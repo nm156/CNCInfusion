@@ -37,6 +37,8 @@ namespace CNCInfusion
 		private void InitializeComponent()
 		{
 			System.Windows.Forms.Label lblUpdateInterval;
+			System.Windows.Forms.Label label1;
+			System.Windows.Forms.Label label2;
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
 			this.dataGridView1 = new System.Windows.Forms.DataGridView();
@@ -50,12 +52,17 @@ namespace CNCInfusion
 			this.customPanel1 = new Utility.Panel.CustomPanel();
 			this.lblUpdate = new System.Windows.Forms.Label();
 			this.rbStatusUpdate = new System.Windows.Forms.RadioButton();
-			this.customPanel2 = new Utility.Panel.CustomPanel();
+			this.pnlReset = new Utility.Panel.CustomPanel();
+			this.btnReset = new System.Windows.Forms.Button();
+			this.customPanel3 = new Utility.Panel.CustomPanel();
 			lblUpdateInterval = new System.Windows.Forms.Label();
+			label1 = new System.Windows.Forms.Label();
+			label2 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
 			this.pnlSettings.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.trackbarUpdateInterval)).BeginInit();
 			this.customPanel1.SuspendLayout();
+			this.pnlReset.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// lblUpdateInterval
@@ -65,6 +72,22 @@ namespace CNCInfusion
 			lblUpdateInterval.Size = new System.Drawing.Size(118, 18);
 			lblUpdateInterval.TabIndex = 46;
 			lblUpdateInterval.Text = "Status Update Interval";
+			// 
+			// label1
+			// 
+			label1.Location = new System.Drawing.Point(23, 13);
+			label1.Name = "label1";
+			label1.Size = new System.Drawing.Size(86, 18);
+			label1.TabIndex = 47;
+			label1.Text = "Hardware reset";
+			// 
+			// label2
+			// 
+			label2.Location = new System.Drawing.Point(23, 31);
+			label2.Name = "label2";
+			label2.Size = new System.Drawing.Size(86, 18);
+			label2.TabIndex = 48;
+			label2.Text = "(DTR toggle)";
 			// 
 			// dataGridView1
 			// 
@@ -215,22 +238,55 @@ namespace CNCInfusion
 			this.rbStatusUpdate.UseVisualStyleBackColor = true;
 			this.rbStatusUpdate.Click += new System.EventHandler(this.RbStatusUpdateClick);
 			// 
-			// customPanel2
+			// pnlReset
 			// 
-			this.customPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+			this.pnlReset.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
-			this.customPanel2.BackColor = System.Drawing.Color.Gray;
-			this.customPanel2.BackColor2 = System.Drawing.Color.Gray;
-			this.customPanel2.BorderColor = System.Drawing.Color.Gold;
-			this.customPanel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.customPanel2.BorderWidth = 2;
-			this.customPanel2.Curvature = 8;
-			this.customPanel2.ForeColor = System.Drawing.Color.Black;
-			this.customPanel2.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
-			this.customPanel2.Location = new System.Drawing.Point(157, 232);
-			this.customPanel2.Name = "customPanel2";
-			this.customPanel2.Size = new System.Drawing.Size(317, 118);
-			this.customPanel2.TabIndex = 47;
+			this.pnlReset.BackColor = System.Drawing.Color.Gray;
+			this.pnlReset.BackColor2 = System.Drawing.Color.Gray;
+			this.pnlReset.BorderColor = System.Drawing.Color.Gold;
+			this.pnlReset.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.pnlReset.BorderWidth = 2;
+			this.pnlReset.Controls.Add(label2);
+			this.pnlReset.Controls.Add(label1);
+			this.pnlReset.Controls.Add(this.btnReset);
+			this.pnlReset.Curvature = 8;
+			this.pnlReset.ForeColor = System.Drawing.Color.Black;
+			this.pnlReset.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+			this.pnlReset.Location = new System.Drawing.Point(157, 232);
+			this.pnlReset.Name = "pnlReset";
+			this.pnlReset.Size = new System.Drawing.Size(119, 118);
+			this.pnlReset.TabIndex = 47;
+			// 
+			// btnReset
+			// 
+			this.btnReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnReset.BackColor = System.Drawing.Color.Coral;
+			this.btnReset.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Red;
+			this.btnReset.Location = new System.Drawing.Point(20, 67);
+			this.btnReset.Name = "btnReset";
+			this.btnReset.Size = new System.Drawing.Size(75, 31);
+			this.btnReset.TabIndex = 39;
+			this.btnReset.Text = "RESET";
+			this.btnReset.UseVisualStyleBackColor = false;
+			this.btnReset.Click += new System.EventHandler(this.BtnResetClick);
+			// 
+			// customPanel3
+			// 
+			this.customPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.customPanel3.BackColor = System.Drawing.Color.Gray;
+			this.customPanel3.BackColor2 = System.Drawing.Color.Gray;
+			this.customPanel3.BorderColor = System.Drawing.Color.Gold;
+			this.customPanel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.customPanel3.BorderWidth = 2;
+			this.customPanel3.Curvature = 8;
+			this.customPanel3.ForeColor = System.Drawing.Color.Black;
+			this.customPanel3.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+			this.customPanel3.Location = new System.Drawing.Point(282, 232);
+			this.customPanel3.Name = "customPanel3";
+			this.customPanel3.Size = new System.Drawing.Size(190, 118);
+			this.customPanel3.TabIndex = 49;
 			// 
 			// Settings
 			// 
@@ -238,7 +294,8 @@ namespace CNCInfusion
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.DimGray;
 			this.ClientSize = new System.Drawing.Size(484, 362);
-			this.Controls.Add(this.customPanel2);
+			this.Controls.Add(this.customPanel3);
+			this.Controls.Add(this.pnlReset);
 			this.Controls.Add(this.customPanel1);
 			this.Controls.Add(this.pnlSettings);
 			this.Controls.Add(this.dataGridView1);
@@ -252,13 +309,16 @@ namespace CNCInfusion
 			this.pnlSettings.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.trackbarUpdateInterval)).EndInit();
 			this.customPanel1.ResumeLayout(false);
+			this.pnlReset.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private Utility.Panel.CustomPanel pnlReset;
+		private Utility.Panel.CustomPanel customPanel3;
+		private System.Windows.Forms.Button btnReset;
 		private Utility.Panel.CustomPanel pnlSettings;
 		private System.Windows.Forms.Label lblUpdate;
 		private System.Windows.Forms.TrackBar trackbarUpdateInterval;
 		private System.Windows.Forms.RadioButton rbStatusUpdate;
-		private Utility.Panel.CustomPanel customPanel2;
 		private Utility.Panel.CustomPanel customPanel1;
 		private System.Windows.Forms.Button btnReadSettings;
 		private System.Windows.Forms.Button btnSetSettings;

@@ -931,6 +931,7 @@
         	this.btnFeedHold.TabIndex = 10;
         	this.btnFeedHold.Text = "Feed Hold";
         	this.btnFeedHold.UseVisualStyleBackColor = false;
+        	this.btnFeedHold.Click += new System.EventHandler(this.BtnFeedHoldClick);
         	// 
         	// jogPage
         	// 

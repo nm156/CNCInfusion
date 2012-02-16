@@ -23,6 +23,11 @@ The Status Update Interval in the settings form will enable reporting and the in
 CNCInfusion has only been tested with this Grbl version (and only with a 'scope), although I suspect it should
 work on any version if status updates remain disabled.
 
+NEW FEATUERES:
+
+Hardware (DTR) Reset in Settings
+Software Reset (0x18) on main form
+
 INCOMPLETE FEATURES:
 
 Status reporting - GRbl is undergoing heavy development in this area. What is
@@ -32,8 +37,6 @@ Supported gcodes - The backplotter is robust and supports many more than Grbl.
 When Grbl does not recognize a code, it flags it as an error and provides the
 opportunity to cancel. It would be better to preprocess the Grbl file and flag
 unsupported codes before runtime? (BtnRunClick() function)
-
-Feed Hold - Grbl work in progress
 
 Feed Override - Grbl work in progress
 

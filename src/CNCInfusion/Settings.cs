@@ -93,7 +93,7 @@ namespace CNCInfusion
 			}
 			
 			((frmViewer)caller).WriteSettings(WriteSettings);
-			MessageBox.Show("Settings have been sucesfully written",  
+			MessageBox.Show("Settings have been successfully written",  
 			                "Write Settings",  
 			                MessageBoxButtons.OK,
 			                MessageBoxIcon.Information,
@@ -151,11 +151,18 @@ namespace CNCInfusion
 			if( mainMode == eMode.CONNECTED || mainMode == eMode.ABORTED || mainMode == eMode.FINISHED ) {
 				pnlSettings.Enabled = true;	
 				dataGridView1.Enabled = true;
+				pnlReset.Enabled = true;
 			}
 			else {
 				pnlSettings.Enabled = false;	
-				dataGridView1.Enabled = false;					
+				dataGridView1.Enabled = false;	
+				pnlReset.Enabled = false;
 			}			
+		}
+		
+		void BtnResetClick(object sender, EventArgs e)
+		{
+			((frmViewer)caller).hardReset();
 		}
 	}
 }

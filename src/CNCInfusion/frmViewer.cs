@@ -24,7 +24,7 @@ using CSharpBasicViewerApp;
 
 namespace CNCInfusion
 {
-  	public enum eMode { CONNECTED, DISCONNECTED, RUNNING, FEEDHOLD, FINISHED, ABORTED, WAITING, READY, LOADING, DISABLED };
+  	public enum eMode { CONNECTED, DISCONNECTED, RUNNING, FEEDHOLD, FINISHED, ABORTED, WAITING, READY, LOADING, SOFTRESET };
   
 	public partial class frmViewer : Form 
 	{ 
@@ -41,7 +41,7 @@ namespace CNCInfusion
 		private string executingLine;
 		private List<string> Settings;
 		private bool G20set;
-		
+		private bool feedHold;
 	    public eMode currentMode;
 		public bool doStatusUpdates;
 		public int UpdateInterval;
@@ -66,6 +66,7 @@ namespace CNCInfusion
 			setMode(currentMode);
 			UpdateInterval = 200; // 5 updates sec
 			doStatusUpdates = false; // when enabled
+			feedHold = false;
 	    }
 	
 	    private void frmViewer_Load(object sender, System.EventArgs e) 
@@ -469,51 +470,55 @@ namespace CNCInfusion
 			cbxComPort.SelectedIndex = 0;	    	
 	    }
 	    
-	    public List<string> GetSettings()
+	    public void hardReset()
 	    {
-		    /*
-			$0 = 755.906 (steps/mm x)
-			$1 = 755.906 (steps/mm y)
-			$2 = 755.906 (steps/mm z)
-			$3 = 30 (microseconds step pulse)
-			$4 = 500.000 (mm/min default feed rate)
-			$5 = 500.000 (mm/min default seek rate)
-			$6 = 0.100 (mm/arc segment)
-			$7 = 28 (step port invert mask. binary = 11100)
-			$8 = 50.000 (acceleration in mm/sec^2)
-			$9 = 0.050 (cornering junction deviation in mm)
-			'$x=value' to set parameter or just '$' to dump current settings
-		   	*/
-		   	
-		   	string val;
-	   		Settings = new List<string>();
-	
-		    // non interrupt driven routine, disable processing
-	   	    disableCommNotify();
-	    	WriteSerial("$\n");
-
-	    	while(comPort.BytesToRead > 0) {
-				val = ReadSerial(); 
-				if(val.StartsWith("$")) {
-					Settings.Add(val);
-					Application.DoEvents();
-				}
-	    	}
+	    	// no actions enabled
+	    	timerStatusQuery.Enabled = false;
+	    	customPanel3.Enabled = false;
+	    	currentMode = eMode.DISCONNECTED;
+	    	setMode(currentMode);
+	    	terminateThread();
 	    	
-	    	// reenable event
-	    	enableCommNotify();
-	    	return Settings;
-		}
-	
-	    public void WriteSettings(List<string> values)
-	    {
-	    	disableCommNotify();
-	    	foreach(string command in values) {
-	    		SerialSendWaitACK(command);
-	    	}
-	    	enableCommNotify();
+	    	cancelled = true;
+	    	Progress.Value = 0;
+	    	
+	    	comPort.DtrEnable = true;
+	    	Thread.Sleep(100);
+	    	comPort.DtrEnable = false;
+	    	
+	    	waitForReset();
+	    	
+	    	// restore actions
+	    	customPanel3.Enabled = true;
+	    	currentMode = eMode.CONNECTED;
+	    	setMode(currentMode);	    	
 	    }
 	    
+	    private void waitForReset()
+	    {
+	    	currentMode = eMode.WAITING;
+	    	setMode(currentMode);
+	    	
+    		// wait for bootloader timeout
+    		for(int i=3; i> 0; i--) {
+    			lblMode.Text = string.Format("WAIT {0}", i);
+    			Application.DoEvents();
+    			Thread.Sleep(1000);
+    		}
+    		
+    		// clear out startup message
+    		//	Grbl 0.7d
+			// '$' to dump current settings
+			
+    		while(comPort.BytesToRead > 0) {
+				ReadSerial();
+    			Application.DoEvents();
+    		}	
+			
+			currentMode = eMode.READY;
+			setMode(currentMode);
+	    }	    
+    
 	    // non interrupt driven serial RX
 	    // for reading settings
 	    private string ReadSerial()
@@ -585,6 +590,9 @@ namespace CNCInfusion
 		  	while(comPort.BytesToRead > 0) {
 		    	ACK = ReadSerial(); 
 		    	
+		    	if(ACK.TrimEnd() == string.Empty)
+		    		return true;
+		    	   
 			  	// postive ACK
 		    	if(ACK.ToUpper().Trim() == "OK") {
 		    		return true;
@@ -593,8 +601,12 @@ namespace CNCInfusion
 			  	else if(ACK.ToUpper().Contains("STORED")) {
 			  		return true;
 			  	}
+			  	// '$' to dump current settings
+			  	else if(ACK.ToUpper().Contains("DUMP")) {
+			  		return true;
+			  	}
 			  	// probably an error
-		    	else {
+				else {
 			  		MessageBox.Show(ACK, "Unexpected response", 
 			  		                MessageBoxButtons.OK, 
 			  		                MessageBoxIcon.Exclamation,
@@ -707,7 +719,17 @@ namespace CNCInfusion
         }
         
 #endregion Serial
-
+	    private void terminateThread()
+	    {
+	    	if(currentMode == eMode.RUNNING) {
+	        	waitingOnACK = false;
+	        	// wait for worker thread 
+		    	workThread.Abort();
+		    	Thread.Sleep(100);
+		    	workThread.Join();	
+	    	}
+	    }
+	    
 	    // comm thread callback to gui thread
 	    public delegate void ThreadFinishActionsCallback();
 	    private void ThreadFinishActions()
@@ -806,6 +828,51 @@ namespace CNCInfusion
 	    	lblRX.BackColor = System.Drawing.Color.Khaki;
 	    	lblRX.Invalidate();	
 	    	Application.DoEvents();	
+	    }
+	    
+	    public List<string> GetSettings()
+	    {
+		    /*
+			$0 = 755.906 (steps/mm x)
+			$1 = 755.906 (steps/mm y)
+			$2 = 755.906 (steps/mm z)
+			$3 = 30 (microseconds step pulse)
+			$4 = 500.000 (mm/min default feed rate)
+			$5 = 500.000 (mm/min default seek rate)
+			$6 = 0.100 (mm/arc segment)
+			$7 = 28 (step port invert mask. binary = 11100)
+			$8 = 50.000 (acceleration in mm/sec^2)
+			$9 = 0.050 (cornering junction deviation in mm)
+			'$x=value' to set parameter or just '$' to dump current settings
+		   	*/
+		   	
+		   	string val;
+	   		Settings = new List<string>();
+	
+		    // non interrupt driven routine, disable processing
+	   	    disableCommNotify();
+	    	WriteSerial("$\n");
+
+	    	while(comPort.BytesToRead > 0) {
+				val = ReadSerial(); 
+				if(val.StartsWith("$")) {
+					Settings.Add(val);
+					Application.DoEvents();
+				}
+	    	}
+	    	
+	    	// reenable event
+	    	enableCommNotify();
+	    	return Settings;
+		}
+	
+	    public void WriteSettings(List<string> values)
+	    {
+	    	disableCommNotify();
+	    	foreach(string command in values) {
+	    		SerialSendWaitACK(command);
+	    	}
+	    	enableCommNotify();
 	    }
 	    
         private void TimerStatusQueryTick(object sender, EventArgs e)
@@ -955,44 +1022,11 @@ namespace CNCInfusion
 						lblMode.BackColor = System.Drawing.Color.SkyBlue;
 						lblMode.Text = "LOADING";
 					break;
-				case eMode.DISABLED:
-					// I was going to use this for something...?
+				case eMode.SOFTRESET:
+					lblMode.BackColor = System.Drawing.Color.SkyBlue;
+					lblMode.Text = "SOFT RESET";
 					break;
 	    	}
-	    }
-	    
-	    private void terminateThread()
-	    {
-        	waitingOnACK = false;
-        	// wait for worker thread 
-	    	workThread.Abort();
-	    	Thread.Sleep(100);
-	    	workThread.Join();	  
-	    }
-	    
-	    private void waitForReset()
-	    {
-	    	currentMode = eMode.WAITING;
-	    	setMode(currentMode);
-	    	
-    		// wait for bootloader timeout
-    		for(int i=3; i> 0; i--) {
-    			lblMode.Text = string.Format("WAIT {0}", i);
-    			Application.DoEvents();
-    			Thread.Sleep(1000);
-    		}
-    		
-    		// clear out startup message
-    		//	Grbl 0.7d
-			// '$' to dump current settings
-			
-    		while(comPort.BytesToRead > 0) {
-				ReadSerial();
-    			Application.DoEvents();
-    		}	
-			
-			currentMode = eMode.READY;
-			setMode(currentMode);
 	    }
 	    
 	    private void BtnConnectClick(object sender, EventArgs e)
@@ -1049,31 +1083,88 @@ namespace CNCInfusion
 	    	currentMode = eMode.DISCONNECTED;
 	    	setMode(currentMode);
 	    }
-	        
+	    
 	    private void BtnResetClick(object sender, EventArgs e)
 	    {
-	    	// no actions enabled
-	    	timerStatusQuery.Enabled = false;
-	    	customPanel3.Enabled = false;
-	    	currentMode = eMode.DISCONNECTED;
-	    	setMode(currentMode);
-	    	terminateThread();
-	    	
-	    	cancelled = true;
-	    	Progress.Value = 0;
-	    	
-	    	comPort.DtrEnable = true;
-	    	Thread.Sleep(100);
-	    	comPort.DtrEnable = false;
-	    	
-	    	waitForReset();
-	    	
-	    	// restore actions
-	    	customPanel3.Enabled = true;
-	    	currentMode = eMode.CONNECTED;
-	    	setMode(currentMode);	
+	    	string command = "\x18\n";
+			SerialSendWaitACK(command);
+    		while(comPort.BytesToRead > 0) {
+				ReadSerial();
+    			Application.DoEvents();
+    		}	
+	    	currentMode = eMode.SOFTRESET;
+	    	setMode(currentMode);			
 	    	
 	    }
+	    /*
+	    #define CMD_STATUS_REPORT '?'
+		#define CMD_FEED_HOLD '!'
+		#define CMD_CYCLE_START '~'
+		#define CMD_RESET 0x18 // ctrl-x
+		*/
+        void BtnFeedHoldClick(object sender, EventArgs e)
+        {
+        	feedHold = !feedHold;
+        	
+        	if(feedHold == true) {
+        		btnFeedHold.Text = "Cycle Start";
+        		comPort.Write("!\n");
+        		if(doStatusUpdates)
+        			timerStatusQuery.Enabled = false;        		
+        	}
+        	else {
+        		btnFeedHold.Text = "Feed Hold";	
+        		comPort.Write("~\n");
+        		if(doStatusUpdates)
+        			timerStatusQuery.Enabled = true;
+        	}
+        }
+        
+        // TODO real code to zero axes
+        //
+        private void BtnZeroAllClick(object sender, EventArgs e)
+        {
+        	// send a simulated message to zero LEDs
+        	UpdatePositionLEDS("MPos:[0.00,0.00,0.00],WPos:[0.00,0.00,0.00]");
+        }
+        
+        void BtnZeroXClick(object sender, EventArgs e)
+        {
+        	
+        }
+        
+        void BtnZeroYClick(object sender, EventArgs e)
+        {
+        	
+        }
+        
+        void BtnZeroZClick(object sender, EventArgs e)
+        {
+        	
+        }
+        
+        private void BtnSettingsClick(object sender, EventArgs e)
+        {
+        	Settings settingsForm = new Settings();	
+        	settingsForm.caller = this;
+        	settingsForm.setUpdateInterval(timerStatusQuery.Interval);
+        	settingsForm.setUpdateMode(doStatusUpdates);
+        	settingsForm.ShowDialog();
+        }
+
+        // TODO feed rate override - not yet supported in Grbl?
+        //
+        private void LbKnob1KnobChangeValue(object sender, CPOL.Knobs.LBKnobEventArgs e)
+        {
+        	lblFeedOverride.Text = string.Format("{0}%", Math.Truncate(lbKnob1.Value));
+        }
+        
+        // prohibit tab changing of mode when running
+	    private void TabControl1SelectedIndexChanged(object sender, EventArgs e)
+	    {
+	    	if(currentMode == eMode.RUNNING)
+	       		tabControl1.SelectedTab = AutoPage;
+	    } 
 
         private void FrmViewerFormClosing(object sender, FormClosingEventArgs e)
         {
@@ -1099,53 +1190,8 @@ namespace CNCInfusion
 	    		comPort.DiscardOutBuffer();
         		comPort.Close();
         	}
-        }
-                
-        // TODO real code to zero axes
-        //
-        private void BtnZeroAllClick(object sender, EventArgs e)
-        {
-        	// send a simulated message to zero LEDs
-        	UpdatePositionLEDS("MPos:[0.00,0.00,0.00],WPos:[0.00,0.00,0.00]");
-        }
-        
-        void BtnZeroXClick(object sender, EventArgs e)
-        {
-        	
-        }
-        
-        void BtnZeroYClick(object sender, EventArgs e)
-        {
-        	
-        }
-        
-        void BtnZeroZClick(object sender, EventArgs e)
-        {
-        	
-        }
-        
-        // TODO feed rate override - not yet supported in Grbl?
-        //
-        private void LbKnob1KnobChangeValue(object sender, CPOL.Knobs.LBKnobEventArgs e)
-        {
-        	lblFeedOverride.Text = string.Format("{0}%", Math.Truncate(lbKnob1.Value));
-        }
-        
-        // prohibit tab changing of mode when running
-	    private void TabControl1SelectedIndexChanged(object sender, EventArgs e)
-	    {
-	    	if(currentMode == eMode.RUNNING)
-	       		tabControl1.SelectedTab = AutoPage;
-	    }        
-        
-        private void BtnSettingsClick(object sender, EventArgs e)
-        {
-        	Settings settingsForm = new Settings();	
-        	settingsForm.caller = this;
-        	settingsForm.setUpdateInterval(timerStatusQuery.Interval);
-        	settingsForm.setUpdateMode(doStatusUpdates);
-        	settingsForm.ShowDialog();
-        }
+        }	    
+
    } 
 }
 	
