@@ -24,7 +24,7 @@ using CSharpBasicViewerApp;
 
 namespace CNCInfusion
 {
-  	public enum eMode { CONNECTED, DISCONNECTED, RUNNING, FEEDHOLD, FINISHED, ABORTED, WAITING, READY, LOADING, SOFTRESET };
+  	public enum eMode { CONNECTED, DISCONNECTED, RUNNING, FEEDHOLD, CYCLESTART, FINISHED, ABORTED, WAITING, READY, LOADING, SOFTRESET };
   
 	public partial class frmViewer : Form 
 	{ 
@@ -61,6 +61,7 @@ namespace CNCInfusion
 	        mSetup.LoadAllMachines(System.IO.Directory.GetCurrentDirectory() + "\\Data");
 	        mProcessor.Init(mSetup.Machine);
 	        cancelled = false;
+	        workThread = null;
 	        sw = new Stopwatch();
 			currentMode = eMode.DISCONNECTED;
 			setMode(currentMode);
@@ -477,7 +478,9 @@ namespace CNCInfusion
 	    	customPanel3.Enabled = false;
 	    	currentMode = eMode.DISCONNECTED;
 	    	setMode(currentMode);
-	    	terminateThread();
+	    	
+	    	if(workThread != null)
+	    		terminateThread();
 	    	
 	    	cancelled = true;
 	    	Progress.Value = 0;
@@ -721,13 +724,11 @@ namespace CNCInfusion
 #endregion Serial
 	    private void terminateThread()
 	    {
-	    	if(currentMode == eMode.RUNNING) {
-	        	waitingOnACK = false;
-	        	// wait for worker thread 
-		    	workThread.Abort();
-		    	Thread.Sleep(100);
-		    	workThread.Join();	
-	    	}
+        	waitingOnACK = false;
+        	// wait for worker thread 
+	    	workThread.Abort();
+	    	Thread.Sleep(100);
+	    	workThread.Join();	
 	    }
 	    
 	    // comm thread callback to gui thread
@@ -943,6 +944,9 @@ namespace CNCInfusion
 						btnDisconnect.Enabled = false;
 						lblMode.BackColor = System.Drawing.Color.Gainsboro;
 				    	lblMode.Text = "RUNNING";
+				    	btnFeedHold.BackColor = System.Drawing.Color.Khaki;
+        				btnFeedHold.Text = "Feed Hold";
+        				feedHold = false;
 						btnZeroAll.Enabled = false;  
 						btnZeroX.Enabled = false;  
 						btnZeroY.Enabled = false;  
@@ -956,10 +960,6 @@ namespace CNCInfusion
 		    			sw.Reset();
 		    			sw.Start();
 		    			timerStatusQuery.Enabled = true;
-	    			break;
-	    		case eMode.FEEDHOLD:
-	    				// TODO
-	    				Cursor = Cursors.WaitCursor;
 	    			break;
 	    		case eMode.FINISHED:
 		    			btnDisconnect.Enabled = true;
@@ -1023,9 +1023,21 @@ namespace CNCInfusion
 						lblMode.Text = "LOADING";
 					break;
 				case eMode.SOFTRESET:
-					lblMode.BackColor = System.Drawing.Color.SkyBlue;
-					lblMode.Text = "SOFT RESET";
+						lblMode.BackColor = System.Drawing.Color.SkyBlue;
+						lblMode.Text = "SOFT RESET";
 					break;
+				case eMode.FEEDHOLD:
+						lblMode.BackColor = System.Drawing.Color.Orange;
+						lblMode.Text = "FEED HOLD";
+        				btnFeedHold.BackColor = System.Drawing.Color.Orange;
+        				btnFeedHold.Text = "Cycle Start";						
+					break;			
+				case eMode.CYCLESTART:
+						lblMode.BackColor = System.Drawing.Color.Gainsboro;
+						lblMode.Text = "RUNNING";
+        				btnFeedHold.BackColor = System.Drawing.Color.Khaki;
+        				btnFeedHold.Text = "Feed Hold";							
+					break;						
 	    	}
 	    }
 	    
@@ -1107,14 +1119,22 @@ namespace CNCInfusion
         	feedHold = !feedHold;
         	
         	if(feedHold == true) {
-        		btnFeedHold.Text = "Cycle Start";
+
+        		comPort.DataReceived -= ComPortDataReceived;
         		comPort.Write("!\n");
+        		comPort.DataReceived += ComPortDataReceived;
+        		//transient mode, don't update currentMode
+        		setMode(eMode.FEEDHOLD);
         		if(doStatusUpdates)
         			timerStatusQuery.Enabled = false;        		
         	}
         	else {
-        		btnFeedHold.Text = "Feed Hold";	
+
+        		comPort.DataReceived -= ComPortDataReceived;
         		comPort.Write("~\n");
+        		comPort.DataReceived += ComPortDataReceived;
+        		//transient mode, don't update currentMode
+				setMode(eMode.CYCLESTART);
         		if(doStatusUpdates)
         			timerStatusQuery.Enabled = true;
         	}

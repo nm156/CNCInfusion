@@ -355,7 +355,7 @@
         	        	        	| System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
         	        	        	| System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
         	this.Coordinates.Name = "Coordinates";
-        	this.Coordinates.Size = new System.Drawing.Size(121, 20);
+        	this.Coordinates.Size = new System.Drawing.Size(90, 20);
         	this.Coordinates.Spring = true;
         	this.Coordinates.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         	// 

@@ -5,7 +5,7 @@ Arduino based Grbl Gcode processor (https://github.com/grbl/grbl)
 
 I have just concentrated on basic functionality for hobby use. My CNC exposure
 has been limited to my home built mill, so I am not familiar with most
-of the G codes for anything much more than basic motion and spinle control. 
+of the G codes for anything much more than basic motion and spindle control. 
 
 It should be obvious that I am not a professional coder.  If you are, please help
 correct and enhance all of my "mis-features".

@@ -148,7 +148,8 @@ namespace CNCInfusion
 			
 			// only these modes allowed to change settings
 			// otherwise Grbl is processing
-			if( mainMode == eMode.CONNECTED || mainMode == eMode.ABORTED || mainMode == eMode.FINISHED ) {
+			if( mainMode == eMode.CONNECTED || mainMode == eMode.ABORTED ||
+			    mainMode == eMode.FINISHED || mainMode == eMode.SOFTRESET) {
 				pnlSettings.Enabled = true;	
 				dataGridView1.Enabled = true;
 				pnlReset.Enabled = true;
