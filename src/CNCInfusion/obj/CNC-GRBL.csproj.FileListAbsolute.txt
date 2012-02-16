@@ -1,0 +1,15 @@
+D:\cnc\GrblGUI\CSharpBasicViewerApp\obj\Debug\ResolveAssemblyReference.cache
+D:\cnc\GrblGUI\CSharpBasicViewerApp\obj\Debug\CSharpBasicViewerApp.frmToolLayers.resources
+D:\cnc\GrblGUI\CSharpBasicViewerApp\obj\Debug\CSharpBasicViewerApp.frmViewer.resources
+D:\cnc\GrblGUI\CSharpBasicViewerApp\obj\Debug\CSharpBasicViewerApp.Knob.LBKnob.resources
+D:\cnc\GrblGUI\CSharpBasicViewerApp\obj\Debug\CSharpBasicViewerApp.Properties.Resources.resources
+D:\cnc\GrblGUI\CSharpBasicViewerApp\obj\Debug\MacGen.MG_CS_BasicViewer.resources
+D:\cnc\GrblGUI\CSharpBasicViewerApp\obj\Debug\CNC-GRBL.csproj.GenerateResource.Cache
+D:\cnc\GrblGUI\CSharpBasicViewerApp\bin\Debug\Data\Mill.xml
+D:\cnc\GrblGUI\CSharpBasicViewerApp\bin\Debug\Samples\LATHE.cnc
+D:\cnc\GrblGUI\CSharpBasicViewerApp\bin\Debug\Samples\MILL.CNC
+D:\cnc\GrblGUI\CSharpBasicViewerApp\bin\Debug\Data\Lathe.xml
+D:\cnc\GrblGUI\CSharpBasicViewerApp\bin\Debug\CNC-GRBL.exe
+D:\cnc\GrblGUI\CSharpBasicViewerApp\bin\Debug\CNC-GRBL.pdb
+D:\cnc\GrblGUI\CSharpBasicViewerApp\obj\Debug\CNC-GRBL.exe
+D:\cnc\GrblGUI\CSharpBasicViewerApp\obj\Debug\CNC-GRBL.pdb

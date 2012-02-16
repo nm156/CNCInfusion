@@ -1,0 +1,45 @@
+﻿NOTES:
+
+Grbl CNC was assembled using many components from code project
+and other internet sources.  
+
+2012 Paul D. Fincato
+Code Project Open License
+
+
+Credit to original authors of components used in this application
+
+G codebackplot
+--------------
+Jason Titcomb
+http://www.codeproject.com/Articles/17424/CNC-Graphical-Backplotter
+Code Project Open License
+
+7 segment
+---------
+Dmitry Brant
+http://dmitrybrant.com
+This component is free for personal use.
+ 
+Custom Panel
+------------
+Mark Jackson
+http://www.codeproject.com/Articles/7641/Customising-the-NET-Panel-control
+Code Project Open License
+
+Knob
+----
+Luca Bonotto
+http://www.codeproject.com/Articles/36116/Industrial-Controls-2
+Code Project Open License
+
+Icons
+-----
+Mark James
+http://www.famfamfam.com/lab/icons/silk/
+Creative Commons Attribution 3.0 License
+
+
+Kudos to the Grbl innovators for a great project!
+
+https://github.com/grbl/grbl

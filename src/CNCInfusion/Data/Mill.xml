@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Machine>
+  <Name>Mill</Name>
+  <Description>Milling setup file</Description>
+  <AbsArcCenter>False</AbsArcCenter>
+  <LatheMinus>False</LatheMinus>
+  <HelixPitch>False</HelixPitch>
+  <BlockSkip>/*</BlockSkip>
+  <Comments>()</Comments>
+  <Endmain>M30</Endmain>
+  <MachineType>MILL</MachineType>
+  <RotaryAxis>X</RotaryAxis>
+  <RotaryDir>CCW</RotaryDir>
+  <Precision>4</Precision>
+  <ProgramId>:$O</ProgramId>
+  <SubReturn>M99</SubReturn>
+  <RotPrecision>4</RotPrecision>
+  <RotaryType>CAD</RotaryType>
+  <Searchstring>Mill</Searchstring>
+  <ViewAngles_0>315</ViewAngles_0>
+  <ViewAngles_1>0</ViewAngles_1>
+  <ViewAngles_2>315</ViewAngles_2>
+  <ViewShift_0>0</ViewShift_0>
+  <ViewShift_1>0</ViewShift_1>
+  <ViewShift_2>0</ViewShift_2>
+  <Absolute>G90</Absolute>
+  <Incremental>G91</Incremental>
+  <CCArc>G03</CCArc>
+  <CWArc>G02</CWArc>
+  <DrillRapid>R</DrillRapid>
+  <Drills_0>G80</Drills_0>
+  <Drills_1>G81</Drills_1>
+  <Drills_2>G82</Drills_2>
+  <Drills_3>G83</Drills_3>
+  <Drills_4>G84</Drills_4>
+  <Drills_5>G85</Drills_5>
+  <Drills_6>G86</Drills_6>
+  <Drills_7>G87</Drills_7>
+  <Drills_8>G88</Drills_8>
+  <Drills_9 />
+  <Linear>G01</Linear>
+  <Rapid>G00</Rapid>
+  <ReturnLevel_0>G98</ReturnLevel_0>
+  <ReturnLevel_1>G99</ReturnLevel_1>
+  <Rotary>B</Rotary>
+  <XYplane>G17</XYplane>
+  <XZplane>G18</XZplane>
+  <YZplane>G19</YZplane>
+  <Subcall>M98</Subcall>
+  <SubRepeats>L</SubRepeats>
+</Machine>

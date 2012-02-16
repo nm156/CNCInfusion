@@ -1,0 +1,181 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9FA4A89F-11D1-40B9-AB2A-85233298A342}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CSharpBasicViewerApp</RootNamespace>
+    <AssemblyName>CNCInfusion</AssemblyName>
+    <StartupObject>CNCInfusion.Program</StartupObject>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\pdf\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="about.cs" />
+    <Compile Include="about.Designer.cs">
+      <DependentUpon>about.cs</DependentUpon>
+    </Compile>
+    <Compile Include="clsMachine.cs" />
+    <Compile Include="clsMotion.cs" />
+    <Compile Include="clsProcessor.cs" />
+    <Compile Include="clsSettings.cs" />
+    <Compile Include="CustomPanel\CornerCurveMode.cs" />
+    <Compile Include="CustomPanel\CustomPanel.cs" />
+    <Compile Include="CustomPanel\LinearGradientMode.cs" />
+    <Compile Include="frmToolLayers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmToolLayers.Designer.cs">
+      <DependentUpon>frmToolLayers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmViewer.Designer.cs">
+      <DependentUpon>frmViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Knob\ColorMng.cs" />
+    <Compile Include="Knob\KnobRenderer.cs" />
+    <Compile Include="Knob\LBKnob.cs" />
+    <Compile Include="Knob\LBKnob.Designer.cs" />
+    <Compile Include="Knob\MathFunc.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="about.resx">
+      <DependentUpon>about.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmToolLayers.resx">
+      <DependentUpon>frmToolLayers.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmViewer.resx">
+      <DependentUpon>frmViewer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Knob\LBKnob.resx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Settings.resx">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viewer\MG_CS_BasicViewer.resx">
+      <DependentUpon>MG_CS_BasicViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Knob\Knob.bmp" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="README.txt" />
+    <None Include="CREDITS.TXT" />
+    <None Include="Samples\fierologo.nc" />
+    <None Include="Samples\Splash.nc" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="Settings.Designer.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SevenSegment\SevenSegment.cs" />
+    <Compile Include="SevenSegment\SevenSegmentArray.cs" />
+    <Compile Include="Viewer\clsCadRect.cs" />
+    <Compile Include="Viewer\clsDisplayList.cs" />
+    <Compile Include="Viewer\clsMotionRecord.cs" />
+    <Compile Include="Viewer\clsToolLayer.cs" />
+    <Compile Include="Viewer\MG_CS_BasicViewer.cs" />
+    <Compile Include="Viewer\MG_CS_BasicViewer.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\Mill.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Color.bmp" />
+    <Content Include="Resources\DisplayOpts.bmp" />
+    <Content Include="Resources\EditInformation.bmp" />
+    <Content Include="Resources\OpenFolder.bmp" />
+    <Content Include="Resources\Refresh.png" />
+    <Content Include="Resources\screens1.bmp" />
+    <Content Include="Resources\screens2.bmp" />
+    <Content Include="Resources\screens4.bmp" />
+    <Content Include="Resources\Select.png" />
+    <Content Include="Resources\ToolLayers.bmp" />
+    <Content Include="Resources\ViewFence.bmp" />
+    <Content Include="Resources\ViewFit.bmp" />
+    <Content Include="Resources\ViewFront.bmp" />
+    <Content Include="Resources\ViewIso.bmp" />
+    <Content Include="Resources\viewpan.bmp" />
+    <Content Include="Resources\ViewRight.bmp" />
+    <Content Include="Resources\viewrotate.bmp" />
+    <Content Include="Resources\ViewTop.bmp" />
+    <Content Include="Resources\viewzoom.bmp" />
+    <Content Include="Resources\web.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpBasicViewerControl\CSharpBasicViewerControl.csproj">
+      <Project>{DF3CE024-D6B5-433F-9DF2-70AB8BA66F92}</Project>
+      <Name>CSharpBasicViewerControl</Name>
+    </ProjectReference>
+    <Folder Include="CustomPanel" />
+    <Folder Include="Knob" />
+    <Folder Include="SevenSegment" />
+    <Folder Include="Viewer" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
