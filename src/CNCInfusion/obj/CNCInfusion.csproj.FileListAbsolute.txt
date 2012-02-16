@@ -28,3 +28,17 @@ D:\cnc\GrblGUI\CNCInfusion\obj\Debug\CNCInfusion.pdb
 D:\cnc\GrblGUI\CNCInfusion\obj\Debug\CSharpBasicViewerApp.about.resources
 D:\cnc\GrblGUI\CNCInfusion\obj\Debug\CNCInfusion.frmViewer.resources
 D:\cnc\GrblGUI\CNCInfusion\obj\Debug\CNCInfusion.Settings.resources
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\CSharpBasicViewerApp.about.resources
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\CSharpBasicViewerApp.frmToolLayers.resources
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\CNCInfusion.frmViewer.resources
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\CSharpBasicViewerApp.Knob.LBKnob.resources
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\CSharpBasicViewerApp.Properties.Resources.resources
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\CNCInfusion.Settings.resources
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\MacGen.MG_CS_BasicViewer.resources
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\CNCInfusion.csproj.GenerateResource.Cache
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\CNCInfusion.exe
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\bin\Debug\Data\Mill.xml
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\bin\Debug\CNCInfusion.exe
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\bin\Debug\CNCInfusion.pdb
+C:\Users\pdf\CNCInfusion\src\CNCInfusion\obj\Debug\CNCInfusion.pdb

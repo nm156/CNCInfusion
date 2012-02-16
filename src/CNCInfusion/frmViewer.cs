@@ -427,13 +427,14 @@ namespace CNCInfusion
 	    private void connect()
 	    {
 	    	if(cbxComPort.Text == "NOPORTS") {
-	    		MessageBox.Show("Serial",
+	    		MessageBox.Show(
 	    						"No serial ports are currently available on this system.\n\n" +
 				                "1. Connect Grbl controller\n" +
 				                "2. Wait a few seconds\n" +
 				                "3. Press 'OK'\n" +
 				                "4. Choose COM port in dropdown box in statusbar\n" +
 				                "5. Retry connect\n",
+				                "Serial",
 				                MessageBoxButtons.OK, MessageBoxIcon.Error,
 				                MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
 	    		getSerialPorts();
@@ -530,8 +531,9 @@ namespace CNCInfusion
 	    	}
 	    	catch (TimeoutException e)
         	{
-	    		MessageBox.Show("Serial port timeout", 
+	    		MessageBox.Show( 
 	    		                "Grbl failed to respond in allocated time", 
+	    		                "Serial port timeout",
 	    		                MessageBoxButtons.OK, 
 	    		                MessageBoxIcon.Error,
 	    		                MessageBoxDefaultButton.Button1, 
@@ -593,7 +595,7 @@ namespace CNCInfusion
 			  	}
 			  	// probably an error
 		    	else {
-			  		MessageBox.Show("Unexpected response", ACK,
+			  		MessageBox.Show(ACK, "Unexpected response", 
 			  		                MessageBoxButtons.OK, 
 			  		                MessageBoxIcon.Exclamation,
 			  		                MessageBoxDefaultButton.Button1, 
@@ -689,7 +691,7 @@ namespace CNCInfusion
 	    			executingLine = "Unknown or unsupported gcode execution attempt: " + executingLine;
 	    			executingLine += "\nDo you want to ABORT this run?";
 	    			
-	    			DialogResult res = MessageBox.Show(executingLine, ACK, 
+	    			DialogResult res = MessageBox.Show(ACK, executingLine, 
 	    			                                   MessageBoxButtons.YesNo, 
 	    			                                   MessageBoxIcon.Error,
 	    			                                   MessageBoxDefaultButton.Button2, 
@@ -1076,7 +1078,7 @@ namespace CNCInfusion
         private void FrmViewerFormClosing(object sender, FormClosingEventArgs e)
         {
         	if(currentMode == eMode.RUNNING) {
-        		MessageBox.Show("Program active", "Currently running.  Abort current program first!",
+        		MessageBox.Show( "Currently running.  Abort current program first!", "Program active",
         		                MessageBoxButtons.OK, 
         		                MessageBoxIcon.Hand,
         		                MessageBoxDefaultButton.Button1, 
