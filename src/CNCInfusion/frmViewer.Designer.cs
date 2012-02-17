@@ -90,7 +90,7 @@
         	this.btnFeedHold = new System.Windows.Forms.Button();
         	this.jogPage = new System.Windows.Forms.TabPage();
         	this.label3 = new System.Windows.Forms.Label();
-        	this.comboBox3 = new System.Windows.Forms.ComboBox();
+        	this.cbJogSpeed = new System.Windows.Forms.ComboBox();
         	this.btnZminus = new System.Windows.Forms.Button();
         	this.btnYminus = new System.Windows.Forms.Button();
         	this.btnXminus = new System.Windows.Forms.Button();
@@ -99,9 +99,9 @@
         	this.btnXplus = new System.Windows.Forms.Button();
         	this.MDIpage = new System.Windows.Forms.TabPage();
         	this.label2 = new System.Windows.Forms.Label();
-        	this.comboBox2 = new System.Windows.Forms.ComboBox();
+        	this.cbMDIHistory = new System.Windows.Forms.ComboBox();
         	this.label7 = new System.Windows.Forms.Label();
-        	this.textBox1 = new System.Windows.Forms.TextBox();
+        	this.tbMDICommand = new System.Windows.Forms.TextBox();
         	this.btnMDIExecute = new System.Windows.Forms.Button();
         	this.comPort = new System.IO.Ports.SerialPort(this.components);
         	this.timerStatusQuery = new System.Windows.Forms.Timer(this.components);
@@ -355,7 +355,7 @@
         	        	        	| System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
         	        	        	| System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
         	this.Coordinates.Name = "Coordinates";
-        	this.Coordinates.Size = new System.Drawing.Size(90, 20);
+        	this.Coordinates.Size = new System.Drawing.Size(121, 20);
         	this.Coordinates.Spring = true;
         	this.Coordinates.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         	// 
@@ -937,7 +937,7 @@
         	// 
         	this.jogPage.BackColor = System.Drawing.Color.Gray;
         	this.jogPage.Controls.Add(this.label3);
-        	this.jogPage.Controls.Add(this.comboBox3);
+        	this.jogPage.Controls.Add(this.cbJogSpeed);
         	this.jogPage.Controls.Add(this.btnZminus);
         	this.jogPage.Controls.Add(this.btnYminus);
         	this.jogPage.Controls.Add(this.btnXminus);
@@ -960,13 +960,13 @@
         	this.label3.TabIndex = 26;
         	this.label3.Text = "Jog Speed";
         	// 
-        	// comboBox3
+        	// cbJogSpeed
         	// 
-        	this.comboBox3.FormattingEnabled = true;
-        	this.comboBox3.Location = new System.Drawing.Point(184, 10);
-        	this.comboBox3.Name = "comboBox3";
-        	this.comboBox3.Size = new System.Drawing.Size(97, 21);
-        	this.comboBox3.TabIndex = 17;
+        	this.cbJogSpeed.FormattingEnabled = true;
+        	this.cbJogSpeed.Location = new System.Drawing.Point(184, 10);
+        	this.cbJogSpeed.Name = "cbJogSpeed";
+        	this.cbJogSpeed.Size = new System.Drawing.Size(97, 21);
+        	this.cbJogSpeed.TabIndex = 17;
         	// 
         	// btnZminus
         	// 
@@ -977,6 +977,7 @@
         	this.btnZminus.TabIndex = 16;
         	this.btnZminus.Text = "Z-";
         	this.btnZminus.UseVisualStyleBackColor = false;
+        	this.btnZminus.Click += new System.EventHandler(this.BtnZminusClick);
         	// 
         	// btnYminus
         	// 
@@ -987,6 +988,7 @@
         	this.btnYminus.TabIndex = 15;
         	this.btnYminus.Text = "Y-";
         	this.btnYminus.UseVisualStyleBackColor = false;
+        	this.btnYminus.Click += new System.EventHandler(this.BtnYminusClick);
         	// 
         	// btnXminus
         	// 
@@ -997,6 +999,7 @@
         	this.btnXminus.TabIndex = 14;
         	this.btnXminus.Text = "X-";
         	this.btnXminus.UseVisualStyleBackColor = false;
+        	this.btnXminus.Click += new System.EventHandler(this.BtnXminusClick);
         	// 
         	// btnZplus
         	// 
@@ -1007,6 +1010,7 @@
         	this.btnZplus.TabIndex = 13;
         	this.btnZplus.Text = "Z+";
         	this.btnZplus.UseVisualStyleBackColor = false;
+        	this.btnZplus.Click += new System.EventHandler(this.BtnZplusClick);
         	// 
         	// btnYplus
         	// 
@@ -1017,6 +1021,7 @@
         	this.btnYplus.TabIndex = 12;
         	this.btnYplus.Text = "Y+";
         	this.btnYplus.UseVisualStyleBackColor = false;
+        	this.btnYplus.Click += new System.EventHandler(this.BtnYplusClick);
         	// 
         	// btnXplus
         	// 
@@ -1027,14 +1032,15 @@
         	this.btnXplus.TabIndex = 11;
         	this.btnXplus.Text = "X+";
         	this.btnXplus.UseVisualStyleBackColor = false;
+        	this.btnXplus.Click += new System.EventHandler(this.BtnXplusClick);
         	// 
         	// MDIpage
         	// 
         	this.MDIpage.BackColor = System.Drawing.Color.Gray;
         	this.MDIpage.Controls.Add(this.label2);
-        	this.MDIpage.Controls.Add(this.comboBox2);
+        	this.MDIpage.Controls.Add(this.cbMDIHistory);
         	this.MDIpage.Controls.Add(this.label7);
-        	this.MDIpage.Controls.Add(this.textBox1);
+        	this.MDIpage.Controls.Add(this.tbMDICommand);
         	this.MDIpage.Controls.Add(this.btnMDIExecute);
         	this.MDIpage.Location = new System.Drawing.Point(4, 25);
         	this.MDIpage.Name = "MDIpage";
@@ -1052,13 +1058,13 @@
         	this.label2.TabIndex = 27;
         	this.label2.Text = "History";
         	// 
-        	// comboBox2
+        	// cbMDIHistory
         	// 
-        	this.comboBox2.FormattingEnabled = true;
-        	this.comboBox2.Location = new System.Drawing.Point(21, 64);
-        	this.comboBox2.Name = "comboBox2";
-        	this.comboBox2.Size = new System.Drawing.Size(219, 21);
-        	this.comboBox2.TabIndex = 26;
+        	this.cbMDIHistory.FormattingEnabled = true;
+        	this.cbMDIHistory.Location = new System.Drawing.Point(21, 64);
+        	this.cbMDIHistory.Name = "cbMDIHistory";
+        	this.cbMDIHistory.Size = new System.Drawing.Size(219, 21);
+        	this.cbMDIHistory.TabIndex = 26;
         	// 
         	// label7
         	// 
@@ -1069,22 +1075,23 @@
         	this.label7.TabIndex = 25;
         	this.label7.Text = "Command";
         	// 
-        	// textBox1
+        	// tbMDICommand
         	// 
-        	this.textBox1.Location = new System.Drawing.Point(21, 24);
-        	this.textBox1.Name = "textBox1";
-        	this.textBox1.Size = new System.Drawing.Size(219, 20);
-        	this.textBox1.TabIndex = 13;
+        	this.tbMDICommand.Location = new System.Drawing.Point(21, 24);
+        	this.tbMDICommand.Name = "tbMDICommand";
+        	this.tbMDICommand.Size = new System.Drawing.Size(219, 20);
+        	this.tbMDICommand.TabIndex = 13;
         	// 
         	// btnMDIExecute
         	// 
         	this.btnMDIExecute.BackColor = System.Drawing.Color.Khaki;
-        	this.btnMDIExecute.Location = new System.Drawing.Point(21, 91);
+        	this.btnMDIExecute.Location = new System.Drawing.Point(21, 107);
         	this.btnMDIExecute.Name = "btnMDIExecute";
         	this.btnMDIExecute.Size = new System.Drawing.Size(75, 34);
         	this.btnMDIExecute.TabIndex = 12;
         	this.btnMDIExecute.Text = "Execute";
         	this.btnMDIExecute.UseVisualStyleBackColor = false;
+        	this.btnMDIExecute.Click += new System.EventHandler(this.BtnMDIExecuteClick);
         	// 
         	// comPort
         	// 
@@ -1139,6 +1146,9 @@
         	this.MDIpage.PerformLayout();
         	this.ResumeLayout(false);
         }
+        private System.Windows.Forms.ComboBox cbJogSpeed;
+        private System.Windows.Forms.ComboBox cbMDIHistory;
+        private System.Windows.Forms.TextBox tbMDICommand;
         private System.Windows.Forms.Button btnCompleted;
         private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Label lblFeedOverride;
@@ -1185,9 +1195,7 @@
         private System.Windows.Forms.Button btnDisconnect;
         private System.Windows.Forms.Button btnConnect;
         private CPOL.Knobs.LBKnob lbKnob1;
-        private System.Windows.Forms.ComboBox comboBox3;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Label label2;
         private Utility.Panel.CustomPanel customPanel5;
         private Utility.Panel.CustomPanel customPanel4;
@@ -1197,7 +1205,6 @@
         private Utility.Panel.CustomPanel customPanel8;
         private System.Windows.Forms.Label label1;
         private Utility.Panel.CustomPanel customPanel2;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TabControl tabControl1;

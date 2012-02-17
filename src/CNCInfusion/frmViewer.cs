@@ -1074,6 +1074,7 @@ namespace CNCInfusion
 	    		// any other modal codes to be checked here?
 	    		if(o.ToString().Contains("G20")) {
 					// use inches in UpdatePositionLEDS() 
+					// 
 	    			G20set = true;
 	    		}
 	    		gcode.Add(o);
@@ -1140,27 +1141,30 @@ namespace CNCInfusion
         	}
         }
         
-        // TODO real code to zero axes
-        //
         private void BtnZeroAllClick(object sender, EventArgs e)
         {
-        	// send a simulated message to zero LEDs
-        	UpdatePositionLEDS("MPos:[0.00,0.00,0.00],WPos:[0.00,0.00,0.00]");
+        	Xdisplay.Value = "000.000"; 
+        	Ydisplay.Value = "000.000"; 
+        	Zdisplay.Value = "000.000"; 
+        	SerialSendWaitACK("G92 X0 Y0 Z0\n");
         }
         
         void BtnZeroXClick(object sender, EventArgs e)
         {
-        	
+       		Xdisplay.Value = "000.000"; 
+       		SerialSendWaitACK("G92 X0\n");
         }
         
         void BtnZeroYClick(object sender, EventArgs e)
         {
-        	
+        	Ydisplay.Value = "000.000";	
+        	SerialSendWaitACK("G92 Y0\n");
         }
         
         void BtnZeroZClick(object sender, EventArgs e)
         {
-        	
+        	Zdisplay.Value = "000.000";	
+        	SerialSendWaitACK("G92 Z0\n");
         }
         
         private void BtnSettingsClick(object sender, EventArgs e)
@@ -1171,7 +1175,48 @@ namespace CNCInfusion
         	settingsForm.setUpdateMode(doStatusUpdates);
         	settingsForm.ShowDialog();
         }
-
+        
+        void BtnXplusClick(object sender, EventArgs e)
+        {
+        	// G21/G20
+        	// G91
+        	// G0 X distance F rate
+        	// G90
+        	
+        	// cbJogSpeed.Text is rate
+        }
+        
+        void BtnXminusClick(object sender, EventArgs e)
+        {
+        	
+        }
+        
+        void BtnYplusClick(object sender, EventArgs e)
+        {
+        	
+        }
+        
+        void BtnYminusClick(object sender, EventArgs e)
+        {
+        	
+        }
+        
+        void BtnZplusClick(object sender, EventArgs e)
+        {
+        	
+        }
+        
+        void BtnZminusClick(object sender, EventArgs e)
+        {
+        	
+        }
+        
+        void BtnMDIExecuteClick(object sender, EventArgs e)
+        {
+        	cbMDIHistory.Items.Add(tbMDICommand.Text);
+        	SerialSendWaitACK(tbMDICommand.Text + "\n");
+        }
+        
         // TODO feed rate override - not yet supported in Grbl?
         //
         private void LbKnob1KnobChangeValue(object sender, CPOL.Knobs.LBKnobEventArgs e)
@@ -1211,7 +1256,6 @@ namespace CNCInfusion
         		comPort.Close();
         	}
         }	    
-
    } 
 }
 	
