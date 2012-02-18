@@ -113,8 +113,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="README.txt" />
-    <None Include="CREDITS.TXT" />
     <None Include="Samples\fierologo.nc" />
     <None Include="Samples\Splash.nc" />
     <Compile Include="Properties\Settings.Designer.cs">

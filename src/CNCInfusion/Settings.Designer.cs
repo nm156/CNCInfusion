@@ -240,8 +240,7 @@ namespace CNCInfusion
 			// 
 			// pnlReset
 			// 
-			this.pnlReset.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.pnlReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.pnlReset.BackColor = System.Drawing.Color.Gray;
 			this.pnlReset.BackColor2 = System.Drawing.Color.Gray;
 			this.pnlReset.BorderColor = System.Drawing.Color.Gold;
