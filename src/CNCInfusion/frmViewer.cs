@@ -10,15 +10,22 @@ using CSharpBasicViewerApp;
 // 0.1.0.0 - initial version
 // 0.1.1.0 - feed hold / soft reset 
 // 0.1.2.0 - restructuring of serial comm code
-// STILL HAS KNOWN ISSUE WITH FEED HOLD INTERMITTANTLY - WORKING ON SOLUTION
+//		   - known problem with feedhold/cyclestart
+// 0.1.3.0 - fixed feedhold problem caused by the ok response
+//		   - known problem ocassionally with re-running after abort (buffer dirty or unknown state?)
+
 
 // TODO
 // Grbl reporting of status is undergoing development:
 // XON/XOFF is being worked as well for flow control, 
 // need to update this code stabilizes
+
 // check gcode flavor of grbl before processing
-// grbl currently seems to only report G21 (metric) 
-// even if G20 is in the nc file // kludged code to get reporting in inches // using variable G20set (search for it here)
+// use preGrbl.py as reference, convert to C# and integrate
+
+// grbl currently seems to only report G21 (metric) - this is a Grbl compile time option
+// kludged this code to get reporting in inches without recompiling Grbl
+// using variable G20set (search for it here)
 
 namespace CNCInfusion
 {
@@ -41,6 +48,7 @@ public partial class frmViewer : Form
     private bool G20set;
     private bool feedHold;
 	private bool gettingSettings;
+	private eMode specialMode;
     public eMode currentMode;
     public bool doStatusUpdates;
     public int UpdateInterval;
@@ -180,7 +188,7 @@ public partial class frmViewer : Form
                 }
             }
         } 
-    	catch (Exception ex) {  }
+    	catch  {  }
     }
 
     private void ViewportActivated(object sender, System.EventArgs e)
@@ -357,7 +365,7 @@ public partial class frmViewer : Form
 
     private void BtnLoadClick(object sender, EventArgs e)
     {
-        String line, laststatus;
+        String line;
         eMode lastMode;
 
         G20set = false;
@@ -390,7 +398,6 @@ public partial class frmViewer : Form
         mViewer.Redraw(true);
         Application.DoEvents();
     }
-
 
     #region Serial
 
@@ -463,6 +470,14 @@ public partial class frmViewer : Form
         setMode(eMode.CONNECTED);
     }
 
+    private void softreset()
+    {
+        string command = "\x18\n";
+
+        WriteSerial(command);
+        setMode(eMode.SOFTRESET);    	
+    }
+    
     private void waitForReset()
     {
         setMode(eMode.WAITING);
@@ -507,7 +522,6 @@ public partial class frmViewer : Form
     }
 
     // separate thread to keep GUI responsive during
-
     // serial activity and when paused for tool change
     // Invoke is used to sync updates back to GUI thread
     private void ThreadedCommunication()
@@ -571,22 +585,18 @@ public partial class frmViewer : Form
             if(ACK.ToUpper().Trim() == "OK") {
                 // strobe RX LED (only on affirm ACKs, not status queries)
                 Invoke(new ReceiveLEDCallback(ReceiveLED));
-                waitingOnACK = false;
+                if(specialMode == eMode.FEEDHOLD) {
+                	// swallow the first OK sent by the feedhold command
+                	waitingOnACK = true;
+                } else {
+                	waitingOnACK = false;	
+                }
             }
             // status update
             else if(ACK.ToUpper().StartsWith("MPOS")) {
                 // show the machine/world position on 7 segment displays
                 Invoke(new UpdatePositionLEDSCallback(UpdatePositionLEDS), ACK);
             }
-            // "Stored new setting"
-            //else if(ACK.ToUpper().StartsWith("Stored")) {
-            //    //waitingOnACK = false;
-            //}
-            // '$' to dump current settings
-            // (sign on message)
-            //else if(ACK.ToUpper().Contains("DUMP")) {
-            //    //waitingOnACK = false;
-            //}
             else if(ACK.StartsWith("'$x=value'")){
             	// break out of loop getting setting values
             	gettingSettings = false; 
@@ -613,7 +623,7 @@ public partial class frmViewer : Form
                 executingLine = "Unknown or unsupported gcode execution attempt: " + executingLine;
                 executingLine += "\nDo you want to ABORT this run?";
 
-                DialogResult res =  MessageBox.Show(ACK, executingLine,
+                DialogResult res =  MessageBox.Show(executingLine, ACK, 
                                     MessageBoxButtons.YesNo,
                                     MessageBoxIcon.Error,
                                     MessageBoxDefaultButton.Button2,
@@ -845,6 +855,7 @@ public partial class frmViewer : Form
 	            break;
 	        case eMode.RUNNING:
 	            currentMode =  eMode.RUNNING;
+	            specialMode = eMode.CYCLESTART;
 	            Cursor =  Cursors.AppStarting;
 	            workThread = new Thread(ThreadedCommunication);
 	            Progress.Minimum = 0;
@@ -891,9 +902,10 @@ public partial class frmViewer : Form
 	            break;
 	        case eMode.ABORTED:
 	            currentMode =  eMode.ABORTED;
+	            waitingOnACK =  false;
 	            cancelled = true;
-	            timerStatusQuery.Enabled = false;
 	            terminateThread();
+	            timerStatusQuery.Enabled = false;
 	            sw.Stop();
 	            lblMode.BackColor = System.Drawing.Color.Salmon;
 	            lblRX.BackColor = System.Drawing.Color.DarkGray;
@@ -945,6 +957,7 @@ public partial class frmViewer : Form
 	            break;
 	        case eMode.FEEDHOLD:
 	            // transient mode, don't update currentmode
+	            specialMode = eMode.FEEDHOLD;
 	            lblMode.BackColor = System.Drawing.Color.Orange;
 	            lblMode.Text = "FEED HOLD";
 	            btnFeedHold.BackColor = System.Drawing.Color.Orange;
@@ -952,6 +965,7 @@ public partial class frmViewer : Form
 	            break;
 	            case eMode.CYCLESTART:
 	            // transient  mode, don't update currentmode
+	            specialMode = eMode.CYCLESTART;
 	            lblMode.BackColor = System.Drawing.Color.Gainsboro;
 	            lblMode.Text = "RUNNING";
 	            btnFeedHold.BackColor = System.Drawing.Color.Khaki;
@@ -984,7 +998,7 @@ public partial class frmViewer : Form
         if(listBoxGcode.Items.Count == 0) {
             return;
         }
-
+        
         // copy of gcode for use in thread
         gcode = new List<object>();
         foreach(object o in listBoxGcode.Items) {
@@ -1014,15 +1028,7 @@ public partial class frmViewer : Form
 
     private void BtnResetClick(object sender, EventArgs e)
     {
-        string command = "\x18\n";
-
-        WriteSerial(command);
-        //SerialSendWaitACK(command);
-        //while(comPort.BytesToRead > 0) {
-        //ReadSerial();
-        //	Application.DoEvents();
-        //}
-        setMode(eMode.SOFTRESET);
+    	softreset();
     }
 
     /*

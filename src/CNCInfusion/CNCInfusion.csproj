@@ -79,6 +79,7 @@
     <Compile Include="Knob\LBKnob.cs" />
     <Compile Include="Knob\LBKnob.Designer.cs" />
     <Compile Include="Knob\MathFunc.cs" />
+    <Compile Include="preprocessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="about.resx">
