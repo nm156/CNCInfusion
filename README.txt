@@ -23,30 +23,28 @@ The Status Update Interval in the settings form will enable reporting and the in
 CNCInfusion has only been tested with this Grbl version (and only with a 'scope), although I suspect it should
 work on any version if status updates remain disabled.
 
-NEW FEATUERES:
+NEW FEATURES:
 
 Hardware (DTR) Reset in Settings
 Software Reset (0x18) on main form
+Feed Hold / Cycle start
+Zero Axes - Untested
 
 INCOMPLETE FEATURES:
 
 Status reporting - GRbl is undergoing heavy development in this area. What is
-currently there is mostly a placeholder as a proof of concept
+currently there is mostly a placeholder as a proof of concept but is functional
 
 Supported gcodes - The backplotter is robust and supports many more than Grbl.
 When Grbl does not recognize a code, it flags it as an error and provides the
-opportunity to cancel. It would be better to preprocess the Grbl file and flag
-unsupported codes before runtime? (BtnRunClick() function)
+opportunity to cancel.  Working on converting preGrbl.py as preprocessor before
+execution
 
 Feed Override - Grbl work in progress
 
 JOG - Not yet coded, GUI components in place - how to acccomplish?
 
-MDI - Not yet coded, GUI components in place - how to acccomplish?
-
-No ESTOP - This should be a hardware function, RESET is only intended to reinit GRbl
-
-Zero Axes - Need some help here
+MDI - Not yet coded, GUI components in place 
 
 Status of modal gcodes - Maybe some indicators?
 
