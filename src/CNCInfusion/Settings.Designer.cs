@@ -39,12 +39,17 @@ namespace CNCInfusion
 			System.Windows.Forms.Label lblUpdateInterval;
 			System.Windows.Forms.Label label1;
 			System.Windows.Forms.Label label2;
+			System.Windows.Forms.Label label3;
+			System.Windows.Forms.Label label4;
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
 			this.dataGridView1 = new System.Windows.Forms.DataGridView();
 			this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.Function = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.conversion = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.btnSetSettings = new System.Windows.Forms.Button();
 			this.btnReadSettings = new System.Windows.Forms.Button();
 			this.pnlSettings = new Utility.Panel.CustomPanel();
@@ -55,14 +60,23 @@ namespace CNCInfusion
 			this.pnlReset = new Utility.Panel.CustomPanel();
 			this.btnReset = new System.Windows.Forms.Button();
 			this.customPanel3 = new Utility.Panel.CustomPanel();
+			this.rbAny = new System.Windows.Forms.RadioButton();
+			this.rbGrblOnly = new System.Windows.Forms.RadioButton();
+			this.customPanel2 = new Utility.Panel.CustomPanel();
+			this.rbImperial = new System.Windows.Forms.RadioButton();
+			this.rbMetric = new System.Windows.Forms.RadioButton();
 			lblUpdateInterval = new System.Windows.Forms.Label();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
+			label3 = new System.Windows.Forms.Label();
+			label4 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
 			this.pnlSettings.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.trackbarUpdateInterval)).BeginInit();
 			this.customPanel1.SuspendLayout();
 			this.pnlReset.SuspendLayout();
+			this.customPanel3.SuspendLayout();
+			this.customPanel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// lblUpdateInterval
@@ -89,6 +103,22 @@ namespace CNCInfusion
 			label2.TabIndex = 48;
 			label2.Text = "(DTR toggle)";
 			// 
+			// label3
+			// 
+			label3.Location = new System.Drawing.Point(22, 13);
+			label3.Name = "label3";
+			label3.Size = new System.Drawing.Size(127, 18);
+			label3.TabIndex = 48;
+			label3.Text = "Gcode Preprocessor";
+			// 
+			// label4
+			// 
+			label4.Location = new System.Drawing.Point(18, 11);
+			label4.Name = "label4";
+			label4.Size = new System.Drawing.Size(111, 18);
+			label4.TabIndex = 48;
+			label4.Text = "Grbl Units";
+			// 
 			// dataGridView1
 			// 
 			this.dataGridView1.AllowUserToAddRows = false;
@@ -102,16 +132,19 @@ namespace CNCInfusion
 			this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
 									this.Column1,
 									this.Function,
-									this.Column2});
+									this.Column2,
+									this.conversion});
 			this.dataGridView1.Location = new System.Drawing.Point(112, 12);
 			this.dataGridView1.MultiSelect = false;
 			this.dataGridView1.Name = "dataGridView1";
+			this.dataGridView1.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
 			this.dataGridView1.RowHeadersVisible = false;
 			this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
 			this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dataGridView1.ShowEditingIcon = false;
-			this.dataGridView1.Size = new System.Drawing.Size(362, 214);
+			this.dataGridView1.Size = new System.Drawing.Size(512, 254);
 			this.dataGridView1.TabIndex = 15;
+			this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1CellValueChanged);
 			this.dataGridView1.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DataGridView1CellValidating);
 			// 
 			// Column1
@@ -135,8 +168,19 @@ namespace CNCInfusion
 			// Column2
 			// 
 			this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			dataGridViewCellStyle3.BackColor = System.Drawing.Color.LightGreen;
+			this.Column2.DefaultCellStyle = dataGridViewCellStyle3;
 			this.Column2.HeaderText = "Value";
 			this.Column2.Name = "Column2";
+			// 
+			// conversion
+			// 
+			dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.conversion.DefaultCellStyle = dataGridViewCellStyle4;
+			this.conversion.HeaderText = "Inch/Binary";
+			this.conversion.Name = "conversion";
+			this.conversion.ReadOnly = true;
+			this.conversion.Width = 152;
 			// 
 			// btnSetSettings
 			// 
@@ -177,7 +221,7 @@ namespace CNCInfusion
 			this.pnlSettings.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
 			this.pnlSettings.Location = new System.Drawing.Point(12, 12);
 			this.pnlSettings.Name = "pnlSettings";
-			this.pnlSettings.Size = new System.Drawing.Size(94, 213);
+			this.pnlSettings.Size = new System.Drawing.Size(94, 254);
 			this.pnlSettings.TabIndex = 44;
 			// 
 			// trackbarUpdateInterval
@@ -187,7 +231,7 @@ namespace CNCInfusion
 			this.trackbarUpdateInterval.LargeChange = 50;
 			this.trackbarUpdateInterval.Location = new System.Drawing.Point(9, 34);
 			this.trackbarUpdateInterval.Maximum = 500;
-			this.trackbarUpdateInterval.Minimum = 50;
+			this.trackbarUpdateInterval.Minimum = 100;
 			this.trackbarUpdateInterval.Name = "trackbarUpdateInterval";
 			this.trackbarUpdateInterval.Size = new System.Drawing.Size(118, 32);
 			this.trackbarUpdateInterval.SmallChange = 50;
@@ -211,7 +255,7 @@ namespace CNCInfusion
 			this.customPanel1.Curvature = 8;
 			this.customPanel1.ForeColor = System.Drawing.Color.Black;
 			this.customPanel1.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
-			this.customPanel1.Location = new System.Drawing.Point(12, 232);
+			this.customPanel1.Location = new System.Drawing.Point(12, 282);
 			this.customPanel1.Name = "customPanel1";
 			this.customPanel1.Size = new System.Drawing.Size(139, 118);
 			this.customPanel1.TabIndex = 46;
@@ -252,7 +296,7 @@ namespace CNCInfusion
 			this.pnlReset.Curvature = 8;
 			this.pnlReset.ForeColor = System.Drawing.Color.Black;
 			this.pnlReset.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
-			this.pnlReset.Location = new System.Drawing.Point(157, 232);
+			this.pnlReset.Location = new System.Drawing.Point(157, 282);
 			this.pnlReset.Name = "pnlReset";
 			this.pnlReset.Size = new System.Drawing.Size(119, 118);
 			this.pnlReset.TabIndex = 47;
@@ -279,38 +323,112 @@ namespace CNCInfusion
 			this.customPanel3.BorderColor = System.Drawing.Color.Gold;
 			this.customPanel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.customPanel3.BorderWidth = 2;
+			this.customPanel3.Controls.Add(label3);
+			this.customPanel3.Controls.Add(this.rbAny);
+			this.customPanel3.Controls.Add(this.rbGrblOnly);
 			this.customPanel3.Curvature = 8;
 			this.customPanel3.ForeColor = System.Drawing.Color.Black;
 			this.customPanel3.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
-			this.customPanel3.Location = new System.Drawing.Point(282, 232);
+			this.customPanel3.Location = new System.Drawing.Point(428, 282);
 			this.customPanel3.Name = "customPanel3";
-			this.customPanel3.Size = new System.Drawing.Size(190, 118);
+			this.customPanel3.Size = new System.Drawing.Size(196, 118);
 			this.customPanel3.TabIndex = 49;
+			// 
+			// rbAny
+			// 
+			this.rbAny.Location = new System.Drawing.Point(22, 65);
+			this.rbAny.Name = "rbAny";
+			this.rbAny.Size = new System.Drawing.Size(130, 18);
+			this.rbAny.TabIndex = 1;
+			this.rbAny.Text = "All (Backplotting only)";
+			this.rbAny.UseVisualStyleBackColor = true;
+			// 
+			// rbGrblOnly
+			// 
+			this.rbGrblOnly.Checked = true;
+			this.rbGrblOnly.Location = new System.Drawing.Point(22, 46);
+			this.rbGrblOnly.Name = "rbGrblOnly";
+			this.rbGrblOnly.Size = new System.Drawing.Size(130, 18);
+			this.rbGrblOnly.TabIndex = 0;
+			this.rbGrblOnly.TabStop = true;
+			this.rbGrblOnly.Text = "Grbl supported";
+			this.rbGrblOnly.UseVisualStyleBackColor = true;
+			this.rbGrblOnly.CheckedChanged += new System.EventHandler(this.RbGrblOnlyCheckedChanged);
+			// 
+			// customPanel2
+			// 
+			this.customPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.customPanel2.BackColor = System.Drawing.Color.Gray;
+			this.customPanel2.BackColor2 = System.Drawing.Color.Gray;
+			this.customPanel2.BorderColor = System.Drawing.Color.Gold;
+			this.customPanel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.customPanel2.BorderWidth = 2;
+			this.customPanel2.Controls.Add(label4);
+			this.customPanel2.Controls.Add(this.rbImperial);
+			this.customPanel2.Controls.Add(this.rbMetric);
+			this.customPanel2.Curvature = 8;
+			this.customPanel2.ForeColor = System.Drawing.Color.Black;
+			this.customPanel2.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+			this.customPanel2.Location = new System.Drawing.Point(283, 284);
+			this.customPanel2.Name = "customPanel2";
+			this.customPanel2.Size = new System.Drawing.Size(139, 116);
+			this.customPanel2.TabIndex = 50;
+			// 
+			// rbImperial
+			// 
+			this.rbImperial.Location = new System.Drawing.Point(18, 65);
+			this.rbImperial.Name = "rbImperial";
+			this.rbImperial.Size = new System.Drawing.Size(111, 18);
+			this.rbImperial.TabIndex = 1;
+			this.rbImperial.Text = "Imperial (inches)";
+			this.rbImperial.UseVisualStyleBackColor = true;
+			this.rbImperial.CheckedChanged += new System.EventHandler(this.RbImperialCheckedChanged);
+			// 
+			// rbMetric
+			// 
+			this.rbMetric.Checked = true;
+			this.rbMetric.Location = new System.Drawing.Point(18, 46);
+			this.rbMetric.Name = "rbMetric";
+			this.rbMetric.Size = new System.Drawing.Size(100, 18);
+			this.rbMetric.TabIndex = 0;
+			this.rbMetric.TabStop = true;
+			this.rbMetric.Text = "Metric (mm)";
+			this.rbMetric.UseVisualStyleBackColor = true;
 			// 
 			// Settings
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.DimGray;
-			this.ClientSize = new System.Drawing.Size(484, 362);
+			this.ClientSize = new System.Drawing.Size(634, 412);
+			this.Controls.Add(this.customPanel2);
 			this.Controls.Add(this.customPanel3);
 			this.Controls.Add(this.pnlReset);
 			this.Controls.Add(this.customPanel1);
 			this.Controls.Add(this.pnlSettings);
 			this.Controls.Add(this.dataGridView1);
 			this.MaximumSize = new System.Drawing.Size(800, 600);
-			this.MinimumSize = new System.Drawing.Size(500, 400);
+			this.MinimumSize = new System.Drawing.Size(650, 450);
 			this.Name = "Settings";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Settings";
 			this.Shown += new System.EventHandler(this.SettingsShown);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsFormClosing);
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
 			this.pnlSettings.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.trackbarUpdateInterval)).EndInit();
 			this.customPanel1.ResumeLayout(false);
 			this.pnlReset.ResumeLayout(false);
+			this.customPanel3.ResumeLayout(false);
+			this.customPanel2.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.RadioButton rbImperial;
+		private System.Windows.Forms.RadioButton rbMetric;
+		private Utility.Panel.CustomPanel customPanel2;
+		private System.Windows.Forms.DataGridViewTextBoxColumn conversion;
+		private System.Windows.Forms.RadioButton rbGrblOnly;
+		private System.Windows.Forms.RadioButton rbAny;
 		private Utility.Panel.CustomPanel pnlReset;
 		private Utility.Panel.CustomPanel customPanel3;
 		private System.Windows.Forms.Button btnReset;

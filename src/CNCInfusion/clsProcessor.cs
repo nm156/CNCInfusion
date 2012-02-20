@@ -598,8 +598,6 @@ class clsProcessor
                 ProcessSubWords(pr);
             }
         }
-
-
     }
 
     private clsProg FindSubByValue(int val)

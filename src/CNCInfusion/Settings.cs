@@ -20,10 +20,12 @@ namespace CNCInfusion
 	{
 		// reference to parent form
 		public Form caller;
+		private bool modified;
 		
 		public Settings()
 		{
 			InitializeComponent();
+			modified = false;
 		}
 		
 		public void setUpdateMode(bool enabled)
@@ -33,7 +35,9 @@ namespace CNCInfusion
 		
 		public void setUpdateInterval(int interval)
 		{
-			trackbarUpdateInterval.Value = interval;		
+			trackbarUpdateInterval.Value = interval;	
+			int timerInterval = 1000/trackbarUpdateInterval.Value;
+			lblUpdate.Text = timerInterval + " updates / second";
 		}
 		
 		void BtnReadSettingsClick(object sender, EventArgs e)
@@ -44,13 +48,16 @@ namespace CNCInfusion
 	   	    string dollar;
 	   	    string description;
 	   	    string readvalue;
+	   	    string conversion;
 	   	    char[] charsToTrim = {'\r', '\n', ')'};
-	   	    
+
 	   	    dataGridView1.Rows.Clear();
-   	    
+   	    	modified = false;
+   	    	
 	   	    // TODO I still can't figure all of the delegate stuff
 	   	    // between forms, so just do it the old fashioned "C" way...
 			RawSettings = ((frmViewer)caller).GetSettings();
+			dataGridView1.Columns[2].DefaultCellStyle.BackColor = System.Drawing.Color.PaleGreen;
 			
 			foreach(string val in RawSettings)
 	    	{
@@ -67,11 +74,43 @@ namespace CNCInfusion
 					description = paramtext[1].TrimEnd(charsToTrim); 
 					readvalue = paramtext[0].Trim();
 					
-					dataGridView1.Rows.Add(new object[]{dollar, description, readvalue});
+					conversion = convertUnits(readvalue, val);
+					dataGridView1.Rows.Add(new object[]{dollar, description, readvalue, conversion});
 					Application.DoEvents();
 	    		}
 			}
 			btnSetSettings.Enabled = true;
+		}
+		
+		string convertUnits(string readvalue, string setting)
+		{
+			double TOINCHES = 0.03937;
+			string convert;	   	    
+			
+			try {
+				if(setting.Contains("steps/mm")) {
+					double fval = double.Parse(readvalue)*(1.0/TOINCHES);
+					convert = fval.ToString();
+				}
+				else if(setting.Contains("mm")) {
+					double fval = double.Parse(readvalue)*TOINCHES;
+					convert = fval.ToString();
+				}
+				else if(setting.Contains("binary")) {
+					int fval = int.Parse(readvalue);
+					convert = GetIntBinaryString(fval);
+				}
+				else {
+					convert = readvalue;
+				}
+			}
+			catch (Exception ex)
+			{
+				convert = string.Empty;
+				MessageBox.Show(ex.Message);
+			}	
+			
+			return convert;
 		}
 		
 		void BtnSetSettingsClick(object sender, EventArgs e)
@@ -125,8 +164,29 @@ namespace CNCInfusion
 		    	                MessageBoxDefaultButton.Button1, 
 		    	                MessageBoxOptions.DefaultDesktopOnly);
 		    		e.Cancel = true;
+		    		return;
 		    }
+		    
+		    e.Cancel = false;
 	    }	
+		
+		// http://www.dotnetperls.com/binary-representation
+		string GetIntBinaryString(int n)
+    	{
+			char[] b = new char[8];
+			int pos = 7;
+			int i = 0;
+
+			while (i < 8) {
+	    		if ((n & (1 << i)) != 0)
+					b[pos] = '1';
+	    		else
+					b[pos] = '0';
+	    		pos--;
+	    		i++;
+			}
+			return new string(b);
+    	}
 		
 		void TrackbarUpdateIntervalScroll(object sender, EventArgs e)
 		{
@@ -138,7 +198,7 @@ namespace CNCInfusion
 		void RbStatusUpdateClick(object sender, EventArgs e)
 		{
 			rbStatusUpdate.Checked  = !rbStatusUpdate.Checked;
-			((frmViewer)caller).doStatusUpdates = rbStatusUpdate.Checked;
+			((frmViewer)caller).PerformStatusUpdates = rbStatusUpdate.Checked;
 		}
 		
 		void SettingsShown(object sender, EventArgs e)
@@ -164,6 +224,45 @@ namespace CNCInfusion
 		void BtnResetClick(object sender, EventArgs e)
 		{
 			((frmViewer)caller).hardReset();
+		}
+		
+		void RbGrblOnlyCheckedChanged(object sender, EventArgs e)
+		{
+			((frmViewer)caller).PreprocessorMode = rbGrblOnly.Checked;
+		}
+	
+		void DataGridView1CellValueChanged(object sender, DataGridViewCellEventArgs e)
+		{
+			if(dataGridView1.SelectedRows.Count > 0) {
+				modified = true;
+		    	int row = dataGridView1.SelectedRows[0].Index;
+	
+		    	dataGridView1.Rows[row].Cells[3].Value = 
+		    		convertUnits(dataGridView1.Rows[row].Cells[2].Value.ToString(),
+		    	            	 dataGridView1.Rows[row].Cells[1].Value.ToString());	
+		    	
+		    	dataGridView1.Rows[row].Cells[2].Style.BackColor = System.Drawing.Color.LightGoldenrodYellow;
+			}
+		}
+		
+		void SettingsFormClosing(object sender, FormClosingEventArgs e)
+		{
+			if(modified) {
+                DialogResult res =  MessageBox.Show("There are unsaved changes.  Do you still want to close settings?", 
+			                        "Notice",
+                                    MessageBoxButtons.YesNo,
+                                    MessageBoxIcon.Information,
+                                    MessageBoxDefaultButton.Button2,
+                                    MessageBoxOptions.DefaultDesktopOnly);
+                if(res ==  DialogResult.No) {
+                    e.Cancel =  true;
+                }				
+			}
+		}
+	
+		void RbImperialCheckedChanged(object sender, EventArgs e)
+		{
+			((frmViewer)caller).GrblReportMode = rbImperial.Checked;			
 		}
 	}
 }

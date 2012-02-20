@@ -280,6 +280,7 @@ public class clsSettings
         System.Text.StringBuilder sb = new System.Text.StringBuilder(); 
         string sTemp = null; 
         System.IO.StreamReader fileReader = default(System.IO.StreamReader); 
+        
         if (mMachines.Count == 0) { 
             Machine = null; 
             return; 
