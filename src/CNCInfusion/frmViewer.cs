@@ -8,6 +8,8 @@ using System.Text.RegularExpressions;
 using MacGen;
 using CSharpBasicViewerApp;
 
+// HISTORY
+//
 // 0.1.0.0 - initial version
 // 0.1.1.0 - feed hold / soft reset 
 // 0.1.2.0 - restructuring of serial comm code
@@ -19,18 +21,25 @@ using CSharpBasicViewerApp;
 //		   - fixed status update interval problem
 //         - fixed re-run after abort problem (added lock in commreceive)
 //		   - added timers for RX and TX indicators
-//		   - added basic preprocessor for grbl code, now
-//           need to coordinate this with what is
+//		   - added basic preprocessor for grbl code
 //           actually loaded and displayed in the backplotter
+// 0.1.5.0 - Grbl preprocessor modifications (needs more thorough testing)
+//         - changes to settings form, more options
+//         - initial code to support joystick
 
 // TODO
+// REPORTING:
 // Grbl reporting of status is undergoing development:
-// XON/XOFF is being worked as well for flow control, 
-// need to update this code stabilizes
-
-// check gcode flavor of grbl before processing
-// use preGrbl.py as reference, convert to C# and integrate
-
+// listbox shows line being buffered in Grbl, not actual line executing
+// XON/XOFF is being worked as well for flow control need to update this when code stabilizes
+//
+// MDI
+// JOG
+// Joystick/Joypad integration 
+// Load/Save settings
+// Color preferences
+//===============================================================
+	
 namespace CNCInfusion
 {
 public enum eMode { CONNECTED, DISCONNECTED, RUNNING, FEEDHOLD, CYCLESTART, FINISHED, ABORTED, WAITING, READY, LOADING, SOFTRESET };
@@ -82,10 +91,18 @@ public partial class frmViewer : Form
     
     public eMode currentMode;
 
-    public bool PerformStatusUpdates { get {return statusUpdates;} set {statusUpdates = value;} }
-    public int UpdateInterval { get {return timerStatusQuery.Interval;} set {timerStatusQuery.Interval = value;} }
-	public bool PreprocessorMode { get {return useGrblOnly;} set {useGrblOnly = value;} }
-	public bool GrblReportMode { get {return GrblReportsInches;} set {GrblReportsInches = value;} }
+    public bool PerformStatusUpdates { get { return statusUpdates; } set { statusUpdates = value; } }
+    public int UpdateInterval 		 { get { return timerStatusQuery.Interval; } set { timerStatusQuery.Interval = value; } }
+	public bool PreprocessorMode 	 { get { return useGrblOnly; } 
+    							   	   set { useGrblOnly = value;     	
+    									 	 if(useGrblOnly)
+    										 	lblGcodeMode.Text = "Preprocessed ";
+    									 	 else 
+    											lblGcodeMode.Text = string.Empty;
+								    	 	 lblGcodeMode.Text += "Gcode";
+    									   }
+    								 }
+	public bool GrblReportMode 		 { get { return GrblReportsInches; } set { GrblReportsInches = value; } }
 	
     public frmViewer()
     {
@@ -115,7 +132,7 @@ public partial class frmViewer : Form
         UpdateInterval = 200; // 5 updates sec
         statusUpdates = false; // when enabled
         feedHold = false;
-        useGrblOnly = true;
+        PreprocessorMode = true;
         GrblReportsInches = false;
         
         TXLEDoff = new System.Timers.Timer(10);
@@ -124,8 +141,19 @@ public partial class frmViewer : Form
        	RXLEDoff.Elapsed += RXLEDoffElapsed; 
     }
    
+    private string getVersion()
+    {
+		System.Reflection.Assembly asm;
+		System.Reflection.AssemblyName asn;
+		asm = System.Reflection.Assembly.LoadFile(System.Windows.Forms.Application.ExecutablePath);
+		asn = asm.GetName();
+		return asn.Version.ToString();    	
+    }
+    
     private void frmViewer_Load(object sender, System.EventArgs e)
     {
+    	lblVersion.Text = "CNCInfusion: "+  getVersion();
+    	
         if(Properties.Settings.Default.Virgin == true) {
             this.StartPosition = FormStartPosition.CenterScreen;
         } else {
@@ -133,86 +161,13 @@ public partial class frmViewer : Form
             this.Size = Properties.Settings.Default.ViewFormSize;
         }
 
-        // nc file as splash screen if in directory
-        OpenFile(System.IO.Directory.GetCurrentDirectory() + "\\Samples\\Splash.nc");
-
         Properties.Settings.Default.Virgin = false;
         mViewer.DrawRapidLines = false;
         mViewer.DrawRapidPoints = false;
-        mViewer.DrawAxisLines = false;
-        mViewer.DrawAxisIndicator = false;
-
-        SetDefaultViews();
-    }
-
-    private void frmViewer_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
-    {
-        try {
-            if
-            (this.WindowState == FormWindowState.Normal) {
-                Properties.Settings.Default.ViewFormLocation = this.Location;
-                Properties.Settings.Default.ViewFormSize = this.Size;
-            }
-            Properties.Settings.Default.LastMachine = "Mill.xml";
-        } catch {
-        }
-    }
-
-    private void OpenFile(string fileName)
-    {
-        long[] ticks = new long[2];
-        mCncFile = fileName;
-
-        mSetup.MatchMachineToFile(mCncFile);
-        ProcessFile(mCncFile);
-        mViewer.BreakPoint = MG_CS_BasicViewer.MotionBlocks.Count - 1;
-
-        mViewer.Pitch =  mSetup.Machine.ViewAngles[0];
-        mViewer.Roll =  mSetup.Machine.ViewAngles[1];
-        mViewer.Yaw = mSetup.Machine.ViewAngles[2];
-        mViewer.Init();
-
-        mViewer.DrawRapidLines = true;
-        mViewer.DrawRapidPoints = true;
         mViewer.DrawAxisLines = true;
         mViewer.DrawAxisIndicator = true;
 
-        ticks[0] = DateTime.Now.Ticks;
-        MG_Viewer1.FindExtents();
-        ticks[1] = DateTime.Now.Ticks;
-
-        MG_Viewer1.DynamicViewManipulation = (ticks[1] - ticks[0]) < 2000000;
-        mViewer.Redraw(true);
-    }
-
-    private void ProcessFile(string fileName)
-    {
-        string lastStatus;
-
-        lastStatus = lblMode.Text;
-
-        if (fileName == null) {
-            return;
-        }
-        if
-        (!System.IO.File.Exists(fileName)) {
-            lblStatus.Text =
-                "File does not exist!";
-            return;
-        }
-        lblMode.Text = "PROCESSING";
-
-        MG_CS_BasicViewer.MotionBlocks.Clear();
-        mProcessor.Init(mSetup.Machine);
-        mProcessor.ProcessFile(fileName, MG_CS_BasicViewer.MotionBlocks);
-
-        if (mViewer.BreakPoint >
-                MG_CS_BasicViewer.MotionBlocks.Count - 1) {
-            mViewer.BreakPoint = MG_CS_BasicViewer.MotionBlocks.Count - 1;
-        }
-        mViewer.GatherTools();
-        Progress.Value = 0;
-        lblMode.Text = lastStatus;
+        SetDefaultViews();
     }
 
     private void mViewer_MouseLocation(float x, float y)
@@ -282,174 +237,113 @@ public partial class frmViewer : Form
         mViewer.Redraw(true);
     }
 
-    private void ViewButtonClicked(object sender, EventArgs e)
+    private void OpenFile(string fileName)
     {
-        string tag = sender.GetType().GetProperty("Tag").GetValue(sender, null).ToString();
-        
-        switch (tag) {
-	        case "Fit":
-	            mViewer.FindExtents();
-	            break;
-	        case "Pan":
-	            mViewer.ViewManipMode = MG_CS_BasicViewer.ManipMode.PAN;
-	            break;
-	        case "Fence":
-	            mViewer.ViewManipMode = MG_CS_BasicViewer.ManipMode.FENCE;
-	            break;
-	        case "Zoom":
-	            mViewer.ViewManipMode = MG_CS_BasicViewer.ManipMode.ZOOM;
-	            break;
-	        case "Rotate":
-	            mViewer.ViewManipMode = MG_CS_BasicViewer.ManipMode.ROTATE;
-	            break;
-	        case "Select":
-	            mViewer.ViewManipMode = MG_CS_BasicViewer.ManipMode.SELECTION;
-	            break;
-	        }
-    }
+        long[] ticks = new long[2];
+        mCncFile = fileName;
 
-    private void frmViewer_ResizeEnd(object sender, EventArgs e)
-    {
+        mSetup.MatchMachineToFile(mCncFile);
+        ProcessFile(mCncFile);
+        mViewer.BreakPoint = MG_CS_BasicViewer.MotionBlocks.Count - 1;
+
+        mViewer.Pitch =  mSetup.Machine.ViewAngles[0];
+        mViewer.Roll =  mSetup.Machine.ViewAngles[1];
+        mViewer.Yaw = mSetup.Machine.ViewAngles[2];
+        mViewer.Init();
+
+        mViewer.DrawRapidLines = true;
+        mViewer.DrawRapidPoints = true;
+        mViewer.DrawAxisLines = true;
+        mViewer.DrawAxisIndicator = true;
+
+        ticks[0] = DateTime.Now.Ticks;
         MG_Viewer1.FindExtents();
+        ticks[1] = DateTime.Now.Ticks;
+
+        MG_Viewer1.DynamicViewManipulation = (ticks[1] - ticks[0]) < 2000000;
         mViewer.Redraw(true);
     }
 
-    //UseMnemonic is just used as a toggle semaphore for the next few functions
-    private void BtnRapidLinesClick(object sender, EventArgs e)
+    private void ProcessFile(string fileName)
     {
-        if(mViewer == null) {
+        string lastStatus;
+        String line;
+        string buffer = string.Empty;
+		const string mCommentMatch = "\\([^()]*\\)";
+		
+		Regex cmtrgx = new Regex(mCommentMatch, RegexOptions.IgnoreCase);
+        lastStatus = lblMode.Text;
+
+        if (fileName == null) {
             return;
         }
-
-        btnRapidLines.UseMnemonic =!btnRapidLines.UseMnemonic;
-        mViewer.DrawRapidLines = btnRapidLines.UseMnemonic;
-        mViewer.Redraw(true);
-    }
-
-    private void BtnRapidPointsClick(object sender, EventArgs e)
-    {
-        if(mViewer == null) {
+        if(!System.IO.File.Exists(fileName)) {
+            lblStatus.Text =
+                "File does not exist!";
             return;
         }
+        lblMode.Text = "PROCESSING";
+        lblMode.Invalidate();
+        Application.DoEvents();
 
-        btnRapidPoints.UseMnemonic = !btnRapidPoints.UseMnemonic;
-        mViewer.DrawRapidPoints = btnRapidPoints.UseMnemonic;
-        mViewer.Redraw(true);
-    }
-
-    private void BtnAxisLinesClick(object sender, EventArgs e)
-    {
-        if(mViewer == null) {
-            return;
+        System.IO.StreamReader sr = new System.IO.StreamReader(OpenFileDialog1.FileName);
+        
+        while ((line = sr.ReadLine()) !=  null) {
+        	if(useGrblOnly == true) {
+        		
+        		// skip comments for efficiency
+        		MatchCollection cmtmatches = cmtrgx.Matches(line);
+				if (cmtmatches.Count > 0)
+						continue;
+					
+            	if(GrblPreprocess(line) == true) {
+					// supported line - add it
+					buffer += line;
+					buffer += "\r\n";
+                	listBoxGcode.Items.Add(line);
+            	} 
+        		else
+        		{
+        			// in Grbl mode and found unrecognized/supported command
+            		listBoxGcode.Items.Clear();
+            		MessageBox.Show(
+						"Selected file contains commands unrecognized by Grbl\n'" +
+						line + "'\nCheck Settings->Options if this error was unexpected\n",
+                		"Preprocessing file",
+                		MessageBoxButtons.OK, MessageBoxIcon.Error,
+                		MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+            		break;
+            	}
+        	}
+        	// add any command - just for backplotting visualization
+       		else 
+       		{
+       			buffer += line;
+       			buffer += "\r\n";
+       			listBoxGcode.Items.Add(line);
+       		}
+            Application.DoEvents();
         }
-
-        btnAxisLines.UseMnemonic = !btnAxisLines.UseMnemonic;
-        mViewer.DrawAxisLines =  btnAxisLines.UseMnemonic;
-        mViewer.Redraw(true);
-    }
-
-    private void BtnAxisIndicatorClick(object sender, EventArgs e)
-    {
-        if(mViewer == null) {
-            return;
+        sr.Close();        
+        
+        MG_CS_BasicViewer.MotionBlocks.Clear();
+        mProcessor.Init(mSetup.Machine);
+        
+		mProcessor.ProcessFile(buffer, MG_CS_BasicViewer.MotionBlocks);
+		
+        if (mViewer.BreakPoint >
+                MG_CS_BasicViewer.MotionBlocks.Count - 1) {
+            mViewer.BreakPoint = MG_CS_BasicViewer.MotionBlocks.Count - 1;
         }
-
-        btnAxisIndicator.UseMnemonic = !btnAxisIndicator.UseMnemonic;
-        mViewer.DrawAxisIndicator = btnAxisIndicator.UseMnemonic;
-        mViewer.Redraw(true);
-    }
-
-    // toggle between current progress position indicated in listbox
-    // and the entire gcode drawing
-    private void BtnCompletedClick(object sender, EventArgs e)
-    {
-        if(mViewer == null) {
-            return;
-        }
-
-        btnCompleted.UseMnemonic = !btnCompleted.UseMnemonic;
-
-        if(btnCompleted.UseMnemonic)  {
-            if(listBoxGcode.SelectedIndex != -1)
-            {
-                mViewer.BreakPoint = listBoxGcode.SelectedIndex;
-            } else
-
-            {
-                mViewer.BreakPoint = 0;
-            }
-        } else {
-            // disable update
-            mViewer.BreakPoint = 0;
-        }
-        mViewer.Redraw(true);
-    }
-
-    private void tsbToolsFilter_Click(object sender, EventArgs e)
-    {
-        TreeNode nd = default(TreeNode);
-        using (frmToolLayers frm = new
-        frmToolLayers()) {
-
-            frm.tvTools.Nodes.Clear();
-            foreach(clsToolLayer tl in MG_CS_BasicViewer.ToolLayers.Values) {
-                nd = frm.tvTools.Nodes.Add("Tool " + tl.Number.ToString());
-                nd.ForeColor = tl.Color;
-                nd.Checked = !tl.Hidden;
-                nd.Tag = tl;
-            }
-
-            frm.tvTools.BackColor = this.MG_Viewer1.BackColor;
-
-            frm.StartPosition = FormStartPosition.Manual;
-            frm.Location =  Control.MousePosition;
-            frm.ShowDialog();
-        }
-        mViewer.Redraw(true);
+        mViewer.GatherTools();
+        Progress.Value = 0;
+        lblMode.Text = lastStatus;
     }
 
     private void BtnLoadClick(object sender, EventArgs e)
     {
-        String line;
-		const string mCommentMatch = "\\([^()]*\\)";
-		
-		Regex cmtrgx = new Regex(mCommentMatch, RegexOptions.IgnoreCase);
-		
         if(OpenFileDialog1.ShowDialog() ==  DialogResult.OK) {
             setMode(eMode.LOADING);
-            System.IO.StreamReader sr = new System.IO.StreamReader(OpenFileDialog1.FileName);
-            
-            while ((line = sr.ReadLine()) !=  null) {
-
-            	// skip comments
-				MatchCollection cmtmatches = cmtrgx.Matches(line);
-				if (cmtmatches.Count > 0)
-					continue;
-		
-            	if(useGrblOnly == true) {
-	            	if(preprocess(line) == true) {
-	                	listBoxGcode.Items.Add(line);
-	            	} 
-            		else
-            		{
-	            		listBoxGcode.Items.Clear();
-	            		MessageBox.Show(
-							"Selected file contains commands unrecognized by Grbl\n" +
-							line,
-	                		"Peprocessing file",
-	                		MessageBoxButtons.OK, MessageBoxIcon.Error,
-	                		MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
-	            		break;
-	            	}
-            	}
-           		else 
-           		{
-           			listBoxGcode.Items.Add(line);
-           		}
-                Application.DoEvents();
-            }
-            sr.Close();
-
             OpenFile(OpenFileDialog1.FileName);
             
             if(comPort.IsOpen)
@@ -473,6 +367,8 @@ public partial class frmViewer : Form
         Application.DoEvents();
     }
 
+    // Serial port functions
+    //----------------------
     #region Serial
 
     private void connect()
@@ -496,8 +392,13 @@ public partial class frmViewer : Form
         comPort.BaudRate = 9600;
         comPort.DtrEnable = false;
         comPort.NewLine = "\n";
-        comPort.Open();
-        setMode(eMode.CONNECTED);
+        try {
+        	comPort.Open();
+        	setMode(eMode.CONNECTED);
+        }
+        catch {
+        	setMode(eMode.DISCONNECTED);	
+        }
     }
 
     private void disconnect()
@@ -523,8 +424,9 @@ public partial class frmViewer : Form
     {
         // no actions enabled
         timerStatusQuery.Enabled = false;
-        customPanel3.Enabled = false;
+        
         setMode(eMode.DISCONNECTED);
+		pnlControl.Enabled = false;
 
         if(workThread != null) {
             terminateThread();
@@ -540,7 +442,6 @@ public partial class frmViewer : Form
         waitForReset();
 
         // restore actions
-        customPanel3.Enabled = true;
         setMode(eMode.CONNECTED);
     }
 
@@ -567,21 +468,20 @@ public partial class frmViewer : Form
         setMode(eMode.READY);
     }
 	
+    private void clearSerialBuffers()
+    {
+        if(comPort.IsOpen) {
+            comPort.DiscardInBuffer();
+            comPort.DiscardOutBuffer();
+            comPort.Close();
+        }    	
+    }
+    
     private void WriteSerial(string cmd)
     {
-        //lblTX.BackColor = System.Drawing.Color.LightGreen;
-        //lblTX.Invalidate();
-       // Application.DoEvents();
-
         if(comPort.IsOpen) {
             comPort.Write(cmd);
         }
-        
-		//visualize it
-        //Thread.Sleep(25);
-        
-        //lblTX.BackColor = System.Drawing.Color.DarkGray;
-        //lblTX.Invalidate();
     }
 
     // separate thread to keep GUI responsive during
@@ -608,6 +508,8 @@ public partial class frmViewer : Form
                 if(comPort.IsOpen)
                 	comPort.Write(line + "\n");
                 
+                Invoke(UpdateGUIAction, i++);
+                
                 // wait for ComPortDataReceived() to
                 // acknowledge reply
                 while(waitingOnACK == true) {
@@ -615,8 +517,7 @@ public partial class frmViewer : Form
                     Thread.Sleep(5);
                 }
 
-                Invoke(UpdateGUIAction, i++);
-                
+               
                 if(cancelled == true)
                 	break;
                 else
@@ -628,7 +529,7 @@ public partial class frmViewer : Form
     }
 
     // all interrupt driven comm is received here
-    // as com port is threaded, we need to Invoke functions back to GUI thread
+    // as comport is threaded, we need to Invoke functions back to GUI thread
     private void ComPortDataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
     {
         string ACK = string.Empty;
@@ -708,7 +609,8 @@ public partial class frmViewer : Form
     }
 
     #endregion Serial
-    
+	//----------------------
+
     private void terminateThread()
     {
         waitingOnACK = false;
@@ -757,7 +659,7 @@ public partial class frmViewer : Form
 
         string parts;
         string [] status;
-        double TOINCHES = 0.03937;
+        double TOINCHES = 0.0393700787;
         //lblStatus.Text = str;
 
         // skip 'MPos:['
@@ -776,10 +678,12 @@ public partial class frmViewer : Form
                 y = y * TOINCHES;
                 z = z * TOINCHES;
             }
-            // rounding issue?
-            Xdisplay.Value = string.Format("{0:0.0000}", x + 0.00005);
-            Ydisplay.Value = string.Format("{0:0.0000}", y + 0.00005);
-            Zdisplay.Value = string.Format("{0:0.0000}", z + 0.00005);
+            //Debug.WriteLine(string.Format("X={0} Y={1} Z={2}", x, y, z));
+            
+            // TODO rounding issue?
+            Xdisplay.Value = string.Format("{0:0.0000}", x);
+            Ydisplay.Value = string.Format("{0:0.0000}", y);
+            Zdisplay.Value = string.Format("{0:0.0000}", z);
         }
         catch {}
     }	
@@ -873,6 +777,7 @@ public partial class frmViewer : Form
         switch(newMode) {
 	        case eMode.CONNECTED:
 	            currentMode =  eMode.CONNECTED;
+	            pnlControl.Enabled = true;
 	            btnConnect.Enabled = false;
 	            cbxComPort.Enabled = false;
 	            customPanel1.Enabled = true;
@@ -896,6 +801,7 @@ public partial class frmViewer : Form
 	            break;
 	        case eMode.DISCONNECTED:
 	            currentMode = eMode.DISCONNECTED;
+	            pnlControl.Enabled = true;
 	            btnDisconnect.Enabled = false;
 	            btnDisconnect.BackColor = System.Drawing.Color.DarkGray;
 	            btnConnect.Enabled = true;
@@ -973,8 +879,6 @@ public partial class frmViewer : Form
 	            cancelled = true;
 	            waitingOnACK =  false;
 	            terminateThread();
-	            comPort.DiscardOutBuffer();		
-	            comPort.DiscardInBuffer();
 	            timerStatusQuery.Enabled = false;
 	            lblMode.BackColor = System.Drawing.Color.Salmon;
 	            lblRX.BackColor = System.Drawing.Color.DarkGray;
@@ -1012,6 +916,7 @@ public partial class frmViewer : Form
 	            break;
 	        case eMode.LOADING:
 	            Cursor = Cursors.AppStarting;
+	            pnlControl.Enabled = false;
 	            btnRun.Enabled = false;
 	            listBoxGcode.Items.Clear();
 	            this.Refresh();
@@ -1067,6 +972,24 @@ public partial class frmViewer : Form
             return;
         }
         
+        // warn use if file is going to be run, but was loaded
+        // without the Grbl preprocessor enabled
+        if(useGrblOnly == false) {
+                DialogResult res =  MessageBox.Show(
+        							"The current file was loaded WITHOUT the use of the Grbl\n" +
+        	                        "Preprocessor. (Settings->Options) Continuing is not recommended.\n" +
+        	                        "Do you want to continue execution of this file?\n",
+        	                        "WARNING!",
+                                    MessageBoxButtons.YesNo,
+                                    MessageBoxIcon.Warning,
+                                    MessageBoxDefaultButton.Button2,
+                                    MessageBoxOptions.DefaultDesktopOnly);
+                if(res ==  DialogResult.No) {
+                    return;
+                }        	
+        }
+        
+        // use existing buffer
         // copy of gcode for use in thread
         gcode = new List<object>();
         foreach(object o in listBoxGcode.Items) {
@@ -1117,9 +1040,7 @@ public partial class frmViewer : Form
 
             // no sense doing status updates if grbl is paused
             if(statusUpdates)
-            {
                     timerStatusQuery.Enabled = false;
-            }
         } 
         else  {
             command = "~\n";
@@ -1128,9 +1049,7 @@ public partial class frmViewer : Form
 
             // restore status updates if they were previously enabled
             if(statusUpdates)
-            {
 	            timerStatusQuery.Enabled = true;
-            }
         }
     }
 
@@ -1170,8 +1089,9 @@ public partial class frmViewer : Form
         settingsForm.caller = this;
 
         settingsForm.setUpdateInterval(timerStatusQuery.Interval);
-
+        settingsForm.setGrblMode(useGrblOnly);
         settingsForm.setUpdateMode(statusUpdates);
+        settingsForm.setInchUnits(GrblReportsInches);
         settingsForm.ShowDialog();
     }
 
@@ -1220,26 +1140,77 @@ public partial class frmViewer : Form
         WriteSerial(command);
     }
 
-    // TODO feed rate override - not yet supported in Grbl?
-    //
-    private void
-    LbKnob1KnobChangeValue(object sender, CPOL.Knobs.LBKnobEventArgs e)
+    //UseMnemonic is just used as a toggle semaphore for the next few functions
+    private void BtnRapidLinesClick(object sender, EventArgs e)
     {
-        lblFeedOverride.Text =
-            string.Format("{0}%", Math.Truncate(lbKnob1.Value));
-    }
-
-    // prohibit tab changing of mode when running
-    private void
-    TabControl1SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if(currentMode == eMode.RUNNING)
-
-        {
-            tabControl1.SelectedTab = AutoPage;
+        if(mViewer == null) {
+            return;
         }
+
+        btnRapidLines.UseMnemonic =!btnRapidLines.UseMnemonic;
+        mViewer.DrawRapidLines = btnRapidLines.UseMnemonic;
+        mViewer.Redraw(true);
     }
 
+    private void BtnRapidPointsClick(object sender, EventArgs e)
+    {
+        if(mViewer == null) {
+            return;
+        }
+
+        btnRapidPoints.UseMnemonic = !btnRapidPoints.UseMnemonic;
+        mViewer.DrawRapidPoints = btnRapidPoints.UseMnemonic;
+        mViewer.Redraw(true);
+    }
+
+    private void BtnAxisLinesClick(object sender, EventArgs e)
+    {
+        if(mViewer == null) {
+            return;
+        }
+
+        btnAxisLines.UseMnemonic = !btnAxisLines.UseMnemonic;
+        mViewer.DrawAxisLines =  btnAxisLines.UseMnemonic;
+        mViewer.Redraw(true);
+    }
+
+    private void BtnAxisIndicatorClick(object sender, EventArgs e)
+    {
+        if(mViewer == null) {
+            return;
+        }
+
+        btnAxisIndicator.UseMnemonic = !btnAxisIndicator.UseMnemonic;
+        mViewer.DrawAxisIndicator = btnAxisIndicator.UseMnemonic;
+        mViewer.Redraw(true);
+    }
+
+    // toggle between current progress position indicated in listbox
+    // and the entire gcode drawing
+    private void BtnCompletedClick(object sender, EventArgs e)
+    {
+        if(mViewer == null) {
+            return;
+        }
+
+        btnCompleted.UseMnemonic = !btnCompleted.UseMnemonic;
+
+        if(btnCompleted.UseMnemonic)  {
+            if(listBoxGcode.SelectedIndex != -1)
+            {
+                mViewer.BreakPoint = listBoxGcode.SelectedIndex;
+            } else
+
+            {
+                mViewer.BreakPoint = 0;
+            }
+        } else {
+            // disable update
+            mViewer.BreakPoint = 0;
+        }
+        mViewer.Redraw(true);
+    }
+    
     private void BtnTopClick(object sender, EventArgs e)
     {
         mViewer.Pitch = 0;
@@ -1250,8 +1221,7 @@ public partial class frmViewer : Form
 
     }
 
-    private void BtnRightClick(object
-                               sender, EventArgs e)
+    private void BtnRightClick(object sender, EventArgs e)
     {
         mViewer.Pitch = 270;
         mViewer.Roll = 0;
@@ -1261,8 +1231,7 @@ public partial class frmViewer : Form
 
     }
 
-    private void BtnFrontClick(object
-                               sender, EventArgs e)
+    private void BtnFrontClick(object sender, EventArgs e)
     {
         mViewer.Pitch = 270;
         mViewer.Roll = 0;
@@ -1288,6 +1257,77 @@ public partial class frmViewer : Form
         aboutForm.ShowDialog();
     }
 
+    private void ViewButtonClicked(object sender, EventArgs e)
+    {
+        string tag = sender.GetType().GetProperty("Tag").GetValue(sender, null).ToString();
+        
+        switch (tag) {
+	        case "Fit":
+	            mViewer.FindExtents();
+	            break;
+	        case "Pan":
+	            mViewer.ViewManipMode = MG_CS_BasicViewer.ManipMode.PAN;
+	            break;
+	        case "Fence":
+	            mViewer.ViewManipMode = MG_CS_BasicViewer.ManipMode.FENCE;
+	            break;
+	        case "Zoom":
+	            mViewer.ViewManipMode = MG_CS_BasicViewer.ManipMode.ZOOM;
+	            break;
+	        case "Rotate":
+	            mViewer.ViewManipMode = MG_CS_BasicViewer.ManipMode.ROTATE;
+	            break;
+	        case "Select":
+	            mViewer.ViewManipMode = MG_CS_BasicViewer.ManipMode.SELECTION;
+	            break;
+	        }
+    }
+
+    private void frmViewer_ResizeEnd(object sender, EventArgs e)
+    {
+        MG_Viewer1.FindExtents();
+        mViewer.Redraw(true);
+    }
+
+    private void tsbToolsFilter_Click(object sender, EventArgs e)
+    {
+        TreeNode nd = default(TreeNode);
+        using (frmToolLayers frm = new
+        frmToolLayers()) {
+
+            frm.tvTools.Nodes.Clear();
+            foreach(clsToolLayer tl in MG_CS_BasicViewer.ToolLayers.Values) {
+                nd = frm.tvTools.Nodes.Add("Tool " + tl.Number.ToString());
+                nd.ForeColor = tl.Color;
+                nd.Checked = !tl.Hidden;
+                nd.Tag = tl;
+            }
+
+            frm.tvTools.BackColor = this.MG_Viewer1.BackColor;
+            frm.StartPosition = FormStartPosition.Manual;
+            frm.Location =  Control.MousePosition;
+            frm.ShowDialog();
+        }
+        mViewer.Redraw(true);
+    }    
+    // TODO feed rate override - not yet supported in Grbl?
+    //
+    private void LbKnob1KnobChangeValue(object sender, CPOL.Knobs.LBKnobEventArgs e)
+    {
+        lblFeedOverride.Text =
+            string.Format("{0}%", Math.Truncate(lbKnob1.Value));
+    }
+
+    // prohibit tab changing of mode when running
+    private void TabControl1SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if(currentMode == eMode.RUNNING)
+
+        {
+            tabControl1.SelectedTab = AutoPage;
+        }
+    }
+    
     private void FrmViewerFormClosing(object sender, FormClosingEventArgs e)
     {
         if(currentMode == eMode.RUNNING) {
@@ -1301,18 +1341,25 @@ public partial class frmViewer : Form
             return;
         }
 
+        try {
+            if(this.WindowState == FormWindowState.Normal) {
+                Properties.Settings.Default.ViewFormLocation = this.Location;
+                Properties.Settings.Default.ViewFormSize = this.Size;
+            }
+            Properties.Settings.Default.LastMachine = "Mill.xml";
+            Properties.Settings.Default.Virgin = false;
+        } catch {
+        }
+    	
         e.Cancel = false;
     }
 
     private void FrmViewerFormClosed(object sender, FormClosedEventArgs e)
     {
         timerStatusQuery.Enabled = false;
-
-        if(comPort.IsOpen) {
-            comPort.DiscardInBuffer();
-            comPort.DiscardOutBuffer();
-            comPort.Close();
-        }
+        clearSerialBuffers();
+        if(comPort.IsOpen)
+        	comPort.Close();
     }
 }
 }

@@ -10,7 +10,9 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
-	
+using Microsoft.DirectX;
+using Microsoft.DirectX.DirectInput;
+
 namespace CNCInfusion
 {
 	/// <summary>
@@ -21,6 +23,8 @@ namespace CNCInfusion
 		// reference to parent form
 		public Form caller;
 		private bool modified;
+		private JoystickInterface.Joystick jst;
+		private string[] sticks;
 		
 		public Settings()
 		{
@@ -28,10 +32,32 @@ namespace CNCInfusion
 			modified = false;
 		}
 		
+		// minimize flicker of stupid tab control
+		protected override CreateParams CreateParams
+		{
+	        get  {
+	                CreateParams cp = base.CreateParams;
+	                cp.ExStyle |= 0x02000000;
+	                return cp;
+	        }
+		}
+
 		public void setUpdateMode(bool enabled)
 		{
 			rbStatusUpdate.Checked = enabled;
 		}
+		
+		public void setGrblMode(bool enabled)
+		{
+			rbGrblOnly.Checked = enabled;
+			rbAny.Checked = !enabled;
+		}		
+		
+		public void setInchUnits(bool enabled)
+		{
+			rbImperial.Checked = enabled;
+			rbMetric.Checked = !enabled;
+		}	
 		
 		public void setUpdateInterval(int interval)
 		{
@@ -84,7 +110,7 @@ namespace CNCInfusion
 		
 		string convertUnits(string readvalue, string setting)
 		{
-			double TOINCHES = 0.03937;
+			double TOINCHES = 0.0393700787;
 			string convert;	   	    
 			
 			try {
@@ -151,6 +177,10 @@ namespace CNCInfusion
 		    // only continue if it is the editable column
 		    if (!dataGridView1.Columns[e.ColumnIndex].HeaderText.Equals("Value")) return;
 		    
+		    //if (sVal.Contains(".")) { 
+            //	 float.Parse(sVal); 
+        	//}
+        	
 		    // TODO error checking is weak
 		    try {
 		    	enteredValue = float.Parse(e.FormattedValue.ToString());
@@ -263,6 +293,43 @@ namespace CNCInfusion
 		void RbImperialCheckedChanged(object sender, EventArgs e)
 		{
 			((frmViewer)caller).GrblReportMode = rbImperial.Checked;			
+		}
+		
+		void Button4Click(object sender, EventArgs e)
+		{
+
+		}
+		//jst.UpdateStatus();
+
+		void CbJoySticksSelectedIndexChanged(object sender, EventArgs e)
+		{
+			try {
+				jst.AcquireJoystick(sticks[cbJoySticks.SelectedIndex]);
+				label9.Text = string.Format("Axes = {0}", jst.AxisCount);
+				label10.Text = string.Format("Buttons = {0}", jst.ButtonCount);
+			}
+			catch {}
+		}
+		
+		void getJoysticks()
+		{
+			//cbJoySticks.SelectedIndexChanged -= CbJoySticksSelectedIndexChanged;
+			
+			jst = new JoystickInterface.Joystick(this.Handle);
+            sticks = jst.FindJoysticks();	
+            cbJoySticks.Items.Clear();
+            foreach(string joyName in sticks)
+            	cbJoySticks.Items.Add(joyName);
+            
+            if(cbJoySticks.Items.Count > 0)
+            	cbJoySticks.SelectedIndex = 0;
+            
+            //cbJoySticks.SelectedIndexChanged += CbJoySticksSelectedIndexChanged;
+		}
+		
+		void SettingsLoad(object sender, EventArgs e)
+		{
+			getJoysticks();
 		}
 	}
 }

@@ -447,6 +447,7 @@ class clsProcessor
         } 
     }
 
+    // modified to take first argument as a preprocessed buffer, instead of filename
     public void ProcessFile(string ncFile, List<clsMotionRecord> gfxRecs)
     {
         mGfxRecs = gfxRecs;
@@ -537,12 +538,10 @@ class clsProcessor
         mEndmain = mCurMachine.Endmain.Trim();
         mSubcall = mCurMachine.Subcall.Trim();
         mSubRepeats = mCurMachine.SubRepeats.Trim();
-
+		
         string sFileContents = null;
-        using (System.IO.StreamReader MyReader = new System.IO.StreamReader(ncFile))
-        {
-            sFileContents = FilterJunk(MyReader.ReadToEnd());
-        }
+        sFileContents = FilterJunk(ncFile);
+        
         mNcProgs.Clear();
         int lastIndex = -1;
         int thisIndex = -1;

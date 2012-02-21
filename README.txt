@@ -31,21 +31,36 @@ The Status Update Interval in the settings form will enable reporting and the in
 CNCInfusion has only been tested with this Grbl version (and only with a 'scope), although I suspect it should
 work on any version if status updates remain disabled.
 
-HISTORY:
+// HISTORY
+//
 // 0.1.0.0 - initial version
 // 0.1.1.0 - feed hold / soft reset 
 // 0.1.2.0 - restructuring of serial comm code
-//             - known problem with feedhold/cyclestart
+//		   - known problem with feedhold/cyclestart
 // 0.1.3.0 - fixed feedhold/cyclestart problem caused by ok response confusion
-//             - known problem ocassionally with re-running after abort 
+//		   - known problem ocassionally with re-running after abort 
 // 0.1.4.0 - modified delegates for use in threads (created at startup)
-//             - starting to create preprocessor that only accepts Grbl gcode
-//             - fixed status update interval problem
+//	   - starting to create preprocessor that only accepts Grbl gcode
+//	   - fixed status update interval problem
 //             - fixed re-run after abort problem (added lock in commreceive)
-//             - added timers for RX and TX indicators
-//             - added basic preprocessor for grbl code, now
-//               need to coordinate this with what is
-//               actually loaded and displayed in the backplotter
+//	   - added timers for RX and TX indicators
+//	   - added basic preprocessor for grbl code
+// 0.1.5.0  - Grbl preprocessor modifications (needs more thorough testing)
+//              - changes to settings form, more options
+//              - initial code to support joystick
+
+// TODO
+//
+// REPORTING:
+// Grbl reporting of status is undergoing development:
+// listbox shows line being buffered in Grbl, not actual line executing
+// XON/XOFF is being worked as well for flow control need to update this when code stabilizes
+//
+// MDI
+// JOG
+// Joystick/Joypad integration 
+// Load/Save settings
+// Color preferences
 
 FEATURES:
 
@@ -58,10 +73,6 @@ INCOMPLETE FEATURES:
 
 Status reporting - GRbl is undergoing heavy development in this area. What is
 currently there is mostly a placeholder as a proof of concept but is functional
-
-Supported gcodes - The backplotter is robust and supports many more than Grbl.
-When Grbl does not recognize a code, it flags it as an error and provides the
-opportunity to cancel. A preprocessor in in the works...
 
 Feed Override - Grbl work in progress
 JOG - Not yet coded, GUI components in place

@@ -39,6 +39,11 @@ Mark James
 http://www.famfamfam.com/lab/icons/silk/
 Creative Commons Attribution 3.0 License
 
+Joystick
+--------
+Interfacing with a Joystick using C#
+http://www.codeproject.com/Articles/16704/Interfacing-with-a-Joystick-using-C
+M Harris 
 
 Kudos to the Grbl innovators for a great project!
 

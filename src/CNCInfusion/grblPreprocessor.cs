@@ -36,14 +36,12 @@ using System.Text.RegularExpressions;
 */
 
 // Attempt to only allow Grbl specific gcode
-// need to coordinate this with what is
-// actually loaded and displayed in the backplotter
 
 namespace CNCInfusion
 {
 public partial class frmViewer : Form	
 {
-	private bool preprocess(string line)
+	private bool GrblPreprocess(string line)
 	{
 		const string pattern = "[A-Z]([-+]?[0-9]*[\\.,]?[0-9]*)";
 		double arg;
@@ -56,7 +54,7 @@ public partial class frmViewer : Form
 				arg = double.Parse(match.Value.Substring(1));
 				switch(match.Value[0]) {
 					case 'G':
-						// only these G codes
+						// explicitly supported G codes
 						switch((int)arg) {
 							case 0: 
 							case 1:
@@ -79,10 +77,11 @@ public partial class frmViewer : Form
 							case 94: 
 								break;
 							default:
+								// any other G code
 								return false;
 						}
 						break;
-					// only these M codes
+					// explicitly supported M codes
 					case 'M':
 						switch((int)arg) {
 							case 0:
@@ -95,21 +94,22 @@ public partial class frmViewer : Form
 							case 30:
 								break;
 							default:
+								// any other M code
 								return false;
 						}
 						break;
-					// any argument
-					case 'T':
-					case 'F':
-					case 'S':
-					case 'I':
-					case 'J':
-					//case 'K': //??
-					//case 'P': //??
-					//case 'R': //??
-					case 'X':
-					case 'Y':
-					case 'Z':
+					// supported codes with any argument
+					case 'T':	// TOOL
+					case 'F':	// FEEDRATE
+					case 'S':	// SPINDLE SPEED
+					case 'I':	// ARC
+					case 'J':	// ARC
+					//case 'K': // ??
+					//case 'P': // ??
+					//case 'R': // ??
+					case 'X':	// AXIS
+					case 'Y':	// AXIS
+					case 'Z':	// AXIS
 						break;
 					default:
 						return false;

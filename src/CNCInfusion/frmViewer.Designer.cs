@@ -64,10 +64,10 @@
         	this.customPanel2 = new Utility.Panel.CustomPanel();
         	this.btnSettings = new System.Windows.Forms.Button();
         	this.btnAbout = new System.Windows.Forms.Button();
-        	this.label1 = new System.Windows.Forms.Label();
+        	this.lblVersion = new System.Windows.Forms.Label();
         	this.customPanel8 = new Utility.Panel.CustomPanel();
-        	this.label8 = new System.Windows.Forms.Label();
-        	this.customPanel3 = new Utility.Panel.CustomPanel();
+        	this.lblGcodeMode = new System.Windows.Forms.Label();
+        	this.pnlControl = new Utility.Panel.CustomPanel();
         	this.btnDisconnect = new System.Windows.Forms.Button();
         	this.btnLoad = new System.Windows.Forms.Button();
         	this.customPanel1 = new Utility.Panel.CustomPanel();
@@ -109,7 +109,7 @@
         	this.rmbView.SuspendLayout();
         	this.customPanel2.SuspendLayout();
         	this.customPanel8.SuspendLayout();
-        	this.customPanel3.SuspendLayout();
+        	this.pnlControl.SuspendLayout();
         	this.customPanel1.SuspendLayout();
         	this.customPanel4.SuspendLayout();
         	this.customPanel5.SuspendLayout();
@@ -463,7 +463,7 @@
         	this.MG_Viewer1.Cursor = System.Windows.Forms.Cursors.Hand;
         	this.MG_Viewer1.DynamicViewManipulation = true;
         	this.MG_Viewer1.FourthAxis = 0F;
-        	this.MG_Viewer1.Location = new System.Drawing.Point(32, 6);
+        	this.MG_Viewer1.Location = new System.Drawing.Point(32, 8);
         	this.MG_Viewer1.Margin = new System.Windows.Forms.Padding(0);
         	this.MG_Viewer1.Name = "MG_Viewer1";
         	this.MG_Viewer1.Pitch = 0F;
@@ -525,7 +525,7 @@
         	this.customPanel2.BorderWidth = 2;
         	this.customPanel2.Controls.Add(this.btnSettings);
         	this.customPanel2.Controls.Add(this.btnAbout);
-        	this.customPanel2.Controls.Add(this.label1);
+        	this.customPanel2.Controls.Add(this.lblVersion);
         	this.customPanel2.Curvature = 4;
         	this.customPanel2.ForeColor = System.Drawing.Color.Black;
         	this.customPanel2.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
@@ -558,16 +558,16 @@
         	this.btnAbout.UseVisualStyleBackColor = false;
         	this.btnAbout.Click += new System.EventHandler(this.BtnAboutClick);
         	// 
-        	// label1
+        	// lblVersion
         	// 
-        	this.label1.AutoSize = true;
-        	this.label1.Font = new System.Drawing.Font("Verdana", 10F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        	this.label1.ForeColor = System.Drawing.Color.Gainsboro;
-        	this.label1.Location = new System.Drawing.Point(3, 6);
-        	this.label1.Name = "label1";
-        	this.label1.Size = new System.Drawing.Size(183, 17);
-        	this.label1.TabIndex = 1;
-        	this.label1.Text = "CNCInfusion: Grbl GUI";
+        	this.lblVersion.AutoSize = true;
+        	this.lblVersion.Font = new System.Drawing.Font("Verdana", 10F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        	this.lblVersion.ForeColor = System.Drawing.Color.Gainsboro;
+        	this.lblVersion.Location = new System.Drawing.Point(3, 6);
+        	this.lblVersion.Name = "lblVersion";
+        	this.lblVersion.Size = new System.Drawing.Size(183, 17);
+        	this.lblVersion.TabIndex = 1;
+        	this.lblVersion.Text = "CNCInfusion: Grbl GUI";
         	// 
         	// customPanel8
         	// 
@@ -578,7 +578,7 @@
         	this.customPanel8.BorderColor = System.Drawing.Color.Gold;
         	this.customPanel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
         	this.customPanel8.BorderWidth = 2;
-        	this.customPanel8.Controls.Add(this.label8);
+        	this.customPanel8.Controls.Add(this.lblGcodeMode);
         	this.customPanel8.Controls.Add(this.listBoxGcode);
         	this.customPanel8.Curvature = 8;
         	this.customPanel8.ForeColor = System.Drawing.Color.Black;
@@ -588,36 +588,36 @@
         	this.customPanel8.Size = new System.Drawing.Size(330, 194);
         	this.customPanel8.TabIndex = 44;
         	// 
-        	// label8
+        	// lblGcodeMode
         	// 
-        	this.label8.AutoSize = true;
-        	this.label8.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        	this.label8.ForeColor = System.Drawing.Color.Gainsboro;
-        	this.label8.Location = new System.Drawing.Point(7, 7);
-        	this.label8.Name = "label8";
-        	this.label8.Size = new System.Drawing.Size(43, 13);
-        	this.label8.TabIndex = 3;
-        	this.label8.Text = "Gcode";
+        	this.lblGcodeMode.AutoSize = true;
+        	this.lblGcodeMode.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        	this.lblGcodeMode.ForeColor = System.Drawing.Color.Gainsboro;
+        	this.lblGcodeMode.Location = new System.Drawing.Point(7, 7);
+        	this.lblGcodeMode.Name = "lblGcodeMode";
+        	this.lblGcodeMode.Size = new System.Drawing.Size(43, 13);
+        	this.lblGcodeMode.TabIndex = 3;
+        	this.lblGcodeMode.Text = "Gcode";
         	// 
-        	// customPanel3
+        	// pnlControl
         	// 
-        	this.customPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-        	this.customPanel3.BackColor = System.Drawing.Color.Gray;
-        	this.customPanel3.BackColor2 = System.Drawing.Color.Gray;
-        	this.customPanel3.BorderColor = System.Drawing.Color.Gold;
-        	this.customPanel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-        	this.customPanel3.BorderWidth = 2;
-        	this.customPanel3.Controls.Add(this.btnDisconnect);
-        	this.customPanel3.Controls.Add(this.btnLoad);
-        	this.customPanel3.Controls.Add(this.btnConnect);
-        	this.customPanel3.Controls.Add(this.btnReset);
-        	this.customPanel3.Curvature = 8;
-        	this.customPanel3.ForeColor = System.Drawing.Color.Black;
-        	this.customPanel3.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
-        	this.customPanel3.Location = new System.Drawing.Point(345, 331);
-        	this.customPanel3.Name = "customPanel3";
-        	this.customPanel3.Size = new System.Drawing.Size(94, 194);
-        	this.customPanel3.TabIndex = 43;
+        	this.pnlControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+        	this.pnlControl.BackColor = System.Drawing.Color.Gray;
+        	this.pnlControl.BackColor2 = System.Drawing.Color.Gray;
+        	this.pnlControl.BorderColor = System.Drawing.Color.Gold;
+        	this.pnlControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+        	this.pnlControl.BorderWidth = 2;
+        	this.pnlControl.Controls.Add(this.btnDisconnect);
+        	this.pnlControl.Controls.Add(this.btnLoad);
+        	this.pnlControl.Controls.Add(this.btnConnect);
+        	this.pnlControl.Controls.Add(this.btnReset);
+        	this.pnlControl.Curvature = 8;
+        	this.pnlControl.ForeColor = System.Drawing.Color.Black;
+        	this.pnlControl.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        	this.pnlControl.Location = new System.Drawing.Point(345, 331);
+        	this.pnlControl.Name = "pnlControl";
+        	this.pnlControl.Size = new System.Drawing.Size(94, 194);
+        	this.pnlControl.TabIndex = 43;
         	// 
         	// btnDisconnect
         	// 
@@ -1110,7 +1110,7 @@
         	this.Controls.Add(this.customPanel1);
         	this.Controls.Add(this.customPanel5);
         	this.Controls.Add(this.customPanel8);
-        	this.Controls.Add(this.customPanel3);
+        	this.Controls.Add(this.pnlControl);
         	this.Controls.Add(this.StatusStrip1);
         	this.Controls.Add(this.customPanel2);
         	this.Cursor = System.Windows.Forms.Cursors.Arrow;
@@ -1135,7 +1135,7 @@
         	this.customPanel2.PerformLayout();
         	this.customPanel8.ResumeLayout(false);
         	this.customPanel8.PerformLayout();
-        	this.customPanel3.ResumeLayout(false);
+        	this.pnlControl.ResumeLayout(false);
         	this.customPanel1.ResumeLayout(false);
         	this.customPanel4.ResumeLayout(false);
         	this.customPanel5.ResumeLayout(false);
@@ -1146,6 +1146,9 @@
         	this.MDIpage.PerformLayout();
         	this.ResumeLayout(false);
         }
+        private System.Windows.Forms.Label lblVersion;
+        private System.Windows.Forms.Label lblGcodeMode;
+        private Utility.Panel.CustomPanel pnlControl;
         private System.Windows.Forms.ComboBox cbJogSpeed;
         private System.Windows.Forms.ComboBox cbMDIHistory;
         private System.Windows.Forms.TextBox tbMDICommand;
@@ -1200,10 +1203,7 @@
         private Utility.Panel.CustomPanel customPanel5;
         private Utility.Panel.CustomPanel customPanel4;
         private Utility.Panel.CustomPanel customPanel1;
-        private Utility.Panel.CustomPanel customPanel3;
-        private System.Windows.Forms.Label label8;
         private Utility.Panel.CustomPanel customPanel8;
-        private System.Windows.Forms.Label label1;
         private Utility.Panel.CustomPanel customPanel2;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label4;

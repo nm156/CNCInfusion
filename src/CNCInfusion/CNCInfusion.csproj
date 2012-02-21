@@ -43,6 +43,8 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.DirectX" />
+    <Reference Include="Microsoft.DirectX.DirectInput" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -74,12 +76,13 @@
     <Compile Include="frmViewer.Designer.cs">
       <DependentUpon>frmViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="grblPreprocessor.cs" />
+    <Compile Include="Joystick.cs" />
     <Compile Include="Knob\ColorMng.cs" />
     <Compile Include="Knob\KnobRenderer.cs" />
     <Compile Include="Knob\LBKnob.cs" />
     <Compile Include="Knob\LBKnob.Designer.cs" />
     <Compile Include="Knob\MathFunc.cs" />
-    <Compile Include="preprocessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="about.resx">
