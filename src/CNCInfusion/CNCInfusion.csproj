@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,13 +8,35 @@
     <ProjectGuid>{9FA4A89F-11D1-40B9-AB2A-85233298A342}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CSharpBasicViewerApp</RootNamespace>
+    <RootNamespace>CNCInfusion</RootNamespace>
     <AssemblyName>CNCInfusion</AssemblyName>
     <StartupObject>CNCInfusion.Program</StartupObject>
     <SourceAnalysisOverrideSettingsFile>C:\Users\pdf\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,7 +76,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="about.cs" />
+    <Compile Include="about.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="about.Designer.cs">
       <DependentUpon>about.cs</DependentUpon>
     </Compile>
@@ -61,8 +86,13 @@
     <Compile Include="clsMotion.cs" />
     <Compile Include="clsProcessor.cs" />
     <Compile Include="clsSettings.cs" />
+    <Compile Include="colorcombox\EmrColorComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomPanel\CornerCurveMode.cs" />
-    <Compile Include="CustomPanel\CustomPanel.cs" />
+    <Compile Include="CustomPanel\CustomPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomPanel\LinearGradientMode.cs" />
     <Compile Include="frmToolLayers.cs">
       <SubType>Form</SubType>
@@ -76,11 +106,15 @@
     <Compile Include="frmViewer.Designer.cs">
       <DependentUpon>frmViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="grblPreprocessor.cs" />
-    <Compile Include="Joystick.cs" />
+    <Compile Include="grblPreprocessor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="joystick\Joystick.cs" />
     <Compile Include="Knob\ColorMng.cs" />
     <Compile Include="Knob\KnobRenderer.cs" />
-    <Compile Include="Knob\LBKnob.cs" />
+    <Compile Include="Knob\LBKnob.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Knob\LBKnob.Designer.cs" />
     <Compile Include="Knob\MathFunc.cs" />
     <Compile Include="Program.cs" />
@@ -111,7 +145,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="Knob\Knob.bmp" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -124,17 +160,26 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Settings.cs" />
+    <Compile Include="Settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
-    <Compile Include="SevenSegment\SevenSegment.cs" />
-    <Compile Include="SevenSegment\SevenSegmentArray.cs" />
+    <Compile Include="Settings1.cs" />
+    <Compile Include="SevenSegment\SevenSegment.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SevenSegment\SevenSegmentArray.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Viewer\clsCadRect.cs" />
     <Compile Include="Viewer\clsDisplayList.cs" />
     <Compile Include="Viewer\clsMotionRecord.cs" />
     <Compile Include="Viewer\clsToolLayer.cs" />
-    <Compile Include="Viewer\MG_CS_BasicViewer.cs" />
+    <Compile Include="Viewer\MG_CS_BasicViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Viewer\MG_CS_BasicViewer.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -163,14 +208,26 @@
     <Content Include="Resources\web.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSharpBasicViewerControl\CSharpBasicViewerControl.csproj">
-      <Project>{DF3CE024-D6B5-433F-9DF2-70AB8BA66F92}</Project>
-      <Name>CSharpBasicViewerControl</Name>
-    </ProjectReference>
-    <Folder Include="CustomPanel" />
-    <Folder Include="Knob" />
-    <Folder Include="SevenSegment" />
-    <Folder Include="Viewer" />
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

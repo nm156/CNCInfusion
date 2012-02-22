@@ -1,7 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-# SharpDevelop 3.2.1.6466
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CNCInfusion", "CNCInfusion\CNCInfusion.csproj", "{9FA4A89F-11D1-40B9-AB2A-85233298A342}"
 EndProject
 Global

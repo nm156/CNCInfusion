@@ -650,7 +650,7 @@ class clsProcessor
                     clsProg retProg = FindSubByValue(int.Parse(ncWord.NextMatch().Groups[1].Value));
                     if ((retProg != null))
                     {
-                        if (retProg.TimesCalled > 100) return;//Prevent infinate loop 
+                        if (retProg.TimesCalled > 100) return;//Prevent infinite loop 
                         ProcessSubWords(retProg);//Call this subagain 
                     }
                 }

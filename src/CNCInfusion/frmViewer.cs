@@ -8,41 +8,79 @@ using System.Text.RegularExpressions;
 using MacGen;
 using CSharpBasicViewerApp;
 
+
+// TESTERS/CODERS WANTED!  I currently don't have a machine to test this on
+// I'm using an Arduino (328) with a scope only for testing at the
+// moment
+
+// NOTICE:
+// This is currently under development and is only recommended for
+// air cutting in a controlled environment!
+
 // HISTORY
 //
 // 0.1.0.0 - initial version
 // 0.1.1.0 - feed hold / soft reset 
 // 0.1.2.0 - restructuring of serial comm code
-//		   - known problem with feedhold/cyclestart
+//         - known problem with feedhold/cyclestart
 // 0.1.3.0 - fixed feedhold/cyclestart problem caused by ok response confusion
 //		   - known problem ocassionally with re-running after abort 
 // 0.1.4.0 - modified delegates for use in threads (created at startup)
-//		   - starting to create preprocessor that only accepts Grbl gcode
-//		   - fixed status update interval problem
+//         - starting to create preprocessor that only accepts Grbl gcode
+//         - fixed status update interval problem
 //         - fixed re-run after abort problem (added lock in commreceive)
-//		   - added timers for RX and TX indicators
-//		   - added basic preprocessor for grbl code
-//           actually loaded and displayed in the backplotter
+//         - added timers for RX and TX indicators
+//         - added basic preprocessor for grbl code
+//           that is actually loaded and displayed in the backplotter
 // 0.1.5.0 - Grbl preprocessor modifications (needs more thorough testing)
 //         - changes to settings form, more options
 //         - initial code to support joystick
-
+// 0.1.6.0 - Error checking to detect grbl when opening serial port
+//         - Added machine/world toggle on display
+//         - regex now used to parse Grbl status report
+// 0.1.7.0 - Switched to Visual C# Express 2010 due to some
+//           problems with SharpDevelop 3.2
 // TODO
 // REPORTING:
 // Grbl reporting of status is undergoing development:
-// listbox shows line being buffered in Grbl, not actual line executing
-// XON/XOFF is being worked as well for flow control need to update this when code stabilizes
+// listbox shows line being buffered in Grbl, not actual line executing (Grbl code for line status needed)
+// XON/XOFF is being worked as well in Grbl for flow control need to update this when code stabilizes
 //
 // MDI
 // JOG
-// Joystick/Joypad integration 
+// Zero axes (world/machine?)
+// Joystick/Joypad integration - having issues on X64 Win7 development box at moment
 // Load/Save settings
 // Color preferences
+//
+// KNOWN PROBLEMS
+// Abort when feedhold is active, sometime causes loss of sync
+// with Grbl.  Hard reset of grbl from Settings page restores
+// stability. 
+
+/*
+FEATURES:
+
+Hardware (DTR) Reset in Settings
+Software Reset (0x18) on main form
+Feed Hold / Cycle start
+Zero Axes - Untested
+
+INCOMPLETE FEATURES:
+
+Status reporting - GRbl is undergoing heavy development in this area. What is
+currently there is mostly a placeholder as a proof of concept but is functional
+
+Feed Override - Grbl work in progress
+JOG - Not yet coded, GUI components in place
+MDI - Not yet coded, GUI components in place 
+Status of modal gcodes - Maybe some indicators?
+*/
 //===============================================================
 	
 namespace CNCInfusion
 {
-public enum eMode { CONNECTED, DISCONNECTED, RUNNING, FEEDHOLD, CYCLESTART, FINISHED, ABORTED, WAITING, READY, LOADING, SOFTRESET };
+public enum eMode { CONNECTED, DISCONNECTED, RUNNING, FEEDHOLD, CYCLESTART, FINISHED, ABORTED, WAITING, READY, LOADING, SOFTRESET, INACTIVE };
 
 public partial class frmViewer : Form
 {
@@ -91,6 +129,10 @@ public partial class frmViewer : Form
     
     public eMode currentMode;
 
+    // Regex for reporting status
+	private static Regex Reportrgx;
+    
+        
     public bool PerformStatusUpdates { get { return statusUpdates; } set { statusUpdates = value; } }
     public int UpdateInterval 		 { get { return timerStatusQuery.Interval; } set { timerStatusQuery.Interval = value; } }
 	public bool PreprocessorMode 	 { get { return useGrblOnly; } 
@@ -99,6 +141,7 @@ public partial class frmViewer : Form
     										 	lblGcodeMode.Text = "Preprocessed ";
     									 	 else 
     											lblGcodeMode.Text = string.Empty;
+    									 	 
 								    	 	 lblGcodeMode.Text += "Gcode";
     									   }
     								 }
@@ -139,6 +182,14 @@ public partial class frmViewer : Form
         TXLEDoff.Elapsed += TXLEDoffElapsed;
         RXLEDoff = new System.Timers.Timer(10);
        	RXLEDoff.Elapsed += RXLEDoffElapsed; 
+		
+       	Reportrgx = new Regex(
+	      "MPos:\\[([-+]?[0-9]*[\\\\.,]?[0-9]*),([-+]?[0-9]*[\\\\.,]?[0"+
+	      "-9]*),([-+]?[0-9]*[\\\\.,]?[0-9]*)\\],WPos:\\[([-+]?[0-9]*[\\\\."+
+	      ",]?[0-9]*),([-+]?[0-9]*[\\\\.,]?[0-9]*),([-+]?[0-9]*[\\\\.,]"+
+	      "?[0-9]*)\\].*",  
+	      RegexOptions.CultureInvariant | RegexOptions.Compiled
+	    );       	
     }
    
     private string getVersion()
@@ -153,15 +204,20 @@ public partial class frmViewer : Form
     private void frmViewer_Load(object sender, System.EventArgs e)
     {
     	lblVersion.Text = "CNCInfusion: "+  getVersion();
-    	
-        if(Properties.Settings.Default.Virgin == true) {
+
+
+        if (Properties.Settings.Default.Virgin == true)
+        {
             this.StartPosition = FormStartPosition.CenterScreen;
         } else {
             this.Location = Properties.Settings.Default.ViewFormLocation;
             this.Size = Properties.Settings.Default.ViewFormSize;
         }
 
-        Properties.Settings.Default.Virgin = false;
+        PreprocessorMode = Properties.Settings.Default.GrblPreprocesor;
+        PerformStatusUpdates = Properties.Settings.Default.StatusUpdates;
+        UpdateInterval = Properties.Settings.Default.UpdateInterval;
+     
         mViewer.DrawRapidLines = false;
         mViewer.DrawRapidPoints = false;
         mViewer.DrawAxisLines = true;
@@ -393,12 +449,22 @@ public partial class frmViewer : Form
         comPort.DtrEnable = false;
         comPort.NewLine = "\n";
         try {
+        	// open port, prod for a reponse within 500 ms
         	comPort.Open();
+        	comPort.ReadTimeout = 500;
+        	comPort.Write("\n");
         	setMode(eMode.CONNECTED);
+        	comPort.ReadTimeout = -1;
+        	
         }
-        catch {
+        catch(Exception ex) {
+        	MessageBox.Show(ex.Message,
+        	                "Serial Port",
+                			MessageBoxButtons.OK, MessageBoxIcon.Error,
+                			MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);        	                
         	setMode(eMode.DISCONNECTED);	
         }
+
     }
 
     private void disconnect()
@@ -436,7 +502,7 @@ public partial class frmViewer : Form
         Progress.Value = 0;
 
         comPort.DtrEnable = true;
-        Thread.Sleep(100);
+        Thread.Sleep(50);
         comPort.DtrEnable = false;
 
         waitForReset();
@@ -496,6 +562,10 @@ public partial class frmViewer : Form
             toolchange = false;
             executingLine = line;
 
+            if(cancelled == true) {
+               	break;
+            }
+            
             // flag M6 command here and prompt for tool change in ComPortDataReceived()
             // caveat - line with M6 should only be an exclusive toolchange command
             // i.e "T0 M6" as entire line will not get transmitted to Grbl
@@ -517,11 +587,10 @@ public partial class frmViewer : Form
                     Thread.Sleep(5);
                 }
 
-               
-                if(cancelled == true)
+                if(cancelled == true) 
                 	break;
-                else
-                	waitingOnACK = true;
+                
+               	waitingOnACK = true;
                 
             } catch(Exception) {  }
         }
@@ -555,7 +624,7 @@ public partial class frmViewer : Form
 	                // strobe RX LED (only on affirm ACKs, not status queries)
 	                Invoke(RX_LED);
 	                if(specialMode == eMode.FEEDHOLD) {
-	                	// swallow the first OK sent by the feedhold command
+	                	// swallow the first OK sent by the command on resume
 	                	waitingOnACK = true;
 	                } else {
 	                	waitingOnACK = false;	
@@ -618,6 +687,7 @@ public partial class frmViewer : Form
         workThread.Abort();
         Thread.Sleep(100);
         workThread.Join();
+        Thread.Sleep(100);
     }
 
     private void ThreadFinishActions()
@@ -657,35 +727,48 @@ public partial class frmViewer : Form
         // Grbl edge status update looks like this: (Feb 2012)
 		//MPos:[0.00,0.00,0.00],WPos:[0.00,0.00,0.00]
 
-        string parts;
-        string [] status;
+        double mx, wx;
+        double my, wy;
+        double mz, wz;
         double TOINCHES = 0.0393700787;
-        //lblStatus.Text = str;
 
-        // skip 'MPos:['
-        parts = str.Substring(7);
-        //0.00,0.00,0.00]
-        status = parts.Split(',');
+        MatchCollection matches = Reportrgx.Matches(str);
+        GroupCollection groups = matches[0].Groups;
+		
+		//Debug.WriteLine(str + "\r\n");
 
         try {
-            double x = double.Parse(status[0]);
-            double y = double.Parse(status[1]);
-            // remove trailing ']'
-            double z = double.Parse(status[2].Substring(1, status[2].Length-2));
+			mx = double.Parse(groups[1].Value.ToString());
+			my = double.Parse(groups[2].Value.ToString());
+			mz = double.Parse(groups[3].Value.ToString());
+			wx = double.Parse(groups[4].Value.ToString());
+			wy = double.Parse(groups[5].Value.ToString());
+			wz = double.Parse(groups[6].Value.ToString());
 
             if(GrblReportsInches) {
-                x = x * TOINCHES;
-                y = y * TOINCHES;
-                z = z * TOINCHES;
+                mx = mx * TOINCHES;
+                my = my * TOINCHES;
+                mz = mz * TOINCHES;				
+                wx = wx * TOINCHES;
+                wy = wy * TOINCHES;
+                wz = wz * TOINCHES;
             }
-            //Debug.WriteLine(string.Format("X={0} Y={1} Z={2}", x, y, z));
+        	
+			if(rbMachine.Checked) {
+	            // TODO rounding issue?
+	            Xdisplay.Value = string.Format("{0:0.0000}", mx);
+	            Ydisplay.Value = string.Format("{0:0.0000}", my);
+	            Zdisplay.Value = string.Format("{0:0.0000}", mz);
+			}
+			else {
+	            Xdisplay.Value = string.Format("{0:0.0000}", wx);
+	            Ydisplay.Value = string.Format("{0:0.0000}", wy);
+	            Zdisplay.Value = string.Format("{0:0.0000}", wz);				
+			}
+            //Debug.WriteLine(string.Format("M X={0} Y={1} Z={2}", mx, my, mz));
+            //Debug.WriteLine(string.Format("W X={0} Y={1} Z={2}", wx, wy, wz));
             
-            // TODO rounding issue?
-            Xdisplay.Value = string.Format("{0:0.0000}", x);
-            Ydisplay.Value = string.Format("{0:0.0000}", y);
-            Zdisplay.Value = string.Format("{0:0.0000}", z);
-        }
-        catch {}
+		} catch(Exception ex) { MessageBox.Show(str, ex.Message); }
     }	
     
     private void TransmitLED()
@@ -815,6 +898,10 @@ public partial class frmViewer : Form
 	            btnXminus.Enabled = false;
 	            btnXplus.Enabled = false;
 	            btnReset.Enabled = false;
+	            btnZeroAll.Enabled = false;
+	            btnZeroX.Enabled = false;
+	            btnZeroY.Enabled = false;
+	            btnZeroZ.Enabled = false;            
 	            cbxComPort.Enabled = true;
 	            lblMode.BackColor = System.Drawing.Color.Khaki;
 	            lblMode.Text = "OFFLINE";
@@ -896,6 +983,7 @@ public partial class frmViewer : Form
 	            btnFeedHold.Enabled = false;
 	            btnCancel.Enabled = false;
 	            Cursor = Cursors.Default;
+	            
 	            MessageBox.Show("Cancel has been requested", "Run aborted",
 	                            MessageBoxButtons.OK,
 	                            MessageBoxIcon.Hand,
@@ -951,13 +1039,10 @@ public partial class frmViewer : Form
     {
         try {
             connect();
-            if(!comPort.IsOpen) {
+            if(!comPort.IsOpen) 
                 return;
-            }
-            //waitForReset();
-
+            
             setMode(eMode.CONNECTED);
-
         } catch (Exception ex) {
             MessageBox.Show(ex.Message);
             setMode(eMode.DISCONNECTED);
@@ -1002,9 +1087,11 @@ public partial class frmViewer : Form
     private void BtnCancelClick(object sender, System.EventArgs e)
     {
     	if(specialMode == eMode.FEEDHOLD) {
-    		// exit mode or grbl will still be waiting
+    		// exit mode or grbl will still be waiting to resume
     		string command = "~\n";
             WriteSerial(command);
+            
+            // clear mode
     		setMode(eMode.CYCLESTART);
     	}     
     	setMode(eMode.ABORTED);
@@ -1322,10 +1409,7 @@ public partial class frmViewer : Form
     private void TabControl1SelectedIndexChanged(object sender, EventArgs e)
     {
         if(currentMode == eMode.RUNNING)
-
-        {
             tabControl1.SelectedTab = AutoPage;
-        }
     }
     
     private void FrmViewerFormClosing(object sender, FormClosingEventArgs e)
@@ -1348,9 +1432,13 @@ public partial class frmViewer : Form
             }
             Properties.Settings.Default.LastMachine = "Mill.xml";
             Properties.Settings.Default.Virgin = false;
+            Properties.Settings.Default.GrblPreprocesor = PreprocessorMode;
+            Properties.Settings.Default.StatusUpdates = PerformStatusUpdates;
+            Properties.Settings.Default.UpdateInterval = UpdateInterval;
+            Properties.Settings.Default.Save();
         } catch {
         }
-    	
+        
         e.Cancel = false;
     }
 

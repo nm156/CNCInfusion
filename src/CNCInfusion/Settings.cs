@@ -10,8 +10,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.DirectInput;
 
 namespace CNCInfusion
 {
@@ -20,7 +18,7 @@ namespace CNCInfusion
 	/// </summary>
 	public partial class Settings : Form
 	{
-		// reference to parent form
+		// reference to parent caller form
 		public Form caller;
 		private bool modified;
 		private JoystickInterface.Joystick jst;
@@ -177,9 +175,10 @@ namespace CNCInfusion
 		    // only continue if it is the editable column
 		    if (!dataGridView1.Columns[e.ColumnIndex].HeaderText.Equals("Value")) return;
 		    
-		    //if (sVal.Contains(".")) { 
+		    //if (sVal.Contains("."))  
             //	 float.Parse(sVal); 
-        	//}
+        	//else
+        	//   int.Parse(sVal);
         	
 		    // TODO error checking is weak
 		    try {
@@ -248,12 +247,19 @@ namespace CNCInfusion
 				pnlSettings.Enabled = false;	
 				dataGridView1.Enabled = false;	
 				pnlReset.Enabled = false;
-			}			
+			}
+
+            colorComboBox1.SelectedColor = tabPage3.BackColor;
 		}
 		
 		void BtnResetClick(object sender, EventArgs e)
 		{
 			((frmViewer)caller).hardReset();
+		}
+		
+		void BtnJoystickRefreshClick(object sender, EventArgs e)
+		{
+			getJoysticks();	
 		}
 		
 		void RbGrblOnlyCheckedChanged(object sender, EventArgs e)
@@ -294,11 +300,20 @@ namespace CNCInfusion
 		{
 			((frmViewer)caller).GrblReportMode = rbImperial.Checked;			
 		}
-		
-		void Button4Click(object sender, EventArgs e)
-		{
 
-		}
+		
+		// Placeholder test code for joystick:
+		
+		// Need to work out some issues with joystick code
+		// I'm developing on Win7 X64, but I want to target back to XP X32
+		// I get some exceptions from DX on startup, so I'll have to revist
+		// how to get joystick code integrated
+		//
+		//Error while loading
+		//C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.dll
+		//An attempt was made to load a program with an incorrect format. (Exception from HRESULT: 0x8007000B)
+		//
+		// TODO poll
 		//jst.UpdateStatus();
 
 		void CbJoySticksSelectedIndexChanged(object sender, EventArgs e)
@@ -307,29 +322,105 @@ namespace CNCInfusion
 				jst.AcquireJoystick(sticks[cbJoySticks.SelectedIndex]);
 				label9.Text = string.Format("Axes = {0}", jst.AxisCount);
 				label10.Text = string.Format("Buttons = {0}", jst.ButtonCount);
+				
+	            cbJoySticks.Items.Clear();
+	            cbXaxisJog.Items.Clear();
+	            cbYaxisJog.Items.Clear();
+	            cbZaxisJog.Items.Clear();
+	            cbAbort.Items.Clear();	
+	            cbFeedHold.Items.Clear();	
+	            cbJogSpeedDec.Items.Clear();
+	            cbJogSpeedInc.Items.Clear();
+	            
+	            for (int i = 0; i < jst.AxisCount; i++)
+            	{
+	            	cbXaxisJog.Items.Add("AXIS " + (i + 1).ToString());
+                    cbYaxisJog.Items.Add("AXIS " + (i + 1).ToString());
+                    cbZaxisJog.Items.Add("AXIS " + (i + 1).ToString());
+            	}
+	            
+	            for (int i = 0; i < jst.ButtonCount; i++)
+            	{
+                    cbAbort.Items.Add("Button " + (i + 1).ToString());
+                    cbFeedHold.Items.Add("Button " + (i + 1).ToString());
+                    cbJogSpeedDec.Items.Add("Button " + (i + 1).ToString());
+                    cbJogSpeedInc.Items.Add("Button " + (i + 1).ToString());
+            	}				
 			}
 			catch {}
 		}
 		
 		void getJoysticks()
 		{
-			//cbJoySticks.SelectedIndexChanged -= CbJoySticksSelectedIndexChanged;
+			cbJoySticks.SelectedIndexChanged -= CbJoySticksSelectedIndexChanged;
+
+			try {
+				jst = new JoystickInterface.Joystick(this.Handle);
+	            sticks = jst.FindJoysticks();	
+
+	            
+	            foreach(string joyName in sticks)
+	            	cbJoySticks.Items.Add(joyName);
+
+			}
+			catch {} //(Exception ex) { MessageBox.Show(ex.Message); }
 			
-			jst = new JoystickInterface.Joystick(this.Handle);
-            sticks = jst.FindJoysticks();	
-            cbJoySticks.Items.Clear();
-            foreach(string joyName in sticks)
-            	cbJoySticks.Items.Add(joyName);
+            cbJoySticks.SelectedIndexChanged += CbJoySticksSelectedIndexChanged;
             
             if(cbJoySticks.Items.Count > 0)
             	cbJoySticks.SelectedIndex = 0;
-            
-            //cbJoySticks.SelectedIndexChanged += CbJoySticksSelectedIndexChanged;
 		}
 		
 		void SettingsLoad(object sender, EventArgs e)
 		{
 			getJoysticks();
 		}
+
+        private void colorComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            panel1.BackColor = colorComboBox1.SelectedColor;
+        }
+
+        private void colorComboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            customPanel5.BackColor = colorComboBox2.SelectedColor;
+            customPanel5.Invalidate();
+        }
+
+        private void colorComboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            customPanel5.BackColor2 = colorComboBox3.SelectedColor;
+            customPanel5.Invalidate();
+        }
+
+        private void colorComboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            customPanel5.BorderColor = colorComboBox4.SelectedColor;
+            customPanel5.Invalidate();
+        }
+
+        void SetBackColorRecursive(Control control, Color color)
+        {
+            control.BackColor = color;
+
+            foreach (Control c in control.Controls)
+                SetBackColorRecursive(c, color);
+        }
+
+        private void SetTextBoxBackColor(Control Page, Color clr)
+        {
+
+            foreach (Control ctrl in Page.Controls)  {
+                if (ctrl is TextBox) {
+                    ((TextBox)(ctrl)).BackColor = clr;
+                }
+                else {
+                    if (ctrl.Controls.Count > 0) {
+                        SetTextBoxBackColor(ctrl, clr);
+                    }
+                }
+            }
+        }
+
 	}
 }

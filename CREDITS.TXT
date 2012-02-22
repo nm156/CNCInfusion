@@ -45,6 +45,10 @@ Interfacing with a Joystick using C#
 http://www.codeproject.com/Articles/16704/Interfacing-with-a-Joystick-using-C
 M Harris 
 
+ColorComboBox
+http://www.codeproject.com/Articles/14296/EmrColorComboBox
+Ampiroid
+
 Kudos to the Grbl innovators for a great project!
 
 https://github.com/grbl/grbl

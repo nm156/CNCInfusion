@@ -6,7 +6,7 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
-namespace CSharpBasicViewerApp
+namespace CNCInfusion
 {
 	partial class about : System.Windows.Forms.Form
 	{
