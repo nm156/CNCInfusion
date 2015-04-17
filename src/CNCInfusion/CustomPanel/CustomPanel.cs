@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Utility.Panel
 {
@@ -350,7 +351,7 @@ namespace Utility.Panel
 
 		public static int DoubleToInt(double value)
 		{
-			return System.Decimal.ToInt32(System.Decimal.Floor(System.Decimal.Parse((value).ToString())));
+            return System.Decimal.ToInt32(System.Decimal.Floor(System.Decimal.Parse((value).ToString(), CultureInfo.InvariantCulture)));
 		}
 	}
 }

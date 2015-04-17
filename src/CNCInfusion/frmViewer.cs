@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
@@ -738,12 +739,12 @@ public partial class frmViewer : Form
 		//Debug.WriteLine(str + "\r\n");
 
         try {
-			mx = double.Parse(groups[1].Value.ToString());
-			my = double.Parse(groups[2].Value.ToString());
-			mz = double.Parse(groups[3].Value.ToString());
-			wx = double.Parse(groups[4].Value.ToString());
-			wy = double.Parse(groups[5].Value.ToString());
-			wz = double.Parse(groups[6].Value.ToString());
+            mx = double.Parse(groups[1].Value, CultureInfo.InvariantCulture);
+            my = double.Parse(groups[2].Value, CultureInfo.InvariantCulture);
+            mz = double.Parse(groups[3].Value, CultureInfo.InvariantCulture);
+            wx = double.Parse(groups[4].Value, CultureInfo.InvariantCulture);
+            wy = double.Parse(groups[5].Value, CultureInfo.InvariantCulture);
+            wz = double.Parse(groups[6].Value, CultureInfo.InvariantCulture);
 
             if(GrblReportsInches) {
                 mx = mx * TOINCHES;
