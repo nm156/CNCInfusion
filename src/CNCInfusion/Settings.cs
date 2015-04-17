@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
@@ -113,15 +114,15 @@ namespace CNCInfusion
 			
 			try {
 				if(setting.Contains("steps/mm")) {
-					double fval = double.Parse(readvalue)*(1.0/TOINCHES);
-					convert = fval.ToString();
+					double fval = double.Parse(readvalue, CultureInfo.InvariantCulture)*(1.0/TOINCHES);
+					convert = fval.ToString(CultureInfo.InvariantCulture);
 				}
 				else if(setting.Contains("mm")) {
-					double fval = double.Parse(readvalue)*TOINCHES;
-					convert = fval.ToString();
+                    double fval = double.Parse(readvalue, CultureInfo.InvariantCulture) * TOINCHES;
+					convert = fval.ToString(CultureInfo.InvariantCulture);
 				}
 				else if(setting.Contains("binary")) {
-					int fval = int.Parse(readvalue);
+                    int fval = int.Parse(readvalue, CultureInfo.InvariantCulture);
 					convert = GetIntBinaryString(fval);
 				}
 				else {
@@ -182,7 +183,7 @@ namespace CNCInfusion
         	
 		    // TODO error checking is weak
 		    try {
-		    	enteredValue = float.Parse(e.FormattedValue.ToString());
+                enteredValue = float.Parse(e.FormattedValue.ToString(), CultureInfo.InvariantCulture);
 	     	}
 		    catch {
 		    		MessageBox.Show("The value must be a non-negative number. You entered '" + 

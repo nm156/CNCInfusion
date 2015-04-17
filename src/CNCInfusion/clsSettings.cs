@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic; 
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 using MacGen;
@@ -110,18 +111,18 @@ public class clsSettings
                 Machine.Endmain = xReader.ReadElementContentAsString(); 
                 Machine.MachineType = (MachineType)Enum.Parse(typeof(MachineType), xReader.ReadElementContentAsString()); 
                 Machine.RotaryAxis = (Axis)Enum.Parse(typeof(Axis), xReader.ReadElementContentAsString()); 
-                Machine.RotaryDir = (RotaryDirection)Enum.Parse(typeof(RotaryDirection), xReader.ReadElementContentAsString()); 
-                Machine.Precision = int.Parse(xReader.ReadElementContentAsString()); 
+                Machine.RotaryDir = (RotaryDirection)Enum.Parse(typeof(RotaryDirection), xReader.ReadElementContentAsString());
+                Machine.Precision = int.Parse(xReader.ReadElementContentAsString(), CultureInfo.InvariantCulture); 
                 Machine.ProgramId = xReader.ReadElementContentAsString(); 
-                Machine.SubReturn = xReader.ReadElementContentAsString(); 
-                Machine.RotPrecision = int.Parse(xReader.ReadElementContentAsString()); 
+                Machine.SubReturn = xReader.ReadElementContentAsString();
+                Machine.RotPrecision = int.Parse(xReader.ReadElementContentAsString(), CultureInfo.InvariantCulture); 
                 Machine.RotaryType = (RotaryMotionType)Enum.Parse(typeof(RotaryMotionType), xReader.ReadElementContentAsString()); 
                 Machine.Searchstring = xReader.ReadElementContentAsString(); 
-                for (r = 0; r <= Machine.ViewAngles.Length - 1; r++) { 
-                    Machine.ViewAngles[r] = float.Parse(xReader.ReadElementContentAsString()); 
+                for (r = 0; r <= Machine.ViewAngles.Length - 1; r++) {
+                    Machine.ViewAngles[r] = float.Parse(xReader.ReadElementContentAsString(), CultureInfo.InvariantCulture); 
                 } 
-                for (r = 0; r <= Machine.ViewShift.Length - 1; r++) { 
-                    Machine.ViewShift[r] = float.Parse(xReader.ReadElementContentAsString()); 
+                for (r = 0; r <= Machine.ViewShift.Length - 1; r++) {
+                    Machine.ViewShift[r] = float.Parse(xReader.ReadElementContentAsString(), CultureInfo.InvariantCulture); 
                 } 
                 Machine.Absolute = xReader.ReadElementContentAsString(); 
                 Machine.Incremental = xReader.ReadElementContentAsString(); 

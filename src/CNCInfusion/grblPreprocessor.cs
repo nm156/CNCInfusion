@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
@@ -51,8 +52,10 @@ public partial class frmViewer : Form
 		MatchCollection matches = rgx.Matches(line);
 		
 		if (matches.Count > 0)	{
-			foreach (Match match in matches) {
-				arg = double.Parse(match.Value.Substring(1));
+			foreach (Match match in matches)
+			{
+			    string valueStr = match.Value.Substring(1, match.Value.Length - 1);
+				arg = double.Parse(valueStr,CultureInfo.InvariantCulture);
 				switch(match.Value[0]) {
 					case 'G':
 						// explicitly supported G codes

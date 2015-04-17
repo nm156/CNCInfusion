@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic; 
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Text;
 using MacGen;
@@ -440,7 +441,7 @@ class clsProcessor
     { 
         //decimal place 
         if (sVal.Contains(".")) { 
-            return float.Parse(sVal); 
+            return float.Parse(sVal, CultureInfo.InvariantCulture); 
         } 
         else { 
             return (float)(float.Parse(sVal) * (Math.Pow(10,  - precision)));//convert a number from a 4 place 
@@ -454,26 +455,26 @@ class clsProcessor
         mCodefile = ncFile;
         {
             mMotion.SubCall.Label = mCurMachine.Subcall[0];
-            mMotion.SubCall.Value = int.Parse(mCurMachine.Subcall.Substring(1));
+            mMotion.SubCall.Value = int.Parse(mCurMachine.Subcall.Substring(1), CultureInfo.InvariantCulture);
 
             mMotion.SubReturn.Label = mCurMachine.SubReturn[0];
-            mMotion.SubReturn.Value = int.Parse(mCurMachine.SubReturn.Substring(1));
+            mMotion.SubReturn.Value = int.Parse(mCurMachine.SubReturn.Substring(1), CultureInfo.InvariantCulture);
 
             mMotion.Abs.Label = mCurMachine.Absolute[0];
-            mMotion.Abs.Value = int.Parse(mCurMachine.Absolute.Substring(1));
+            mMotion.Abs.Value = int.Parse(mCurMachine.Absolute.Substring(1), CultureInfo.InvariantCulture);
             mMotion.CCArc.Label = mCurMachine.CCArc[0];
-            mMotion.CCArc.Value = int.Parse(mCurMachine.CCArc.Substring(1));
+            mMotion.CCArc.Value = int.Parse(mCurMachine.CCArc.Substring(1), CultureInfo.InvariantCulture);
             mMotion.CWArc.Label = mCurMachine.CWArc[0];
-            mMotion.CWArc.Value = int.Parse(mCurMachine.CWArc.Substring(1));
+            mMotion.CWArc.Value = int.Parse(mCurMachine.CWArc.Substring(1), CultureInfo.InvariantCulture);
 
             mMotion.Inc.Label = mCurMachine.Incremental[0];
-            mMotion.Inc.Value = int.Parse(mCurMachine.Incremental.Substring(1));
+            mMotion.Inc.Value = int.Parse(mCurMachine.Incremental.Substring(1), CultureInfo.InvariantCulture);
 
             mMotion.Linear.Label = mCurMachine.Linear[0];
-            mMotion.Linear.Value = int.Parse(mCurMachine.Linear.Substring(1));
+            mMotion.Linear.Value = int.Parse(mCurMachine.Linear.Substring(1), CultureInfo.InvariantCulture);
 
             mMotion.Rapid.Label = mCurMachine.Rapid[0];
-            mMotion.Rapid.Value = int.Parse(mCurMachine.Rapid.Substring(1));
+            mMotion.Rapid.Value = int.Parse(mCurMachine.Rapid.Substring(1), CultureInfo.InvariantCulture);
 
             mMotion.Rotary.Label = mCurMachine.Rotary[0];
             mMotion.Rotary.Value = 0;
@@ -482,23 +483,23 @@ class clsProcessor
             mMotion.DrillRapid.Value = 0;
 
             mMotion.Plane[0].Label = mCurMachine.XYplane[0];
-            mMotion.Plane[0].Value = int.Parse(mCurMachine.XYplane.Substring(1));
+            mMotion.Plane[0].Value = int.Parse(mCurMachine.XYplane.Substring(1), CultureInfo.InvariantCulture);
             mMotion.Plane[1].Label = mCurMachine.XZplane[0];
-            mMotion.Plane[1].Value = int.Parse(mCurMachine.XZplane.Substring(1));
+            mMotion.Plane[1].Value = int.Parse(mCurMachine.XZplane.Substring(1), CultureInfo.InvariantCulture);
             mMotion.Plane[2].Label = mCurMachine.YZplane[0];
-            mMotion.Plane[2].Value = int.Parse(mCurMachine.YZplane.Substring(1));
+            mMotion.Plane[2].Value = int.Parse(mCurMachine.YZplane.Substring(1), CultureInfo.InvariantCulture);
 
             mMotion.ReturnLevel[0].Label = mCurMachine.ReturnLevel[0][0];
-            mMotion.ReturnLevel[0].Value = int.Parse(mCurMachine.ReturnLevel[0].Substring(1));
+            mMotion.ReturnLevel[0].Value = int.Parse(mCurMachine.ReturnLevel[0].Substring(1), CultureInfo.InvariantCulture);
             mMotion.ReturnLevel[1].Label = mCurMachine.ReturnLevel[1][0];
-            mMotion.ReturnLevel[1].Value = int.Parse(mCurMachine.ReturnLevel[1].Substring(1));
+            mMotion.ReturnLevel[1].Value = int.Parse(mCurMachine.ReturnLevel[1].Substring(1), CultureInfo.InvariantCulture);
 
             for (int r = 0; r <= mMotion.Drills.Length - 1; r++)
             {
                 if (mCurMachine.Drills[r].Length > 2)
                 {
                     mMotion.Drills[r].Label = mCurMachine.Drills[r][0];
-                    mMotion.Drills[r].Value = int.Parse(mCurMachine.Drills[r].Substring(1));
+                    mMotion.Drills[r].Value = int.Parse(mCurMachine.Drills[r].Substring(1), CultureInfo.InvariantCulture);
                 }
             }
         }
@@ -564,7 +565,7 @@ class clsProcessor
                 p.Main = false;
                 p.Index = thisIndex;
                 p.Label = Char.ToUpper(m.Value[0]).ToString();
-                p.Value = int.Parse(m.Groups[1].Value);
+                p.Value = int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture);
                 mNcProgs.Add(p);
                 lastIndex = m.Index;
             }
@@ -643,11 +644,11 @@ class clsProcessor
                 //Word 
                 mCurAddress.Label = Char.ToUpper(ncWord.Value[0]);
                 mCurAddress.StringValue = ncWord.Groups[1].Value;
-                mCurAddress.Value = float.Parse(ncWord.Groups[1].Value);
+                mCurAddress.Value = float.Parse(ncWord.Groups[1].Value, CultureInfo.InvariantCulture);
                 if (mCurAddress.Matches(mMotion.SubCall))
                 {
                     //M98 P. Use the next word value as the sub name 
-                    clsProg retProg = FindSubByValue(int.Parse(ncWord.NextMatch().Groups[1].Value));
+                    clsProg retProg = FindSubByValue(int.Parse(ncWord.NextMatch().Groups[1].Value, CultureInfo.InvariantCulture));
                     if ((retProg != null))
                     {
                         if (retProg.TimesCalled > 100) return;//Prevent infinite loop 
