@@ -9,16 +9,15 @@
 
 using System;
 
-namespace CPOL.Utils
+namespace CNCInfusion.Knob;
+
+/// <summary>
+/// Mathematic Functions
+/// </summary>
+public class LBMath : object
 {
-	/// <summary>
-	/// Mathematic Functions
-	/// </summary>
-	public class LBMath : Object
-	{
-		public static float GetRadian ( float val )
-		{
-			return (float)(val * Math.PI / 180);
-		}
-	}
+    public static float GetRadian(float val)
+    {
+        return (float)(val * Math.PI / 180);
+    }
 }

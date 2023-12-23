@@ -1,35 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
-namespace CSharpBasicViewerApp
+namespace CSharpBasicViewerApp;
+
+public partial class frmToolLayers : Form
 {
-    public partial class frmToolLayers : Form
+    public frmToolLayers()
     {
-        public frmToolLayers()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void tvTools_AfterCheck(object sender, TreeViewEventArgs e)
+    private void tvTools_AfterCheck(object sender, TreeViewEventArgs e)
+    {
+        if (e.Action == TreeViewAction.Unknown)
         {
-            if (e.Action == TreeViewAction.Unknown)
-                return;
-            ((clsToolLayer)e.Node.Tag).Hidden = !e.Node.Checked;
-        }
+            return;
+        } ((ClsToolLayer)e.Node.Tag).Hidden = !e.Node.Checked;
+    }
 
-        private void tvTools_BeforeSelect(object sender, TreeViewCancelEventArgs e)
-        {
-            e.Cancel = true;
-        }
+    private void tvTools_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+    {
+        e.Cancel = true;
+    }
 
-        private void btnDone_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+    private void btnDone_Click(object sender, EventArgs e)
+    {
+        Close();
     }
 }

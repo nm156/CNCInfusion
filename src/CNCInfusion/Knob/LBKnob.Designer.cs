@@ -6,8 +6,8 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
-namespace CPOL.Knobs
-{
+namespace CPOL.Knobs;
+
 	partial class LBKnob
 	{
 		/// <summary>
@@ -50,4 +50,3 @@ namespace CPOL.Knobs
 			this.ResumeLayout(false);
 		}
 	}
-}

@@ -6,11 +6,6 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Windows.Forms;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 /* 
@@ -38,88 +33,91 @@ using System.Text.RegularExpressions;
 // Attempt to only allow Grbl specific gcode
 // case statements are explicitly supported codes
 
-namespace CNCInfusion
+namespace CNCInfusion;
+
+public class GRBLPreprocessor
 {
-public partial class frmViewer : Form	
-{
-	private bool GrblPreprocess(string line)
-	{
-		const string pattern = "[A-Z]([-+]?[0-9]*[\\.,]?[0-9]*)";
-		double arg;
-		
-		Regex rgx = new Regex(pattern, RegexOptions.IgnoreCase);
-		MatchCollection matches = rgx.Matches(line);
-		
-		if (matches.Count > 0)	{
-			foreach (Match match in matches) {
-				arg = double.Parse(match.Value.Substring(1));
-				switch(match.Value[0]) {
-					case 'G':
-						// explicitly supported G codes
-						switch((int)arg) {
-							case 0: 	// MOTION_MODE_SEEK
-							case 1:		// MOTION_MODE_LINEAR
-							case 2: 	// MOTION_MODE_CW_ARC
-							case 3: 	// MOTION_MODE_CCW_ARC
-							case 4: 	// DWELL
-							case 17:	// select_plane(X_AXIS, Y_AXIS, Z_AXIS); 
-							case 18: 	// select_plane(X_AXIS, Z_AXIS, Y_AXIS)
-							case 19:	// select_plane(Y_AXIS, Z_AXIS, X_AXIS)
-							case 20:	// INCHES
-							case 21:	// METRIC
-							case 28: 	// GO_HOME
-							case 53: 	// absolute_override
-							case 80:    // MOTION_MODE_CANCEL    
-							case 90: 	// absolute_mode ON
-							case 91: 	// absolute_mode OFF
-							case 92:    // COORDINATE_OFFSET  
-							case 93: 	// inverse_feed_rate ON
-							case 94: 	// inverse_feed_rate OFF
-								break;
-							default:
-								// any other G code
-								return false;
-						}
-						break;
-					// explicitly supported M codes
-					case 'M':
-						switch((int)arg) {
-							case 0:		// PROGRAM_FLOW_PAUSED
-							case 1:		// PROGRAM_FLOW_OPT_PAUSED
-							case 2:		// PROGRAM_FLOW_COMPLETED
-							case 3:		// spindle_direction = 1
-							case 4:		// spindle_direction = -1
-							case 5:		// spindle_direction = 0
-							case 6:		// TOOL CHANGE (Not supported by Grbl by caught by CNCInfusion)
-							case 30:	// PROGRAM_FLOW_COMPLETED
-							case 60:	// PROGRAM_FLOW_PAUSED
-								break;
-							default:
-								// any other M code
-								return false;
-						}
-						break;
-					// supported codes with any argument
-					case 'T':	// TOOL
-					case 'F':	// FEEDRATE
-					case 'S':	// SPINDLE SPEED
-					case 'I':	// ARC
-					case 'J':	// ARC
-					case 'K':   // ??
-					case 'P':   // ??
-					case 'R':   // ?? ARC/HELIX?
-					case 'X':	// AXIS
-					case 'Y':	// AXIS
-					case 'Z':	// AXIS
-						break;
-					default:
-						return false;
-				}
-			}
-		}
-		return true;
-	}
-}
-	
+    public static bool GrblPreprocess(string line)
+    {
+        const string pattern = "[A-Z]([-+]?[0-9]*[\\.,]?[0-9]*)";
+        double arg;
+
+        Regex rgx = new(pattern, RegexOptions.IgnoreCase);
+        MatchCollection matches = rgx.Matches(line);
+
+        if (matches.Count > 0)
+        {
+            foreach (Match match in matches)
+            {
+                arg = double.Parse(match.Value[1..]);
+                switch (match.Value[0])
+                {
+                    case 'G':
+                        // explicitly supported G codes
+                        switch ((int)arg)
+                        {
+                            case 0:     // MOTION_MODE_SEEK
+                            case 1:     // MOTION_MODE_LINEAR
+                            case 2:     // MOTION_MODE_CW_ARC
+                            case 3:     // MOTION_MODE_CCW_ARC
+                            case 4:     // DWELL
+                            case 17:    // select_plane(X_AXIS, Y_AXIS, Z_AXIS); 
+                            case 18:    // select_plane(X_AXIS, Z_AXIS, Y_AXIS)
+                            case 19:    // select_plane(Y_AXIS, Z_AXIS, X_AXIS)
+                            case 20:    // INCHES
+                            case 21:    // METRIC
+                            case 28:    // GO_HOME
+                            case 53:    // absolute_override
+                            case 80:    // MOTION_MODE_CANCEL    
+                            case 90:    // absolute_mode ON
+                            case 91:    // absolute_mode OFF
+                            case 92:    // COORDINATE_OFFSET  
+                            case 93:    // inverse_feed_rate ON
+                            case 94:    // inverse_feed_rate OFF
+                                break;
+                            default:
+                                // any other G code
+                                return false;
+                        }
+                        break;
+                    // explicitly supported M codes
+                    case 'M':
+                        switch ((int)arg)
+                        {
+                            case 0:     // PROGRAM_FLOW_PAUSED
+                            case 1:     // PROGRAM_FLOW_OPT_PAUSED
+                            case 2:     // PROGRAM_FLOW_COMPLETED
+                            case 3:     // spindle_direction = 1
+                            case 4:     // spindle_direction = -1
+                            case 5:     // spindle_direction = 0
+                            case 6:     // TOOL CHANGE (Not supported by Grbl by caught by CNCInfusion)
+                            case 30:    // PROGRAM_FLOW_COMPLETED
+                            case 60:    // PROGRAM_FLOW_PAUSED
+                                break;
+                            default:
+                                // any other M code
+                                return false;
+                        }
+                        break;
+                    // supported codes with any argument
+                    case 'T':   // TOOL
+                    case 'F':   // FEEDRATE
+                    case 'S':   // SPINDLE SPEED
+                    case 'I':   // ARC
+                    case 'J':   // ARC
+                    case 'K':   // ??
+                    case 'P':   // ??
+                    case 'R':   // ?? ARC/HELIX?
+                    case 'X':   // AXIS
+                    case 'Y':   // AXIS
+                    case 'Z':   // AXIS
+                        break;
+                    default:
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
 }
 

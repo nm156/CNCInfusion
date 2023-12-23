@@ -12,65 +12,51 @@ public class clsCadRect
     private float mX;
     public float X
     {
-        get { return mX; }
+        get => mX;
         set
         {
             mX = value;
-            mLeft = mX;
-            mRight = mLeft + mWidth;
+            Left = mX;
+            Right = Left + mWidth;
         }
     }
     private float my;
     public float Y
     {
-        get { return my; }
+        get => my;
         set
         {
             my = value;
-            mTop = my + mHeight;
-            mBottom = my;
+            Top = my + mHeight;
+            Bottom = my;
         }
     }
-    private float mLeft;
-    public float Left
-    {
-        get { return mLeft; }
-    }
-    private float mRight;
-    public float Right
-    {
-        get { return mRight; }
-    }
+
+    public float Left { get; private set; }
+    public float Right { get; private set; }
     private float mWidth;
     public float Width
     {
-        get { return mWidth; }
+        get => mWidth;
         set
         {
             mWidth = value;
-            mRight = mLeft + mWidth;
+            Right = Left + mWidth;
         }
     }
     private float mHeight;
     public float Height
     {
-        get { return mHeight; }
+        get => mHeight;
         set
         {
             mHeight = value;
-            mTop = my + mHeight;
+            Top = my + mHeight;
         }
     }
-    private float mTop;
-    public float Top
-    {
-        get { return mTop; }
-    }
-    private float mBottom;
-    public float Bottom
-    {
-        get { return mBottom; }
-    }
+
+    public float Top { get; private set; }
+    public float Bottom { get; private set; }
 
     public clsCadRect()
     {
@@ -82,10 +68,10 @@ public class clsCadRect
 
     public clsCadRect(float x, float y, float width, float height)
     {
-        this.X = x;
-        this.Y = y;
-        this.Width = width;
-        this.Height = height;
+        X = x;
+        Y = y;
+        Width = width;
+        Height = height;
     }
     public bool IntersectsLine(PointF p1, PointF p2)
     {
@@ -100,24 +86,24 @@ public class clsCadRect
     public bool IntersectsLine(float x1, float y1, float x2, float y2)
     {
         //Trivial test inside 
-        if (this.Contains(x1, y1) | this.Contains(x2, y2))
+        if (Contains(x1, y1) | Contains(x2, y2))
         {
             return true;
         }
         //Trivial test outside 
-        if (x1 < this.Left & x2 < this.Left)
+        if (x1 < Left & x2 < Left)
         {
             return false;
         }
-        else if (x1 > this.Right & x2 > this.Right)
+        else if (x1 > Right & x2 > Right)
         {
             return false;
         }
-        else if (y1 < this.Bottom & y2 < this.Bottom)
+        else if (y1 < Bottom & y2 < Bottom)
         {
             return false;
         }
-        else if (y1 > this.Top & y2 > this.Top)
+        else if (y1 > Top & y2 > Top)
         {
             return false;
         }
@@ -134,39 +120,33 @@ public class clsCadRect
 
         float slope = (y2 - y1) / (x2 - x1);
         float Yintercept = y1 - (slope * x1);
-        float iptX = 0;
-        float iptY = 0;
 
         //Left edge 
-        iptX = this.Left;
-        iptY = (slope * iptX) + Yintercept;
-        if (iptY > this.Bottom & iptY < this.Top)
+        float iptX = Left;
+        float iptY = (slope * iptX) + Yintercept;
+        if (iptY > Bottom & iptY < Top)
         {
             return true;
         }
 
         //Right edge 
-        iptX = this.Right;
-        if (iptY > this.Bottom & iptY < this.Top)
+        _ = Right;
+        if (iptY > Bottom & iptY < Top)
         {
             return true;
         }
 
         //Top edge 
-        iptY = this.Top;
-        iptX = ((iptY - Yintercept) / slope);
-        if (iptX > this.Left & iptX < this.Right)
+        iptY = Top;
+        iptX = (iptY - Yintercept) / slope;
+        if (iptX > Left & iptX < Right)
         {
             return true;
         }
 
         //Bottom edge 
-        iptY = this.Bottom;
-        iptX = ((iptY - Yintercept) / slope);
-        if (iptX > this.Left & iptX < this.Right)
-        {
-            return true;
-        }
-        return false;
+        iptY = Bottom;
+        iptX = (iptY - Yintercept) / slope;
+        return iptX > Left & iptX < Right;
     }
 }

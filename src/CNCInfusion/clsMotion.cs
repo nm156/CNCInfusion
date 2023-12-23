@@ -4,18 +4,19 @@ internal struct Address
     private char mLabel;
     public char Label
     {
-        get { return mLabel; }
-        set { 
+        get => mLabel;
+        set
+        {
             mLabel = value;
-            Letter = (clsProcessor.letters)Enum.Parse(typeof(clsProcessor.letters), mLabel.ToString());
+            Letter = (clsProcessor.LETTERS)Enum.Parse(typeof(clsProcessor.LETTERS), mLabel.ToString());
         }
     }
     public float Value;
     public string StringValue;
-    public clsProcessor.letters Letter;
+    public clsProcessor.LETTERS Letter;
     public bool Matches(Address a)
     {
-        return (a.Letter == this.Letter) & (a.Value == this.Value);
+        return (a.Letter == Letter) & (a.Value == Value);
     }
 }
 

@@ -4,7 +4,8 @@ public class clsMachine
     //Store all settings in this class 
     public string Name;    //file name 
     public string Description;    //file name 
-    public string ProgramId;    public string Subcall;
+    public string ProgramId;
+    public string Subcall;
     //call sub 
     public string SubRepeats;
     public string SubReturn;    //return from sub 
@@ -39,7 +40,7 @@ public class clsMachine
 
     public clsMachine(string name)
     {
-        this.Name = name;
+        Name = name;
     }
     public clsMachine()
     {
