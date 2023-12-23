@@ -1,0 +1,39 @@
+# Ignore Visual Studio files
+.vs/
+*.suo
+*.user
+*.sln.docstates
+
+# Ignore build output
+bin/
+obj/
+
+# Ignore NuGet packages
+*.nuget.props
+*.nuget.targets
+packages/
+
+# Ignore Resharper files
+_ReSharper*/
+*.resharper
+*.DotSettings.user
+
+# Ignore Visual Studio Code files
+.vscode/
+
+# Ignore test results
+TestResults/
+
+# Ignore miscellaneous files
+*.cache
+*.log
+*.bak
+*.tmp
+*.tmp_proj
+*.Publish.xml
+*.pubxml
+*.publishproj
+*.userprefs
+*.dbmdl
+*.dbproj.schemaview
+
