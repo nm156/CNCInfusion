@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-public class clsDisplayList
+public class ClsDisplayList
 {
     public bool InView = true;
     public bool Rapid = true;

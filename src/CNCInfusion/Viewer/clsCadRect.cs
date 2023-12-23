@@ -134,12 +134,10 @@ public class clsCadRect
 
         float slope = (y2 - y1) / (x2 - x1);
         float Yintercept = y1 - (slope * x1);
-        float iptX = 0;
-        float iptY = 0;
 
         //Left edge 
-        iptX = this.Left;
-        iptY = (slope * iptX) + Yintercept;
+        float iptX = Left;
+        float iptY = slope * iptX + Yintercept;
         if (iptY > this.Bottom & iptY < this.Top)
         {
             return true;

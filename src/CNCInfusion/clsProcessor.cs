@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic; 
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Text;
 using MacGen;
 using System;
-using CSharpBasicViewerApp.Properties;
 /// <summary> 
 /// Processes the cnc file and loads the graphics records. 
 /// </summary> 
@@ -14,8 +13,22 @@ using CSharpBasicViewerApp.Properties;
 /// </remarks> 
 class clsProcessor
 {
-    private int[] mColors16 = { -16777216, -8388608, -16744448, -8355840, -16777088, -8388480, -16744320, -4144960, -8355712, -65536, 
-    -16711936, -256, -16776961, -12525360, -65281, -1 };
+    private readonly int[] mColors16 = [-16777216,
+        -8388608,
+        -16744448,
+        -8355840,
+        -16777088,
+        -8388480,
+        -16744320,
+        -4144960,
+        -8355712,
+        -65536,
+        -16711936,
+        -256,
+        -16776961,
+        -12525360,
+        -65281,
+        -1];
 
     private Regex mRegSubs;
     private Regex mRegWords;
@@ -24,7 +37,7 @@ class clsProcessor
     private Motion mPlane;
     private float mDrillClear;
     private int mCurrentColor;
-    private System.Collections.Specialized.StringCollection mSubFiles = new System.Collections.Specialized.StringCollection();
+    private readonly System.Collections.Specialized.StringCollection mSubFiles = new();
 
     private float mInitialZBeforeDrill;
     private string mEndmain;    //M30 
@@ -63,14 +76,14 @@ class clsProcessor
     private string mCodeText;
     private int mTotalLines;
     private int mTotalBites;
-    private clsMotion mMotion = new clsMotion();
+    private readonly clsMotion mMotion = new();
     private Address mCurAddress;
     private bool mNewProfile;
-    private clsMotionRecord mGrfxRec;
-    private System.Collections.Generic.List<clsMotionRecord> mGfxRecs;
+    private ClsMotionRecord mGrfxRec;
+    private System.Collections.Generic.List<ClsMotionRecord> mGfxRecs;
     public clsMachine mCurMachine;
     private const float ONE_RADIAN = (float)(Math.PI * 2);
-    public enum letters
+    public enum LETTERS
     {
         A,
         B,
@@ -100,7 +113,7 @@ class clsProcessor
         Z,
         ANY
     }
-    private bool[] mBlockAddresses = new bool[27];
+    private readonly bool[] mBlockAddresses = new bool[27];
     public event OnAddBlockEventHandler OnAddBlock;
     public delegate void OnAddBlockEventHandler(int value, int max);
     public event OnToolChangedEventHandler OnToolChanged;
@@ -138,23 +151,22 @@ class clsProcessor
         public int TimesCalled = 0;
     }
 
-    private System.Collections.Generic.List<clsProg> mNcProgs = new System.Collections.Generic.List<clsProg>();
+    private readonly System.Collections.Generic.List<clsProg> mNcProgs = new();
 
     private void Arc_Center()
     {
-        float side_opposite = 0;
-        float meanX = 0;
-        float meanY = 0;
         float centerVector = 0;
-        float quarterArc = 0;
-
+        float side_opposite;
+        float meanX;
+        float meanY;
+        float quarterArc;
         switch (mPlane)
         {
             case Motion.XY_PLN:
                 //This is for an arc or helix that uses an R insdead of I,J,K, 
 
                 //Radius move with R 
-                if (mBlockAddresses[(int)letters.R] & (mMode > Motion.LINE))
+                if (mBlockAddresses[(int)LETTERS.R] & (mMode > Motion.LINE))
                 {
                     quarterArc = (float)(Math.PI / 2);
                     //|------- Calculate arc center position -------| 
@@ -233,7 +245,7 @@ class clsProcessor
                 //This is for an arc or helix that uses an R insdead of I,J,K, 
 
                 //Radius move with R 
-                if (mBlockAddresses[(int)letters.R] & mMode > Motion.LINE)
+                if (mBlockAddresses[(int)LETTERS.R] & mMode > Motion.LINE)
                 {
                     quarterArc = (float)(Math.PI / 2);
                     //|------- Calculate arc center position -------| 
@@ -315,7 +327,7 @@ class clsProcessor
                 //This is for an arc or helix that uses an R insdead of I,J,K, 
 
                 //Radius move with R 
-                if (mBlockAddresses[(int)letters.R] & mMode > Motion.LINE)
+                if (mBlockAddresses[(int)LETTERS.R] & mMode > Motion.LINE)
                 {
                     quarterArc = (float)(Math.PI / 2);
                     //|------- Calculate arc center position -------| 
@@ -391,7 +403,7 @@ class clsProcessor
 
 
                 break;
-            //InStr(codeline, "R") 
+                //InStr(codeline, "R") 
 
         }
 
@@ -399,7 +411,7 @@ class clsProcessor
 
     private void AddMotionRecord()
     {
-        mGrfxRec = new clsMotionRecord();
+        mGrfxRec = new ClsMotionRecord();
         {
             mGrfxRec.BeginProfile = mNewProfile;
             mGrfxRec.WrkPlane = (int)mPlane;
@@ -436,19 +448,21 @@ class clsProcessor
         mGfxRecs.Add(mGrfxRec);
     }
 
-    private float FormatAxis(string sVal, int precision) 
-    { 
+    private float FormatAxis(string sVal, int precision)
+    {
         //decimal place 
-        if (sVal.Contains(".")) { 
-            return float.Parse(sVal); 
-        } 
-        else { 
-            return (float)(float.Parse(sVal) * (Math.Pow(10,  - precision)));//convert a number from a 4 place 
-        } 
+        if (sVal.Contains("."))
+        {
+            return float.Parse(sVal);
+        }
+        else
+        {
+            return (float)(float.Parse(sVal) * (Math.Pow(10, -precision)));//convert a number from a 4 place 
+        }
     }
 
     // modified to take first argument as a preprocessed buffer, instead of filename
-    public void ProcessFile(string ncFile, List<clsMotionRecord> gfxRecs)
+    public void ProcessFile(string ncFile, List<ClsMotionRecord> gfxRecs)
     {
         mGfxRecs = gfxRecs;
         mCodefile = ncFile;
@@ -538,19 +552,16 @@ class clsProcessor
         mEndmain = mCurMachine.Endmain.Trim();
         mSubcall = mCurMachine.Subcall.Trim();
         mSubRepeats = mCurMachine.SubRepeats.Trim();
-		
-        string sFileContents = null;
-        sFileContents = FilterJunk(ncFile);
-        
+        string sFileContents = FilterJunk(ncFile);
+
         mNcProgs.Clear();
         int lastIndex = -1;
-        int thisIndex = -1;
-        clsProg p = default(clsProg);
+        clsProg p;
         foreach (Match m in this.mRegSubs.Matches(sFileContents))
         {
             if (mCurMachine.ProgramId.Contains(m.Value[0].ToString()))
             {
-                thisIndex = m.Index;
+                int thisIndex = m.Index;
                 //Each program 
                 if (lastIndex > -1)
                 {
@@ -560,11 +571,13 @@ class clsProcessor
                         mNcProgs[mNcProgs.Count - 1].Main = true;
                     }
                 }
-                p = new clsProg();
-                p.Main = false;
-                p.Index = thisIndex;
-                p.Label = Char.ToUpper(m.Value[0]).ToString();
-                p.Value = int.Parse(m.Groups[1].Value);
+                p = new clsProg
+                {
+                    Main = false,
+                    Index = thisIndex,
+                    Label = Char.ToUpper(m.Value[0]).ToString(),
+                    Value = int.Parse(m.Groups[1].Value)
+                };
                 mNcProgs.Add(p);
                 lastIndex = m.Index;
             }
@@ -574,12 +587,14 @@ class clsProcessor
         if (mNcProgs.Count == 0)
         {
             //Just add all the text we found in the file 
-            p = new clsProg();
-            p.Main = true;
-            p.Index = 0;
-            p.Label = "MAIN";
-            p.Value = 0;
-            p.Contents = sFileContents;
+            p = new clsProg
+            {
+                Main = true,
+                Index = 0,
+                Label = "MAIN",
+                Value = 0,
+                Contents = sFileContents
+            };
             mNcProgs.Add(p);
             mTotalBites = sFileContents.Length;
             ProcessSubWords(p);
@@ -621,10 +636,7 @@ class clsProcessor
                 mTotalLines += 1;
                 mCodeText = p.Contents.Substring(lastIndex, ncWord.Index - lastIndex - 1);
                 CreateGcodeBlock();
-                if (OnAddBlock != null)
-                {
-                    OnAddBlock(ncWord.Index, mTotalBites);
-                }
+                OnAddBlock?.Invoke(ncWord.Index, mTotalBites);
                 Array.Clear(mBlockAddresses, 0, 26);
                 lastIndex = ncWord.Index + 1;
             }
@@ -664,9 +676,9 @@ class clsProcessor
 
     private void CreateGcodeBlock()
     {
-        if (!mBlockAddresses[(int)letters.ANY]) return;
+        if (!mBlockAddresses[(int)LETTERS.ANY]) return;
 
-        if (mBlockAddresses[(int)letters.X])
+        if (mBlockAddresses[(int)LETTERS.X])
         {
             if (mAbsolute == false)
             {
@@ -677,16 +689,16 @@ class clsProcessor
                 mXpos = mXpos / 2;
             }
         }
-        if (mBlockAddresses[(int)letters.Y])
+        if (mBlockAddresses[(int)LETTERS.Y])
         {
             if (mAbsolute == false) mYpos = mYpos + mPrevY;
         }
-        if (mBlockAddresses[(int)letters.Z])
+        if (mBlockAddresses[(int)LETTERS.Z])
         {
             if (mAbsolute == false) mZpos = mZpos + mPrevZ;
         }
 
-        if (mBlockAddresses[(int)mMotion.Rotary.Letter]==true)
+        if (mBlockAddresses[(int)mMotion.Rotary.Letter] == true)
         {
             mRotating = true;
             //0>360 sign determines dir 
@@ -791,10 +803,7 @@ class clsProcessor
             {
                 mCurrentColor = 1;
             }
-            if (OnToolChanged != null)
-            {
-                OnToolChanged(mTool);
-            }
+            OnToolChanged?.Invoke(mTool);
         }
 
         if ((static_CreateGcodeBlock_mPrevMode == Motion.RAPID & mMode > Motion.RAPID) | static_CreateGcodeBlock_mPrevMode > Motion.RAPID & mMode == Motion.RAPID)
@@ -829,24 +838,23 @@ class clsProcessor
 
     private void EvaluateWord()
     {
-        int r = 0;
         mBlockAddresses[(int)mCurAddress.Letter] = true;
         switch (mCurAddress.Letter)
         {
-            case letters.X:
-                mBlockAddresses[(int)letters.ANY] = true;
+            case LETTERS.X:
+                mBlockAddresses[(int)LETTERS.ANY] = true;
                 mXpos = FormatAxis(mCurAddress.StringValue, mCurMachine.Precision);
                 break;
-            case letters.Y:
-                mBlockAddresses[(int)letters.ANY] = true;
+            case LETTERS.Y:
+                mBlockAddresses[(int)LETTERS.ANY] = true;
                 mYpos = FormatAxis(mCurAddress.StringValue, mCurMachine.Precision);
                 break;
-            case letters.Z:
-                mBlockAddresses[(int)letters.ANY] = true;
+            case LETTERS.Z:
+                mBlockAddresses[(int)LETTERS.ANY] = true;
                 mZpos = FormatAxis(mCurAddress.StringValue, mCurMachine.Precision);
                 break;
-            case letters.I:
-                mBlockAddresses[(int)letters.ANY] = true;
+            case LETTERS.I:
+                mBlockAddresses[(int)LETTERS.ANY] = true;
                 mI = FormatAxis(mCurAddress.StringValue, mCurMachine.Precision);
                 if (mCurMachine.MachineType == MachineType.LATHEDIA)
                 {
@@ -856,35 +864,35 @@ class clsProcessor
                     }
                 }
                 break;
-            case letters.J:
-                mBlockAddresses[(int)letters.ANY] = true;
+            case LETTERS.J:
+                mBlockAddresses[(int)LETTERS.ANY] = true;
                 mJ = FormatAxis(mCurAddress.StringValue, mCurMachine.Precision);
                 break;
-            case letters.K:
-                mBlockAddresses[(int)letters.ANY] = true;
+            case LETTERS.K:
+                mBlockAddresses[(int)LETTERS.ANY] = true;
                 mK = FormatAxis(mCurAddress.StringValue, mCurMachine.Precision);
                 break;
-            case letters.R:
-                mBlockAddresses[(int)letters.ANY] = true;
+            case LETTERS.R:
+                mBlockAddresses[(int)LETTERS.ANY] = true;
                 mRpoint = FormatAxis(mCurAddress.StringValue, mCurMachine.Precision);
                 mArcRad = mRpoint;
                 break;
-            case letters.S:
-                mBlockAddresses[(int)letters.ANY] = true;
+            case LETTERS.S:
+                mBlockAddresses[(int)LETTERS.ANY] = true;
                 mSpeed = mCurAddress.Value;
                 break;
-            case letters.F:
-                mBlockAddresses[(int)letters.ANY] = true;
+            case LETTERS.F:
+                mBlockAddresses[(int)LETTERS.ANY] = true;
                 mFeed = mCurAddress.Value;
                 break;
-            case letters.T:
-                mBlockAddresses[(int)letters.ANY] = true;
+            case LETTERS.T:
+                mBlockAddresses[(int)LETTERS.ANY] = true;
                 mTool = mCurAddress.Value;
                 break;
             default:
                 if (mBlockAddresses[(int)mMotion.Rotary.Letter] == true)
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     mABC = FormatAxis(mCurAddress.StringValue, mCurMachine.RotPrecision) * 0.01745329f;
                     //Convert to radians 
                     //check for -0 
@@ -899,29 +907,29 @@ class clsProcessor
                 //Absolute positioning 
                 if (mCurAddress.Matches(mMotion.Abs))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     mAbsolute = true;
                 }
                 //Incremental positioning 
                 else if (mCurAddress.Matches(mMotion.Inc))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     mAbsolute = false;
                 }
                 else if (mCurAddress.Matches(mMotion.Rapid))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     mMode = Motion.RAPID;
                 }
                 else if (mCurAddress.Matches(mMotion.Linear))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     mMode = Motion.LINE;
                 }
                 //Arc clockwise 
                 else if (mCurAddress.Matches(mMotion.CWArc))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     if (mPlane == Motion.XZ_PLN)
                     {
                         mMode = Motion.CCARC;
@@ -934,7 +942,7 @@ class clsProcessor
                 //Arc anti-clockwise 
                 else if (mCurAddress.Matches(mMotion.CCArc))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     if (mPlane == Motion.XZ_PLN)
                     {
                         mMode = Motion.CWARC;
@@ -947,7 +955,7 @@ class clsProcessor
                 //Drill cancel found 
                 else if (mCurAddress.Matches(mMotion.Drills[0]))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     mMode = Motion.RAPID;
                     if (mDrillReturnMode == Motion.I_PLN)
                     {
@@ -960,7 +968,7 @@ class clsProcessor
                 }
                 else if (mCurAddress.Matches(mMotion.ReturnLevel[0]))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     mDrillReturnMode = Motion.I_PLN;
                     if (mMode > Motion.CCARC)
                     {
@@ -969,7 +977,7 @@ class clsProcessor
                 }
                 else if (mCurAddress.Matches(mMotion.ReturnLevel[1]))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     mDrillReturnMode = Motion.R_PLN;
                     if (mMode > Motion.CCARC)
                     {
@@ -979,23 +987,24 @@ class clsProcessor
                 //Plane Change G17 
                 else if (mCurAddress.Matches(mMotion.Plane[0]))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     mPlane = Motion.XY_PLN;
                 }
                 //Plane Change G18 
                 else if (mCurAddress.Matches(mMotion.Plane[1]))
                 {
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                     mPlane = Motion.XZ_PLN;
                 }
                 //Plane Change G19 
                 else if (mCurAddress.Matches(mMotion.Plane[2]))
                 {
                     mPlane = Motion.YZ_PLN;
-                    mBlockAddresses[(int)letters.ANY] = true;
+                    mBlockAddresses[(int)LETTERS.ANY] = true;
                 }
                 else
                 {
+                    int r;
                     //Cycle through all 10 drilling cycles 
                     for (r = 1; r <= mMotion.Drills.Length - 1; r++)
                     {
@@ -1014,7 +1023,7 @@ class clsProcessor
                                 {
                                     mDrillClear = mRpoint;
                                 }
-                                mBlockAddresses[(int)letters.ANY] = true;
+                                mBlockAddresses[(int)LETTERS.ANY] = true;
                                 break; // TODO: might not be correct. Was : Exit For 
                             }
                         }
@@ -1050,7 +1059,7 @@ class clsProcessor
             //[:\$O]+([0-9]+) This will return the label and value of each program. 
             string progId = Regex.Escape(mCurMachine.ProgramId);
             mRegSubs = new Regex(InsertCommment() + "[" + progId + "]([0-9]+)", RegexOptions.Compiled);
-        } 
+        }
     }
 
     private string InsertCommment()
@@ -1063,7 +1072,7 @@ class clsProcessor
         {
             return "";
         }
-    } 
+    }
 
     private void BuildCommentMatch()
     {
@@ -1119,7 +1128,7 @@ class clsProcessor
         {
             mCommentMatch = "(?<Comment>" + mCommentMatch + ")";
         }
-    } 
+    }
 
     public string FilterJunk(string sText)
     {

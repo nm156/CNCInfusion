@@ -1,14 +1,7 @@
 ﻿using System.Drawing;
-public class clsToolLayer
+public class ClsToolLayer(float number, Color color)
 {
-    public System.Drawing.Color Color;
-    public float Number;
-    public bool Hidden;
-
-    public clsToolLayer(float number, Color color)
-    {
-        this.Number = number;
-        this.Color = color;
-        this.Hidden = false;
-    }
+    public Color Color = color;
+    public float Number = number;
+    public bool Hidden = false;
 }
