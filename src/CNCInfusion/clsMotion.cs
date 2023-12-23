@@ -4,7 +4,7 @@ internal struct Address
     private char mLabel;
     public char Label
     {
-        get { return mLabel; }
+        get => mLabel;
         set
         {
             mLabel = value;
@@ -16,7 +16,7 @@ internal struct Address
     public clsProcessor.LETTERS Letter;
     public bool Matches(Address a)
     {
-        return (a.Letter == this.Letter) & (a.Value == this.Value);
+        return (a.Letter == Letter) & (a.Value == Value);
     }
 }
 

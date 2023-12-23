@@ -6,11 +6,6 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Windows.Forms;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 /* 
@@ -54,7 +49,7 @@ public class GRBLPreprocessor
         {
             foreach (Match match in matches)
             {
-                arg = double.Parse(match.Value.Substring(1));
+                arg = double.Parse(match.Value[1..]);
                 switch (match.Value[0])
                 {
                     case 'G':

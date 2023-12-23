@@ -40,7 +40,7 @@ public class clsMachine
 
     public clsMachine(string name)
     {
-        this.Name = name;
+        Name = name;
     }
     public clsMachine()
     {

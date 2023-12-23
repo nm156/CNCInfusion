@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Text;
+﻿using CNCInfusion.Viewer;
 using MacGen;
 using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 /// <summary> 
 /// Processes the cnc file and loads the graphics records. 
 /// </summary> 
@@ -11,7 +11,7 @@ using System;
 /// Jason Titcomb 
 /// www.CncEdit.com 
 /// </remarks> 
-class clsProcessor
+internal class clsProcessor
 {
     private readonly int[] mColors16 = [-16777216,
         -8388608,
@@ -37,7 +37,7 @@ class clsProcessor
     private Motion mPlane;
     private float mDrillClear;
     private int mCurrentColor;
-    private readonly System.Collections.Specialized.StringCollection mSubFiles = new();
+    private readonly System.Collections.Specialized.StringCollection mSubFiles = [];
 
     private float mInitialZBeforeDrill;
     private string mEndmain;    //M30 
@@ -131,10 +131,7 @@ class clsProcessor
     public static clsProcessor Instance()
     {
         // initialize if not already done 
-        if (mInstance == null)
-        {
-            mInstance = new clsProcessor();
-        }
+        mInstance ??= new clsProcessor();
         // return the initialized instance of the Singleton Class 
         return mInstance;
     }
@@ -151,7 +148,7 @@ class clsProcessor
         public int TimesCalled = 0;
     }
 
-    private readonly System.Collections.Generic.List<clsProg> mNcProgs = new();
+    private readonly System.Collections.Generic.List<clsProg> mNcProgs = [];
 
     private void Arc_Center()
     {
@@ -185,7 +182,7 @@ class clsProcessor
                     }
 
                     mRad = System.Math.Abs(mArcRad); //calculate side opposite 'hypotenuse 
-                    side_opposite = (float)System.Math.Abs((Math.Pow(mRad, 2)) - (Math.Pow((MG_CS_BasicViewer.VectorLength(mPrevX, mPrevY, 0, mXpos, mYpos, 0) / 2), 2)));
+                    side_opposite = (float)System.Math.Abs(Math.Pow(mRad, 2) - Math.Pow(MG_CS_BasicViewer.VectorLength(mPrevX, mPrevY, 0, mXpos, mYpos, 0) / 2, 2));
                     side_opposite = (float)System.Math.Sqrt(side_opposite);
                     //find mid point of start and end of arc start and end points 
                     meanX = (mPrevX + mXpos) / 2;
@@ -206,7 +203,7 @@ class clsProcessor
                         centerVector = MG_CS_BasicViewer.AngleFromPoint(mXpos - mPrevX, mYpos - mPrevY, false) + quarterArc;
                         if (centerVector > ONE_RADIAN)
                         {
-                            centerVector = centerVector - ONE_RADIAN;
+                            centerVector -= ONE_RADIAN;
                         }
                     }
 
@@ -223,8 +220,8 @@ class clsProcessor
 
                     if (mCurMachine.AbsArcCenter)
                     {
-                        mI = mI - mPrevX;
-                        mJ = mJ - mPrevY;
+                        mI -= mPrevX;
+                        mJ -= mPrevY;
                     }
 
                     mRad = (float)System.Math.Sqrt(Math.Pow(mI, 2) + Math.Pow(mJ, 2));
@@ -266,7 +263,7 @@ class clsProcessor
 
                     mRad = System.Math.Abs(mArcRad);
                     //calculate side opposite 'hypotenuse 
-                    side_opposite = (float)System.Math.Abs((Math.Pow(mRad, 2)) - (Math.Pow((MG_CS_BasicViewer.VectorLength(mPrevX, mPrevZ, 0, mXpos, mZpos, 0) / 2), 2)));
+                    side_opposite = (float)System.Math.Abs(Math.Pow(mRad, 2) - Math.Pow(MG_CS_BasicViewer.VectorLength(mPrevX, mPrevZ, 0, mXpos, mZpos, 0) / 2, 2));
                     side_opposite = (float)System.Math.Sqrt(side_opposite);
                     //find mid point of start and end of arc start and end points 
                     meanX = (mPrevX + mXpos) / 2;
@@ -287,7 +284,7 @@ class clsProcessor
                         centerVector = MG_CS_BasicViewer.AngleFromPoint(mXpos - mPrevX, mZpos - mPrevZ, false) + quarterArc;
                         if (centerVector > ONE_RADIAN)
                         {
-                            centerVector = centerVector - ONE_RADIAN;
+                            centerVector -= ONE_RADIAN;
                         }
                     }
 
@@ -304,8 +301,8 @@ class clsProcessor
 
                     if (mCurMachine.AbsArcCenter)
                     {
-                        mI = mI - mPrevX;
-                        mK = mK - mPrevZ;
+                        mI -= mPrevX;
+                        mK -= mPrevZ;
                     }
 
                     mRad = (float)System.Math.Sqrt(Math.Pow(mI, 2) + Math.Pow(mK, 2));
@@ -348,7 +345,7 @@ class clsProcessor
 
                     mRad = System.Math.Abs(mArcRad);
                     //calculate side opposite 'hypotenuse 
-                    side_opposite = (float)System.Math.Abs((Math.Pow(mRad, 2)) - (Math.Pow((MG_CS_BasicViewer.VectorLength(mPrevY, mPrevZ, 0, mYpos, mZpos, 0) / 2), 2)));
+                    side_opposite = (float)System.Math.Abs(Math.Pow(mRad, 2) - Math.Pow(MG_CS_BasicViewer.VectorLength(mPrevY, mPrevZ, 0, mYpos, mZpos, 0) / 2, 2));
                     side_opposite = (float)System.Math.Sqrt(side_opposite);
                     //find mid point of start and end of arc start and end points 
                     meanX = (mPrevY + mYpos) / 2;
@@ -369,7 +366,7 @@ class clsProcessor
                         centerVector = MG_CS_BasicViewer.AngleFromPoint(mYpos - mPrevY, mZpos - mPrevZ, false) + quarterArc;
                         if (centerVector > ONE_RADIAN)
                         {
-                            centerVector = centerVector - ONE_RADIAN;
+                            centerVector -= ONE_RADIAN;
                         }
                     }
 
@@ -386,8 +383,8 @@ class clsProcessor
 
                     if (mCurMachine.AbsArcCenter)
                     {
-                        mJ = mJ - mPrevY;
-                        mK = mK - mPrevZ;
+                        mJ -= mPrevY;
+                        mK -= mPrevZ;
                     }
 
                     mRad = (float)System.Math.Sqrt(Math.Pow(mJ, 2) + Math.Pow(mK, 2));
@@ -457,7 +454,7 @@ class clsProcessor
         }
         else
         {
-            return (float)(float.Parse(sVal) * (Math.Pow(10, -precision)));//convert a number from a 4 place 
+            return (float)(float.Parse(sVal) * Math.Pow(10, -precision));//convert a number from a 4 place 
         }
     }
 
@@ -468,26 +465,26 @@ class clsProcessor
         mCodefile = ncFile;
         {
             mMotion.SubCall.Label = mCurMachine.Subcall[0];
-            mMotion.SubCall.Value = int.Parse(mCurMachine.Subcall.Substring(1));
+            mMotion.SubCall.Value = int.Parse(mCurMachine.Subcall[1..]);
 
             mMotion.SubReturn.Label = mCurMachine.SubReturn[0];
-            mMotion.SubReturn.Value = int.Parse(mCurMachine.SubReturn.Substring(1));
+            mMotion.SubReturn.Value = int.Parse(mCurMachine.SubReturn[1..]);
 
             mMotion.Abs.Label = mCurMachine.Absolute[0];
-            mMotion.Abs.Value = int.Parse(mCurMachine.Absolute.Substring(1));
+            mMotion.Abs.Value = int.Parse(mCurMachine.Absolute[1..]);
             mMotion.CCArc.Label = mCurMachine.CCArc[0];
-            mMotion.CCArc.Value = int.Parse(mCurMachine.CCArc.Substring(1));
+            mMotion.CCArc.Value = int.Parse(mCurMachine.CCArc[1..]);
             mMotion.CWArc.Label = mCurMachine.CWArc[0];
-            mMotion.CWArc.Value = int.Parse(mCurMachine.CWArc.Substring(1));
+            mMotion.CWArc.Value = int.Parse(mCurMachine.CWArc[1..]);
 
             mMotion.Inc.Label = mCurMachine.Incremental[0];
-            mMotion.Inc.Value = int.Parse(mCurMachine.Incremental.Substring(1));
+            mMotion.Inc.Value = int.Parse(mCurMachine.Incremental[1..]);
 
             mMotion.Linear.Label = mCurMachine.Linear[0];
-            mMotion.Linear.Value = int.Parse(mCurMachine.Linear.Substring(1));
+            mMotion.Linear.Value = int.Parse(mCurMachine.Linear[1..]);
 
             mMotion.Rapid.Label = mCurMachine.Rapid[0];
-            mMotion.Rapid.Value = int.Parse(mCurMachine.Rapid.Substring(1));
+            mMotion.Rapid.Value = int.Parse(mCurMachine.Rapid[1..]);
 
             mMotion.Rotary.Label = mCurMachine.Rotary[0];
             mMotion.Rotary.Value = 0;
@@ -496,23 +493,23 @@ class clsProcessor
             mMotion.DrillRapid.Value = 0;
 
             mMotion.Plane[0].Label = mCurMachine.XYplane[0];
-            mMotion.Plane[0].Value = int.Parse(mCurMachine.XYplane.Substring(1));
+            mMotion.Plane[0].Value = int.Parse(mCurMachine.XYplane[1..]);
             mMotion.Plane[1].Label = mCurMachine.XZplane[0];
-            mMotion.Plane[1].Value = int.Parse(mCurMachine.XZplane.Substring(1));
+            mMotion.Plane[1].Value = int.Parse(mCurMachine.XZplane[1..]);
             mMotion.Plane[2].Label = mCurMachine.YZplane[0];
-            mMotion.Plane[2].Value = int.Parse(mCurMachine.YZplane.Substring(1));
+            mMotion.Plane[2].Value = int.Parse(mCurMachine.YZplane[1..]);
 
             mMotion.ReturnLevel[0].Label = mCurMachine.ReturnLevel[0][0];
-            mMotion.ReturnLevel[0].Value = int.Parse(mCurMachine.ReturnLevel[0].Substring(1));
+            mMotion.ReturnLevel[0].Value = int.Parse(mCurMachine.ReturnLevel[0][1..]);
             mMotion.ReturnLevel[1].Label = mCurMachine.ReturnLevel[1][0];
-            mMotion.ReturnLevel[1].Value = int.Parse(mCurMachine.ReturnLevel[1].Substring(1));
+            mMotion.ReturnLevel[1].Value = int.Parse(mCurMachine.ReturnLevel[1][1..]);
 
             for (int r = 0; r <= mMotion.Drills.Length - 1; r++)
             {
                 if (mCurMachine.Drills[r].Length > 2)
                 {
                     mMotion.Drills[r].Label = mCurMachine.Drills[r][0];
-                    mMotion.Drills[r].Value = int.Parse(mCurMachine.Drills[r].Substring(1));
+                    mMotion.Drills[r].Value = int.Parse(mCurMachine.Drills[r][1..]);
                 }
             }
         }
@@ -557,7 +554,7 @@ class clsProcessor
         mNcProgs.Clear();
         int lastIndex = -1;
         clsProg p;
-        foreach (Match m in this.mRegSubs.Matches(sFileContents))
+        foreach (Match m in mRegSubs.Matches(sFileContents))
         {
             if (mCurMachine.ProgramId.Contains(m.Value[0].ToString()))
             {
@@ -565,17 +562,17 @@ class clsProcessor
                 //Each program 
                 if (lastIndex > -1)
                 {
-                    mNcProgs[mNcProgs.Count - 1].Contents = sFileContents.Substring(lastIndex, thisIndex - lastIndex).TrimEnd();
-                    if (mNcProgs[mNcProgs.Count - 1].Contents.Contains(mCurMachine.Endmain))
+                    mNcProgs[^1].Contents = sFileContents[lastIndex..thisIndex].TrimEnd();
+                    if (mNcProgs[^1].Contents.Contains(mCurMachine.Endmain))
                     {
-                        mNcProgs[mNcProgs.Count - 1].Main = true;
+                        mNcProgs[^1].Main = true;
                     }
                 }
                 p = new clsProg
                 {
                     Main = false,
                     Index = thisIndex,
-                    Label = Char.ToUpper(m.Value[0]).ToString(),
+                    Label = char.ToUpper(m.Value[0]).ToString(),
                     Value = int.Parse(m.Groups[1].Value)
                 };
                 mNcProgs.Add(p);
@@ -601,10 +598,10 @@ class clsProcessor
         }
         else
         {
-            mNcProgs[mNcProgs.Count - 1].Contents = sFileContents.Substring(lastIndex).TrimEnd();
-            if (mNcProgs[mNcProgs.Count - 1].Contents.Contains(mCurMachine.Endmain))
+            mNcProgs[^1].Contents = sFileContents[lastIndex..].TrimEnd();
+            if (mNcProgs[^1].Contents.Contains(mCurMachine.Endmain))
             {
-                mNcProgs[mNcProgs.Count - 1].Main = true;
+                mNcProgs[^1].Main = true;
             }
             foreach (clsProg pr in mNcProgs)
             {
@@ -618,7 +615,10 @@ class clsProcessor
     {
         foreach (clsProg p in mNcProgs)
         {
-            if (p.Value == val) return p;
+            if (p.Value == val)
+            {
+                return p;
+            }
         }
         return null;
     }
@@ -627,7 +627,7 @@ class clsProcessor
     {
         p.TimesCalled += 1;
         int lastIndex = 0;
-        foreach (Match ncWord in this.mRegWords.Matches(p.Contents))
+        foreach (Match ncWord in mRegWords.Matches(p.Contents))
         {
             //Each word 
             //Is this a newline 
@@ -653,16 +653,20 @@ class clsProcessor
             else
             {
                 //Word 
-                mCurAddress.Label = Char.ToUpper(ncWord.Value[0]);
+                mCurAddress.Label = char.ToUpper(ncWord.Value[0]);
                 mCurAddress.StringValue = ncWord.Groups[1].Value;
                 mCurAddress.Value = float.Parse(ncWord.Groups[1].Value);
                 if (mCurAddress.Matches(mMotion.SubCall))
                 {
                     //M98 P. Use the next word value as the sub name 
                     clsProg retProg = FindSubByValue(int.Parse(ncWord.NextMatch().Groups[1].Value));
-                    if ((retProg != null))
+                    if (retProg != null)
                     {
-                        if (retProg.TimesCalled > 100) return;//Prevent infinite loop 
+                        if (retProg.TimesCalled > 100)
+                        {
+                            return;//Prevent infinite loop 
+                        }
+
                         ProcessSubWords(retProg);//Call this subagain 
                     }
                 }
@@ -676,26 +680,35 @@ class clsProcessor
 
     private void CreateGcodeBlock()
     {
-        if (!mBlockAddresses[(int)LETTERS.ANY]) return;
+        if (!mBlockAddresses[(int)LETTERS.ANY])
+        {
+            return;
+        }
 
         if (mBlockAddresses[(int)LETTERS.X])
         {
             if (mAbsolute == false)
             {
-                mXpos = mXpos + mPrevX;
+                mXpos += mPrevX;
             }
             if (mCurMachine.MachineType == MachineType.LATHEDIA)
             {
-                mXpos = mXpos / 2;
+                mXpos /= 2;
             }
         }
         if (mBlockAddresses[(int)LETTERS.Y])
         {
-            if (mAbsolute == false) mYpos = mYpos + mPrevY;
+            if (mAbsolute == false)
+            {
+                mYpos += mPrevY;
+            }
         }
         if (mBlockAddresses[(int)LETTERS.Z])
         {
-            if (mAbsolute == false) mZpos = mZpos + mPrevZ;
+            if (mAbsolute == false)
+            {
+                mZpos += mPrevZ;
+            }
         }
 
         if (mBlockAddresses[(int)mMotion.Rotary.Letter] == true)
@@ -706,7 +719,7 @@ class clsProcessor
             {
                 if (mAbsolute == false)
                 {
-                    mABC = mABC + mPrevABC;
+                    mABC += mPrevABC;
                 }
             }
             //like CAD 
@@ -715,7 +728,7 @@ class clsProcessor
                 if (mAbsolute == false)
                 {
                     mRotDir = System.Math.Sign(mABC);
-                    mABC = mABC + mPrevABC;
+                    mABC += mPrevABC;
                 }
                 else
                 {
@@ -730,14 +743,7 @@ class clsProcessor
                         mPrevABC -= ONE_RADIAN;
                     }
 
-                    if (mABC < mPrevABC)
-                    {
-                        mRotDir = -1;
-                    }
-                    else
-                    {
-                        mRotDir = 1;
-                    }
+                    mRotDir = mABC < mPrevABC ? -1 : 1;
                 }
             }
         }
@@ -750,7 +756,7 @@ class clsProcessor
             //Calculate arc center 
             if (mSang <= mEang)
             {
-                mSang = mSang + ONE_RADIAN;
+                mSang += ONE_RADIAN;
             }
 
             //re-calculate zpos if helix using k for pitch 
@@ -758,11 +764,11 @@ class clsProcessor
             {
                 if (mSang == mEang)
                 {
-                    mZpos = mZpos + mK;
+                    mZpos += mK;
                 }
                 else
                 {
-                    mZpos = mZpos + (mK * (System.Math.Abs(mSang - mEang)) / ONE_RADIAN);
+                    mZpos += mK * System.Math.Abs(mSang - mEang) / ONE_RADIAN;
                 }
             }
         }
@@ -775,18 +781,18 @@ class clsProcessor
             //Calculate arc center 
             if (mEang <= mSang)
             {
-                mEang = mEang + ONE_RADIAN;
+                mEang += ONE_RADIAN;
             }
             //re-calculate zpos if helix using k for pitch 
             if (mK > 0 & mPlane == Motion.XY_PLN)
             {
                 if (mSang == mEang)
                 {
-                    mZpos = mZpos + mK;
+                    mZpos += mK;
                 }
                 else
                 {
-                    mZpos = mZpos + (mK * (System.Math.Abs(mSang - mEang)) / ONE_RADIAN);
+                    mZpos += mK * System.Math.Abs(mSang - mEang) / ONE_RADIAN;
                 }
             }
         }
@@ -798,7 +804,7 @@ class clsProcessor
             {
                 mCurrentColor = 9;
             }
-            mCurrentColor = mCurrentColor + 1;
+            mCurrentColor++;
             if (mCurrentColor > 15)
             {
                 mCurrentColor = 1;
@@ -806,7 +812,7 @@ class clsProcessor
             OnToolChanged?.Invoke(mTool);
         }
 
-        if ((static_CreateGcodeBlock_mPrevMode == Motion.RAPID & mMode > Motion.RAPID) | static_CreateGcodeBlock_mPrevMode > Motion.RAPID & mMode == Motion.RAPID)
+        if ((static_CreateGcodeBlock_mPrevMode == Motion.RAPID & mMode > Motion.RAPID) | (static_CreateGcodeBlock_mPrevMode > Motion.RAPID & mMode == Motion.RAPID))
         {
             mNewProfile = true;
         }
@@ -834,7 +840,8 @@ class clsProcessor
         mPrevY = mYpos;
         mPrevZ = mZpos;
     }
-    static MacGen.Motion static_CreateGcodeBlock_mPrevMode = Motion.RAPID;
+
+    private static MacGen.Motion static_CreateGcodeBlock_mPrevMode = Motion.RAPID;
 
     private void EvaluateWord()
     {
@@ -860,7 +867,7 @@ class clsProcessor
                 {
                     if (mCurMachine.AbsArcCenter)
                     {
-                        mI = mI / 2;
+                        mI /= 2;
                     }
                 }
                 break;
@@ -930,41 +937,20 @@ class clsProcessor
                 else if (mCurAddress.Matches(mMotion.CWArc))
                 {
                     mBlockAddresses[(int)LETTERS.ANY] = true;
-                    if (mPlane == Motion.XZ_PLN)
-                    {
-                        mMode = Motion.CCARC;
-                    }
-                    else
-                    {
-                        mMode = Motion.CWARC;
-                    }
+                    mMode = mPlane == Motion.XZ_PLN ? Motion.CCARC : Motion.CWARC;
                 }
                 //Arc anti-clockwise 
                 else if (mCurAddress.Matches(mMotion.CCArc))
                 {
                     mBlockAddresses[(int)LETTERS.ANY] = true;
-                    if (mPlane == Motion.XZ_PLN)
-                    {
-                        mMode = Motion.CWARC;
-                    }
-                    else
-                    {
-                        mMode = Motion.CCARC;
-                    }
+                    mMode = mPlane == Motion.XZ_PLN ? Motion.CWARC : Motion.CCARC;
                 }
                 //Drill cancel found 
                 else if (mCurAddress.Matches(mMotion.Drills[0]))
                 {
                     mBlockAddresses[(int)LETTERS.ANY] = true;
                     mMode = Motion.RAPID;
-                    if (mDrillReturnMode == Motion.I_PLN)
-                    {
-                        mZpos = mInitialZBeforeDrill;
-                    }
-                    else
-                    {
-                        mZpos = mRpoint;
-                    }
+                    mZpos = mDrillReturnMode == Motion.I_PLN ? mInitialZBeforeDrill : mRpoint;
                 }
                 else if (mCurAddress.Matches(mMotion.ReturnLevel[0]))
                 {
@@ -972,7 +958,7 @@ class clsProcessor
                     mDrillReturnMode = Motion.I_PLN;
                     if (mMode > Motion.CCARC)
                     {
-                        mMode = (Motion)((int)Motion.HOLE_I + mDrillReturnMode);
+                        mMode = (int)Motion.HOLE_I + mDrillReturnMode;
                     }
                 }
                 else if (mCurAddress.Matches(mMotion.ReturnLevel[1]))
@@ -981,7 +967,7 @@ class clsProcessor
                     mDrillReturnMode = Motion.R_PLN;
                     if (mMode > Motion.CCARC)
                     {
-                        mMode = (Motion)((int)Motion.HOLE_I + mDrillReturnMode);
+                        mMode = (int)Motion.HOLE_I + mDrillReturnMode;
                     }
                 }
                 //Plane Change G17 
@@ -1013,7 +999,7 @@ class clsProcessor
                         {
                             if (mCurAddress.Matches(mMotion.Drills[r]))
                             {
-                                mMode = (Motion)((int)Motion.HOLE_I + mDrillReturnMode);
+                                mMode = (int)Motion.HOLE_I + mDrillReturnMode;
                                 //Drill cycle found 
                                 if (mMode == Motion.HOLE_I)
                                 {
@@ -1046,7 +1032,11 @@ class clsProcessor
             mCurMachine = machineSetup;
             const string REG_NCWORDS = "[A-Z]([-+]?[0-9]*[\\.,]?[0-9]*)";
 
-            if (machineSetup == null) return;
+            if (machineSetup == null)
+            {
+                return;
+            }
+
             string skipChars = "";
             foreach (char c in mCurMachine.BlockSkip.ToCharArray())
             {
@@ -1064,19 +1054,12 @@ class clsProcessor
 
     private string InsertCommment()
     {
-        if (mCommentMatch.Length > 0)
-        {
-            return mCommentMatch + "|";
-        }
-        else
-        {
-            return "";
-        }
+        return mCommentMatch.Length > 0 ? mCommentMatch + "|" : "";
     }
 
     private void BuildCommentMatch()
     {
-        String STR_EOL = "\r?";
+        string STR_EOL = "\r?";
         mCommentMatch = "";
         string commentSetting = mCurMachine.Comments;
         //Legacy support 
@@ -1087,40 +1070,68 @@ class clsProcessor
 
         if (commentSetting.Contains("{}"))
         {
-            if (mCommentMatch.Length > 0) mCommentMatch += "|";
+            if (mCommentMatch.Length > 0)
+            {
+                mCommentMatch += "|";
+            }
+
             mCommentMatch += "{[^{}]*}";
         }
         if (commentSetting.Contains("[]"))
         {
-            if (mCommentMatch.Length > 0) mCommentMatch += "|";
+            if (mCommentMatch.Length > 0)
+            {
+                mCommentMatch += "|";
+            }
+
             mCommentMatch += "\\[[[]]*\\]";
         }
         if (commentSetting.Contains("<>"))
         {
-            if (mCommentMatch.Length > 0) mCommentMatch += "|";
+            if (mCommentMatch.Length > 0)
+            {
+                mCommentMatch += "|";
+            }
+
             mCommentMatch += "\\<[<>]*\\>";
         }
 
         if (commentSetting.Contains("\"\""))
         {
-            if (mCommentMatch.Length > 0) mCommentMatch += "|";
+            if (mCommentMatch.Length > 0)
+            {
+                mCommentMatch += "|";
+            }
+
             mCommentMatch += "\".*\"";
         }
 
         //Single characters 
         if (commentSetting.Contains(";"))
         {
-            if (mCommentMatch.Length > 0) mCommentMatch += "|";
+            if (mCommentMatch.Length > 0)
+            {
+                mCommentMatch += "|";
+            }
+
             mCommentMatch += ";.*" + STR_EOL;
         }
         if (commentSetting.Contains(":"))
         {
-            if (mCommentMatch.Length > 0) mCommentMatch += "|";
+            if (mCommentMatch.Length > 0)
+            {
+                mCommentMatch += "|";
+            }
+
             mCommentMatch += ":.*" + STR_EOL;
         }
         if (commentSetting.Contains("'"))
         {
-            if (mCommentMatch.Length > 0) mCommentMatch += "|";
+            if (mCommentMatch.Length > 0)
+            {
+                mCommentMatch += "|";
+            }
+
             mCommentMatch += "'.*" + STR_EOL;
         }
 

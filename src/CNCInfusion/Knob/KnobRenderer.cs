@@ -7,12 +7,11 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 
-using System;
+using CPOL.Knobs;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using CPOL.Utils;
 
-namespace CPOL.Knobs;
+namespace CNCInfusion.Knob;
 
 /// <summary>
 /// Base class for the renderers of the knob
@@ -23,15 +22,10 @@ public class LBKnobRenderer
     /// <summary>
     /// Control to render
     /// </summary>
-    private LBKnob knob = null;
     #endregion
 
     #region Properies
-    public LBKnob Knob
-    {
-        set { this.knob = value; }
-        get { return this.knob; }
-    }
+    public LBKnob Knob { set; get; } = null;
     #endregion
 
     #region Virtual method
@@ -43,14 +37,16 @@ public class LBKnobRenderer
     /// <returns></returns>
     public virtual bool DrawBackground(Graphics Gr, RectangleF rc)
     {
-        if (this.Knob == null)
+        if (Knob == null)
+        {
             return false;
+        }
 
-        Color c = this.Knob.BackColor;
+        Color c = Knob.BackColor;
         SolidBrush br = new(c);
         Pen pen = new(c);
 
-        Rectangle _rcTmp = new(0, 0, this.Knob.Width, this.Knob.Height);
+        Rectangle _rcTmp = new(0, 0, Knob.Width, Knob.Height);
         Gr.DrawRectangle(pen, _rcTmp);
         Gr.FillRectangle(br, rc);
 
@@ -68,10 +64,12 @@ public class LBKnobRenderer
     /// <returns></returns>
     public virtual bool DrawScale(Graphics Gr, RectangleF rc)
     {
-        if (this.Knob == null)
+        if (Knob == null)
+        {
             return false;
+        }
 
-        Color cKnob = this.Knob.ScaleColor;
+        Color cKnob = Knob.ScaleColor;
         Color cKnobDark = LBColorManager.StepColor(cKnob, 60);
 
         LinearGradientBrush br = new(rc, cKnobDark, cKnob, 45);
@@ -91,10 +89,12 @@ public class LBKnobRenderer
     /// <returns></returns>
     public virtual bool DrawKnob(Graphics Gr, RectangleF rc)
     {
-        if (this.Knob == null)
+        if (Knob == null)
+        {
             return false;
+        }
 
-        Color cKnob = this.Knob.KnobColor;
+        Color cKnob = Knob.KnobColor;
         Color cKnobDark = LBColorManager.StepColor(cKnob, 60);
 
         LinearGradientBrush br = new(rc, cKnob, cKnobDark, 45);
@@ -108,8 +108,10 @@ public class LBKnobRenderer
 
     public virtual bool DrawKnobIndicator(Graphics Gr, RectangleF rc, PointF pos)
     {
-        if (this.Knob == null)
+        if (Knob == null)
+        {
             return false;
+        }
 
         RectangleF _rc = rc;
         _rc.X = pos.X - 4;
@@ -117,7 +119,7 @@ public class LBKnobRenderer
         _rc.Width = 8;
         _rc.Height = 8;
 
-        Color cKnob = this.Knob.IndicatorColor;
+        Color cKnob = Knob.IndicatorColor;
         Color cKnobDark = LBColorManager.StepColor(cKnob, 60);
 
         LinearGradientBrush br = new(_rc, cKnobDark, cKnob, 45);

@@ -6,9 +6,12 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
+using CNCInfusion.colorcombox;
+using CNCInfusion.CustomPanel;
+
 namespace CNCInfusion;
 
-	partial class Settings
+partial class Settings
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.
@@ -391,7 +394,7 @@ namespace CNCInfusion;
         this.customPanel4.Controls.Add(this.tabControl1);
         this.customPanel4.Curvature = 8;
         this.customPanel4.ForeColor = System.Drawing.Color.Black;
-        this.customPanel4.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel4.GradientMode = LinearGradientMode.Vertical;
         this.customPanel4.Location = new System.Drawing.Point(3, 3);
         this.customPanel4.Name = "customPanel4";
         this.customPanel4.Size = new System.Drawing.Size(629, 406);
@@ -438,7 +441,7 @@ namespace CNCInfusion;
         this.pnlSettings.Controls.Add(this.btnSetSettings);
         this.pnlSettings.Curvature = 8;
         this.pnlSettings.ForeColor = System.Drawing.Color.Black;
-        this.pnlSettings.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.pnlSettings.GradientMode = LinearGradientMode.Vertical;
         this.pnlSettings.Location = new System.Drawing.Point(6, 11);
         this.pnlSettings.Name = "pnlSettings";
         this.pnlSettings.Size = new System.Drawing.Size(94, 330);
@@ -557,7 +560,7 @@ namespace CNCInfusion;
         this.customPanel1.Controls.Add(this.trackbarUpdateInterval);
         this.customPanel1.Curvature = 8;
         this.customPanel1.ForeColor = System.Drawing.Color.Black;
-        this.customPanel1.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel1.GradientMode = LinearGradientMode.Vertical;
         this.customPanel1.Location = new System.Drawing.Point(7, 145);
         this.customPanel1.Name = "customPanel1";
         this.customPanel1.Size = new System.Drawing.Size(166, 118);
@@ -613,7 +616,7 @@ namespace CNCInfusion;
         this.customPanel3.Controls.Add(this.rbGrblOnly);
         this.customPanel3.Curvature = 8;
         this.customPanel3.ForeColor = System.Drawing.Color.Black;
-        this.customPanel3.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel3.GradientMode = LinearGradientMode.Vertical;
         this.customPanel3.Location = new System.Drawing.Point(7, 21);
         this.customPanel3.Name = "customPanel3";
         this.customPanel3.Size = new System.Drawing.Size(166, 118);
@@ -652,7 +655,7 @@ namespace CNCInfusion;
         this.customPanel2.Controls.Add(this.rbMetric);
         this.customPanel2.Curvature = 8;
         this.customPanel2.ForeColor = System.Drawing.Color.Black;
-        this.customPanel2.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel2.GradientMode = LinearGradientMode.Vertical;
         this.customPanel2.Location = new System.Drawing.Point(179, 23);
         this.customPanel2.Name = "customPanel2";
         this.customPanel2.Size = new System.Drawing.Size(139, 116);
@@ -691,7 +694,7 @@ namespace CNCInfusion;
         this.pnlReset.Controls.Add(this.btnReset);
         this.pnlReset.Curvature = 8;
         this.pnlReset.ForeColor = System.Drawing.Color.Black;
-        this.pnlReset.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.pnlReset.GradientMode = LinearGradientMode.Vertical;
         this.pnlReset.Location = new System.Drawing.Point(179, 145);
         this.pnlReset.Name = "pnlReset";
         this.pnlReset.Size = new System.Drawing.Size(139, 118);
@@ -758,7 +761,7 @@ namespace CNCInfusion;
         // colorComboBox10
         // 
         this.colorComboBox10.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.colorComboBox10.Appearance = EmrColorComboBox.ColorComboBox.ControlView.Skinned;
+        this.colorComboBox10.Appearance = ColorComboBox.ControlView.Skinned;
         this.colorComboBox10.ControlColor = System.Drawing.SystemColors.ButtonFace;
         this.colorComboBox10.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
         this.colorComboBox10.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -915,7 +918,7 @@ namespace CNCInfusion;
         // colorComboBox9
         // 
         this.colorComboBox9.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.colorComboBox9.Appearance = EmrColorComboBox.ColorComboBox.ControlView.Skinned;
+        this.colorComboBox9.Appearance = ColorComboBox.ControlView.Skinned;
         this.colorComboBox9.ControlColor = System.Drawing.SystemColors.ButtonFace;
         this.colorComboBox9.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
         this.colorComboBox9.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1072,7 +1075,7 @@ namespace CNCInfusion;
         // colorComboBox8
         // 
         this.colorComboBox8.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.colorComboBox8.Appearance = EmrColorComboBox.ColorComboBox.ControlView.Skinned;
+        this.colorComboBox8.Appearance = ColorComboBox.ControlView.Skinned;
         this.colorComboBox8.ControlColor = System.Drawing.SystemColors.ButtonFace;
         this.colorComboBox8.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
         this.colorComboBox8.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1229,7 +1232,7 @@ namespace CNCInfusion;
         // colorComboBox7
         // 
         this.colorComboBox7.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.colorComboBox7.Appearance = EmrColorComboBox.ColorComboBox.ControlView.Skinned;
+        this.colorComboBox7.Appearance = ColorComboBox.ControlView.Skinned;
         this.colorComboBox7.ControlColor = System.Drawing.SystemColors.ButtonFace;
         this.colorComboBox7.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
         this.colorComboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1386,7 +1389,7 @@ namespace CNCInfusion;
         // colorComboBox6
         // 
         this.colorComboBox6.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.colorComboBox6.Appearance = EmrColorComboBox.ColorComboBox.ControlView.Skinned;
+        this.colorComboBox6.Appearance = ColorComboBox.ControlView.Skinned;
         this.colorComboBox6.ControlColor = System.Drawing.SystemColors.ButtonFace;
         this.colorComboBox6.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
         this.colorComboBox6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1543,7 +1546,7 @@ namespace CNCInfusion;
         // colorComboBox5
         // 
         this.colorComboBox5.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.colorComboBox5.Appearance = EmrColorComboBox.ColorComboBox.ControlView.Skinned;
+        this.colorComboBox5.Appearance = ColorComboBox.ControlView.Skinned;
         this.colorComboBox5.ControlColor = System.Drawing.SystemColors.ButtonFace;
         this.colorComboBox5.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
         this.colorComboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1700,7 +1703,7 @@ namespace CNCInfusion;
         // colorComboBox4
         // 
         this.colorComboBox4.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.colorComboBox4.Appearance = EmrColorComboBox.ColorComboBox.ControlView.Skinned;
+        this.colorComboBox4.Appearance = ColorComboBox.ControlView.Skinned;
         this.colorComboBox4.ControlColor = System.Drawing.SystemColors.ButtonFace;
         this.colorComboBox4.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
         this.colorComboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1858,7 +1861,7 @@ namespace CNCInfusion;
         // colorComboBox3
         // 
         this.colorComboBox3.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.colorComboBox3.Appearance = EmrColorComboBox.ColorComboBox.ControlView.Skinned;
+        this.colorComboBox3.Appearance = ColorComboBox.ControlView.Skinned;
         this.colorComboBox3.ControlColor = System.Drawing.SystemColors.ButtonFace;
         this.colorComboBox3.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
         this.colorComboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -2016,7 +2019,7 @@ namespace CNCInfusion;
         // colorComboBox2
         // 
         this.colorComboBox2.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.colorComboBox2.Appearance = EmrColorComboBox.ColorComboBox.ControlView.Skinned;
+        this.colorComboBox2.Appearance = ColorComboBox.ControlView.Skinned;
         this.colorComboBox2.ControlColor = System.Drawing.SystemColors.ButtonFace;
         this.colorComboBox2.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
         this.colorComboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -2174,7 +2177,7 @@ namespace CNCInfusion;
         // colorComboBox1
         // 
         this.colorComboBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.colorComboBox1.Appearance = EmrColorComboBox.ColorComboBox.ControlView.Skinned;
+        this.colorComboBox1.Appearance = ColorComboBox.ControlView.Skinned;
         this.colorComboBox1.ControlColor = System.Drawing.SystemColors.ButtonFace;
         this.colorComboBox1.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
         this.colorComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -2351,7 +2354,7 @@ namespace CNCInfusion;
         this.customPanel5.Controls.Add(this.button1);
         this.customPanel5.Curvature = 8;
         this.customPanel5.ForeColor = System.Drawing.Color.Black;
-        this.customPanel5.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel5.GradientMode = LinearGradientMode.Vertical;
         this.customPanel5.Location = new System.Drawing.Point(8, 19);
         this.customPanel5.Name = "customPanel5";
         this.customPanel5.Size = new System.Drawing.Size(117, 195);
@@ -2425,7 +2428,7 @@ namespace CNCInfusion;
         this.customPanel6.Controls.Add(this.cbJoySticks);
         this.customPanel6.Curvature = 8;
         this.customPanel6.ForeColor = System.Drawing.Color.Black;
-        this.customPanel6.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel6.GradientMode = LinearGradientMode.Vertical;
         this.customPanel6.Location = new System.Drawing.Point(6, 7);
         this.customPanel6.Name = "customPanel6";
         this.customPanel6.Size = new System.Drawing.Size(585, 334);
@@ -2609,19 +2612,19 @@ namespace CNCInfusion;
 		private System.Windows.Forms.ComboBox cbYaxisJog;
 		private System.Windows.Forms.ComboBox cbJogSpeedDec;
 		private System.Windows.Forms.ComboBox cbJogSpeedInc;
-		private EmrColorComboBox.ColorComboBox colorComboBox9;
-		private EmrColorComboBox.ColorComboBox colorComboBox10;
-		private EmrColorComboBox.ColorComboBox colorComboBox8;
-		private EmrColorComboBox.ColorComboBox colorComboBox2;
-		private EmrColorComboBox.ColorComboBox colorComboBox3;
-		private EmrColorComboBox.ColorComboBox colorComboBox4;
-		private EmrColorComboBox.ColorComboBox colorComboBox5;
-		private EmrColorComboBox.ColorComboBox colorComboBox6;
-		private EmrColorComboBox.ColorComboBox colorComboBox7;
-		private EmrColorComboBox.ColorComboBox colorComboBox1;
+		private ColorComboBox colorComboBox9;
+		private ColorComboBox colorComboBox10;
+		private ColorComboBox colorComboBox8;
+		private ColorComboBox colorComboBox2;
+		private ColorComboBox colorComboBox3;
+		private ColorComboBox colorComboBox4;
+		private ColorComboBox colorComboBox5;
+		private ColorComboBox colorComboBox6;
+		private ColorComboBox colorComboBox7;
+		private ColorComboBox colorComboBox1;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.GroupBox groupBox2;
-		private Utility.Panel.CustomPanel customPanel6;
+		private CustomPanel.CustomPanel customPanel6;
 		private System.Windows.Forms.Button btnJoystickRefresh;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Label label10;
@@ -2631,26 +2634,26 @@ namespace CNCInfusion;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Button button3;
-		private Utility.Panel.CustomPanel customPanel5;
-		private Utility.Panel.CustomPanel customPanel4;
+		private CustomPanel.CustomPanel customPanel5;
+		private CustomPanel.CustomPanel customPanel4;
 		private System.Windows.Forms.TabPage tabPage3;
 		private System.Windows.Forms.TabPage tabPage2;
 		private System.Windows.Forms.TabPage tabPage1;
 		private System.Windows.Forms.TabControl tabControl1;
 		private System.Windows.Forms.RadioButton rbImperial;
 		private System.Windows.Forms.RadioButton rbMetric;
-		private Utility.Panel.CustomPanel customPanel2;
+		private CustomPanel.CustomPanel customPanel2;
 		private System.Windows.Forms.DataGridViewTextBoxColumn conversion;
 		private System.Windows.Forms.RadioButton rbGrblOnly;
 		private System.Windows.Forms.RadioButton rbAny;
-		private Utility.Panel.CustomPanel pnlReset;
-		private Utility.Panel.CustomPanel customPanel3;
+		private CustomPanel.CustomPanel pnlReset;
+		private CustomPanel.CustomPanel customPanel3;
 		private System.Windows.Forms.Button btnReset;
-		private Utility.Panel.CustomPanel pnlSettings;
+		private CustomPanel.CustomPanel pnlSettings;
 		private System.Windows.Forms.Label lblUpdate;
 		private System.Windows.Forms.TrackBar trackbarUpdateInterval;
 		private System.Windows.Forms.RadioButton rbStatusUpdate;
-		private Utility.Panel.CustomPanel customPanel1;
+		private CustomPanel.CustomPanel customPanel1;
 		private System.Windows.Forms.Button btnReadSettings;
 		private System.Windows.Forms.Button btnSetSettings;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column2;

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 
 /*
  * Seven-segment LED array control for .NET
@@ -23,19 +23,19 @@ using System.Drawing;
  * 
  */
 
-namespace DmitryBrant.CustomControls;
+namespace CNCInfusion.SevenSegment;
 
 public class SevenSegmentArray : UserControl
 {
     public SevenSegmentArray()
     {
-        this.SuspendLayout();
-        this.Name = "SevenSegmentArray";
-        this.Size = new System.Drawing.Size(100, 25);
-        this.Resize += new System.EventHandler(this.SevenSegmentArray_Resize);
-        this.ResumeLayout(false);
+        SuspendLayout();
+        Name = "SevenSegmentArray";
+        Size = new Size(100, 25);
+        Resize += new EventHandler(SevenSegmentArray_Resize);
+        ResumeLayout(false);
 
-        this.TabStop = false;
+        TabStop = false;
         elementPadding = new Padding(4, 4, 4, 4);
         RecreateSegments(4);
     }
@@ -55,9 +55,15 @@ public class SevenSegmentArray : UserControl
     private void RecreateSegments(int count)
     {
         if (segments != null)
+        {
             for (int i = 0; i < segments.Length; i++) { segments[i].Parent = null; segments[i].Dispose(); }
+        }
 
-        if (count <= 0) return;
+        if (count <= 0)
+        {
+            return;
+        }
+
         segments = new SevenSegment[count];
 
         for (int i = 0; i < count; i++)
@@ -66,7 +72,7 @@ public class SevenSegmentArray : UserControl
             {
                 Parent = this,
                 Top = 0,
-                Height = this.Height,
+                Height = Height,
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom,
                 Visible = true
             };
@@ -74,7 +80,7 @@ public class SevenSegmentArray : UserControl
 
         ResizeSegments();
         UpdateSegments();
-        this.Value = theValue;
+        Value = theValue;
     }
 
     /// <summary>
@@ -83,10 +89,10 @@ public class SevenSegmentArray : UserControl
     /// </summary>
     private void ResizeSegments()
     {
-        int segWidth = this.Width / segments.Length;
+        int segWidth = Width / segments.Length;
         for (int i = 0; i < segments.Length; i++)
         {
-            segments[i].Left = this.Width * (segments.Length - 1 - i) / segments.Length;
+            segments[i].Left = Width * (segments.Length - 1 - i) / segments.Length;
             segments[i].Width = segWidth;
         }
     }
@@ -125,38 +131,38 @@ public class SevenSegmentArray : UserControl
     /// <summary>
     /// Background color of the LED array.
     /// </summary>
-    public Color ColorBackground { get { return colorBackground; } set { colorBackground = value; UpdateSegments(); } }
+    public Color ColorBackground { get => colorBackground; set { colorBackground = value; UpdateSegments(); } }
     /// <summary>
     /// Color of inactive LED segments.
     /// </summary>
-    public Color ColorDark { get { return colorDark; } set { colorDark = value; UpdateSegments(); } }
+    public Color ColorDark { get => colorDark; set { colorDark = value; UpdateSegments(); } }
     /// <summary>
     /// Color of active LED segments.
     /// </summary>
-    public Color ColorLight { get { return colorLight; } set { colorLight = value; UpdateSegments(); } }
+    public Color ColorLight { get => colorLight; set { colorLight = value; UpdateSegments(); } }
 
     /// <summary>
     /// Width of LED segments.
     /// </summary>
-    public int ElementWidth { get { return elementWidth; } set { elementWidth = value; UpdateSegments(); } }
+    public int ElementWidth { get => elementWidth; set { elementWidth = value; UpdateSegments(); } }
     /// <summary>
     /// Shear coefficient for italicizing the displays. Try a value like -0.1.
     /// </summary>
-    public float ItalicFactor { get { return italicFactor; } set { italicFactor = value; UpdateSegments(); } }
+    public float ItalicFactor { get => italicFactor; set { italicFactor = value; UpdateSegments(); } }
     /// <summary>
     /// Specifies if the decimal point LED is displayed.
     /// </summary>
-    public bool DecimalShow { get { return showDot; } set { showDot = value; UpdateSegments(); } }
+    public bool DecimalShow { get => showDot; set { showDot = value; UpdateSegments(); } }
 
     /// <summary>
     /// Number of seven-segment elements in this array.
     /// </summary>
-    public int ArrayCount { get { return segments.Length; } set { if ((value > 0) && (value <= 100)) RecreateSegments(value); } }
+    public int ArrayCount { get => segments.Length; set { if (value is > 0 and <= 100) { RecreateSegments(value); } } }
     /// <summary>
     /// Padding that applies to each seven-segment element in the array.
     /// Tweak these numbers to get the perfect appearance for the array of your size.
     /// </summary>
-    public Padding ElementPadding { get { return elementPadding; } set { elementPadding = value; UpdateSegments(); } }
+    public Padding ElementPadding { get => elementPadding; set { elementPadding = value; UpdateSegments(); } }
 
 
     private string theValue = null;
@@ -166,7 +172,7 @@ public class SevenSegmentArray : UserControl
     /// </summary>
     public string Value
     {
-        get { return theValue; }
+        get => theValue;
         set
         {
             theValue = value;
@@ -176,9 +182,19 @@ public class SevenSegmentArray : UserControl
                 int segmentIndex = 0;
                 for (int i = theValue.Length - 1; i >= 0; i--)
                 {
-                    if (segmentIndex >= segments.Length) break;
-                    if (theValue[i] == '.') segments[segmentIndex].DecimalOn = true;
-                    else segments[segmentIndex++].Value = theValue[i].ToString();
+                    if (segmentIndex >= segments.Length)
+                    {
+                        break;
+                    }
+
+                    if (theValue[i] == '.')
+                    {
+                        segments[segmentIndex].DecimalOn = true;
+                    }
+                    else
+                    {
+                        segments[segmentIndex++].Value = theValue[i].ToString();
+                    }
                 }
             }
         }

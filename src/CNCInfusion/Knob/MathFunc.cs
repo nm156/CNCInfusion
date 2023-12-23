@@ -9,12 +9,12 @@
 
 using System;
 
-namespace CPOL.Utils;
+namespace CNCInfusion.Knob;
 
 /// <summary>
 /// Mathematic Functions
 /// </summary>
-public class LBMath : Object
+public class LBMath : object
 {
     public static float GetRadian(float val)
     {

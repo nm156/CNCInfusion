@@ -6,10 +6,11 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
+using CNCInfusion.joystick;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace CNCInfusion;
 
@@ -21,7 +22,7 @@ public partial class Settings : Form
     // reference to parent caller form
     public Form caller;
     private bool modified;
-    private JoystickInterface.MyJoystick jst;
+    private MyJoystick jst;
     private string[] sticks;
 
     public Settings()
@@ -65,7 +66,7 @@ public partial class Settings : Form
         lblUpdate.Text = timerInterval + " updates / second";
     }
 
-    void BtnReadSettingsClick(object sender, EventArgs e)
+    private void BtnReadSettingsClick(object sender, EventArgs e)
     {
         List<string> RawSettings;
         string[] temp;
@@ -101,14 +102,14 @@ public partial class Settings : Form
                 readvalue = paramtext[0].Trim();
 
                 conversion = convertUnits(readvalue, val);
-                dataGridView1.Rows.Add([dollar, description, readvalue, conversion]);
+                _ = dataGridView1.Rows.Add([dollar, description, readvalue, conversion]);
                 Application.DoEvents();
             }
         }
         btnSetSettings.Enabled = true;
     }
 
-    string convertUnits(string readvalue, string setting)
+    private string convertUnits(string readvalue, string setting)
     {
         double TOINCHES = 0.0393700787;
         string convert;
@@ -138,15 +139,15 @@ public partial class Settings : Form
         catch (Exception ex)
         {
             convert = string.Empty;
-            MessageBox.Show(ex.Message);
+            _ = MessageBox.Show(ex.Message);
         }
 
         return convert;
     }
 
-    void BtnSetSettingsClick(object sender, EventArgs e)
+    private void BtnSetSettingsClick(object sender, EventArgs e)
     {
-        List<string> WriteSettings = new();
+        List<string> WriteSettings = [];
         string parameter;
         string setValue;
         string command;
@@ -163,7 +164,7 @@ public partial class Settings : Form
         }
 
         ((frmViewer)caller).WriteSettings(WriteSettings);
-        MessageBox.Show("Settings have been successfully written",
+        _ = MessageBox.Show("Settings have been successfully written",
                         "Write Settings",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information,
@@ -171,7 +172,7 @@ public partial class Settings : Form
                         MessageBoxOptions.DefaultDesktopOnly);
     }
 
-    void DataGridView1CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+    private void DataGridView1CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
     {
         float enteredValue;
 
@@ -180,7 +181,10 @@ public partial class Settings : Form
         if (dataGridView1.Rows[e.RowIndex].IsNewRow) { return; }
 
         // only continue if it is the editable column
-        if (!dataGridView1.Columns[e.ColumnIndex].HeaderText.Equals("Value")) return;
+        if (!dataGridView1.Columns[e.ColumnIndex].HeaderText.Equals("Value"))
+        {
+            return;
+        }
 
         //if (sVal.Contains("."))  
         //	 float.Parse(sVal); 
@@ -194,7 +198,7 @@ public partial class Settings : Form
         }
         catch
         {
-            MessageBox.Show("The value must be a non-negative number. You entered '" +
+            _ = MessageBox.Show("The value must be a non-negative number. You entered '" +
                         e.FormattedValue.ToString() + "' for parameter " + dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value,
                         "Invalid Settings Parameter",
                         MessageBoxButtons.OK,
@@ -209,7 +213,7 @@ public partial class Settings : Form
     }
 
     // http://www.dotnetperls.com/binary-representation
-    string GetIntBinaryString(int n)
+    private string GetIntBinaryString(int n)
     {
         char[] b = new char[8];
         int pos = 7;
@@ -217,38 +221,35 @@ public partial class Settings : Form
 
         while (i < 8)
         {
-            if ((n & (1 << i)) != 0)
-                b[pos] = '1';
-            else
-                b[pos] = '0';
+            b[pos] = (n & (1 << i)) != 0 ? '1' : '0';
             pos--;
             i++;
         }
         return new string(b);
     }
 
-    void TrackbarUpdateIntervalScroll(object sender, EventArgs e)
+    private void TrackbarUpdateIntervalScroll(object sender, EventArgs e)
     {
         int timerInterval = 1000 / trackbarUpdateInterval.Value;
         lblUpdate.Text = timerInterval + " updates / second";
         ((frmViewer)caller).UpdateInterval = trackbarUpdateInterval.Value;
     }
 
-    void RbStatusUpdateClick(object sender, EventArgs e)
+    private void RbStatusUpdateClick(object sender, EventArgs e)
     {
         rbStatusUpdate.Checked = !rbStatusUpdate.Checked;
         ((frmViewer)caller).PerformStatusUpdates = rbStatusUpdate.Checked;
     }
 
-    void SettingsShown(object sender, EventArgs e)
+    private void SettingsShown(object sender, EventArgs e)
     {
         // what mode are we in?
         eMode mainMode = ((frmViewer)caller).currentMode;
 
         // only these modes allowed to change settings
         // otherwise Grbl is processing
-        if (mainMode == eMode.CONNECTED || mainMode == eMode.ABORTED ||
-            mainMode == eMode.FINISHED || mainMode == eMode.SOFTRESET)
+        if (mainMode is eMode.CONNECTED or eMode.ABORTED or
+            eMode.FINISHED or eMode.SOFTRESET)
         {
             pnlSettings.Enabled = true;
             dataGridView1.Enabled = true;
@@ -264,22 +265,22 @@ public partial class Settings : Form
         colorComboBox1.SelectedColor = tabPage3.BackColor;
     }
 
-    void BtnResetClick(object sender, EventArgs e)
+    private void BtnResetClick(object sender, EventArgs e)
     {
         ((frmViewer)caller).hardReset();
     }
 
-    void BtnJoystickRefreshClick(object sender, EventArgs e)
+    private void BtnJoystickRefreshClick(object sender, EventArgs e)
     {
         getJoysticks();
     }
 
-    void RbGrblOnlyCheckedChanged(object sender, EventArgs e)
+    private void RbGrblOnlyCheckedChanged(object sender, EventArgs e)
     {
         ((frmViewer)caller).PreprocessorMode = rbGrblOnly.Checked;
     }
 
-    void DataGridView1CellValueChanged(object sender, DataGridViewCellEventArgs e)
+    private void DataGridView1CellValueChanged(object sender, DataGridViewCellEventArgs e)
     {
         if (dataGridView1.SelectedRows.Count > 0)
         {
@@ -294,7 +295,7 @@ public partial class Settings : Form
         }
     }
 
-    void SettingsFormClosing(object sender, FormClosingEventArgs e)
+    private void SettingsFormClosing(object sender, FormClosingEventArgs e)
     {
         if (modified)
         {
@@ -311,7 +312,7 @@ public partial class Settings : Form
         }
     }
 
-    void RbImperialCheckedChanged(object sender, EventArgs e)
+    private void RbImperialCheckedChanged(object sender, EventArgs e)
     {
         ((frmViewer)caller).GrblReportMode = rbImperial.Checked;
     }
@@ -331,11 +332,11 @@ public partial class Settings : Form
     // TODO poll
     //jst.UpdateStatus();
 
-    void CbJoySticksSelectedIndexChanged(object sender, EventArgs e)
+    private void CbJoySticksSelectedIndexChanged(object sender, EventArgs e)
     {
         try
         {
-            jst.AcquireJoystick(sticks[cbJoySticks.SelectedIndex]);
+            _ = jst.AcquireJoystick(sticks[cbJoySticks.SelectedIndex]);
             label9.Text = string.Format("Axes = {0}", jst.AxisCount);
             label10.Text = string.Format("Buttons = {0}", jst.ButtonCount);
 
@@ -350,45 +351,48 @@ public partial class Settings : Form
 
             for (int i = 0; i < jst.AxisCount; i++)
             {
-                cbXaxisJog.Items.Add("AXIS " + (i + 1).ToString());
-                cbYaxisJog.Items.Add("AXIS " + (i + 1).ToString());
-                cbZaxisJog.Items.Add("AXIS " + (i + 1).ToString());
+                _ = cbXaxisJog.Items.Add("AXIS " + (i + 1).ToString());
+                _ = cbYaxisJog.Items.Add("AXIS " + (i + 1).ToString());
+                _ = cbZaxisJog.Items.Add("AXIS " + (i + 1).ToString());
             }
 
             for (int i = 0; i < jst.ButtonCount; i++)
             {
-                cbAbort.Items.Add("Button " + (i + 1).ToString());
-                cbFeedHold.Items.Add("Button " + (i + 1).ToString());
-                cbJogSpeedDec.Items.Add("Button " + (i + 1).ToString());
-                cbJogSpeedInc.Items.Add("Button " + (i + 1).ToString());
+                _ = cbAbort.Items.Add("Button " + (i + 1).ToString());
+                _ = cbFeedHold.Items.Add("Button " + (i + 1).ToString());
+                _ = cbJogSpeedDec.Items.Add("Button " + (i + 1).ToString());
+                _ = cbJogSpeedInc.Items.Add("Button " + (i + 1).ToString());
             }
         }
         catch { }
     }
 
-    void getJoysticks()
+    private void getJoysticks()
     {
         cbJoySticks.SelectedIndexChanged -= CbJoySticksSelectedIndexChanged;
 
         try
         {
-            jst = new JoystickInterface.MyJoystick(this.Handle);
+            jst = new JoystickInterface.MyJoystick(Handle);
             sticks = jst.FindJoysticks() ?? [];
 
 
             foreach (string joyName in sticks)
-                cbJoySticks.Items.Add(joyName);
-
+            {
+                _ = cbJoySticks.Items.Add(joyName);
+            }
         }
         catch { } //(Exception ex) { MessageBox.Show(ex.Message); }
 
         cbJoySticks.SelectedIndexChanged += CbJoySticksSelectedIndexChanged;
 
         if (cbJoySticks.Items.Count > 0)
+        {
             cbJoySticks.SelectedIndex = 0;
+        }
     }
 
-    void SettingsLoad(object sender, EventArgs e)
+    private void SettingsLoad(object sender, EventArgs e)
     {
         getJoysticks();
     }
@@ -416,12 +420,14 @@ public partial class Settings : Form
         customPanel5.Invalidate();
     }
 
-    void SetBackColorRecursive(Control control, Color color)
+    private void SetBackColorRecursive(Control control, Color color)
     {
         control.BackColor = color;
 
         foreach (Control c in control.Controls)
+        {
             SetBackColorRecursive(c, color);
+        }
     }
 
     private void SetTextBoxBackColor(Control Page, Color clr)
@@ -431,7 +437,7 @@ public partial class Settings : Form
         {
             if (ctrl is TextBox)
             {
-                ((TextBox)(ctrl)).BackColor = clr;
+                ((TextBox)ctrl).BackColor = clr;
             }
             else
             {

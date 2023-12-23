@@ -6,13 +6,11 @@
  * leave this notice at the top of this file. I'd love to see any changes you
  * do make, so please email them to me :)
  *****************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Text;
 using SharpDX.DirectInput;
+using System;
 using System.Diagnostics;
 
-namespace JoystickInterface;
+namespace CNCInfusion.joystick;
 
 /// <summary>
 /// Class to interface with a joystick device.
@@ -23,84 +21,48 @@ public class MyJoystick
     private JoystickState state;
     private Joystick joystick;
 
-    private int buttonCount;
-    private int axisCount;
     /// <summary>
     /// Number of axes on the joystick.
     /// </summary>
-    public int AxisCount
-    {
-        get { return axisCount; }
-    }
+    public int AxisCount { get; private set; }
 
-    public int ButtonCount
-    {
-        get { return buttonCount; }
-    }
+    public int ButtonCount { get; private set; }
 
-    private int axisA;
     /// <summary>
     /// The first axis on the joystick.
     /// </summary>
-    public int AxisA
-    {
-        get { return axisA; }
-    }
+    public int AxisA { get; private set; }
 
-    private int axisB;
     /// <summary>
     /// The second axis on the joystick.
     /// </summary>
-    public int AxisB
-    {
-        get { return axisB; }
-    }
+    public int AxisB { get; private set; }
 
-    private int axisC;
     /// <summary>
     /// The third axis on the joystick.
     /// </summary>
-    public int AxisC
-    {
-        get { return axisC; }
-    }
+    public int AxisC { get; private set; }
 
-    private int axisD;
     /// <summary>
     /// The fourth axis on the joystick.
     /// </summary>
-    public int AxisD
-    {
-        get { return axisD; }
-    }
+    public int AxisD { get; private set; }
 
-    private int axisE;
     /// <summary>
     /// The fifth axis on the joystick.
     /// </summary>
-    public int AxisE
-    {
-        get { return axisE; }
-    }
+    public int AxisE { get; private set; }
 
-    private int axisF;
     /// <summary>
     /// The sixth axis on the joystick.
     /// </summary>
-    public int AxisF
-    {
-        get { return axisF; }
-    }
-    private readonly IntPtr hWnd;
+    public int AxisF { get; private set; }
+    private readonly nint hWnd;
 
-    private bool[] buttons;
     /// <summary>
     /// Array of buttons availiable on the joystick. This also includes PoV hats.
     /// </summary>
-    public bool[] Buttons
-    {
-        get { return buttons; }
-    }
+    public bool[] Buttons { get; private set; }
 
     private string[] systemJoysticks;
 
@@ -108,16 +70,16 @@ public class MyJoystick
     /// Constructor for the class.
     /// </summary>
     /// <param name="window_handle">Handle of the window which the joystick will be "attached" to.</param>
-    public MyJoystick(IntPtr window_handle)
+    public MyJoystick(nint window_handle)
     {
         hWnd = window_handle;
-        axisA = -1;
-        axisB = -1;
-        axisC = -1;
-        axisD = -1;
-        axisE = -1;
-        axisF = -1;
-        axisCount = 0;
+        AxisA = -1;
+        AxisB = -1;
+        AxisC = -1;
+        AxisD = -1;
+        AxisE = -1;
+        AxisF = -1;
+        AxisCount = 0;
     }
 
     private void Poll()
@@ -161,27 +123,33 @@ public class MyJoystick
         try
         {
             // Initialize DirectInput
-            var directInput = new DirectInput();
+            DirectInput directInput = new();
 
             // Find a Joystick Guid
-            var joystickGuid = Guid.Empty;
+            Guid joystickGuid = Guid.Empty;
 
-            foreach (var deviceInstance in directInput.GetDevices(DeviceType.Gamepad, DeviceEnumerationFlags.AllDevices))
+            foreach (DeviceInstance deviceInstance in directInput.GetDevices(DeviceType.Gamepad, DeviceEnumerationFlags.AllDevices))
+            {
                 joystickGuid = deviceInstance.InstanceGuid;
+            }
 
             // If Gamepad not found, look for a Joystick
             if (joystickGuid == Guid.Empty)
-                foreach (var deviceInstance in directInput.GetDevices(DeviceType.Joystick, DeviceEnumerationFlags.AllDevices))
+            {
+                foreach (DeviceInstance deviceInstance in directInput.GetDevices(DeviceType.Joystick, DeviceEnumerationFlags.AllDevices))
+                {
                     joystickGuid = deviceInstance.InstanceGuid;
+                }
+            }
 
             if (joystickGuid == Guid.Empty)
             {
                 Console.WriteLine("No joystick/Gamepad found.");
-                Console.ReadKey();
+                _ = Console.ReadKey();
                 Environment.Exit(1);
             }
 
-            this.joystickDevice = new Joystick(directInput, joystickGuid);
+            joystickDevice = new Joystick(directInput, joystickGuid);
 
         }
         catch (Exception err)
@@ -204,29 +172,35 @@ public class MyJoystick
         try
         {
             // Initialize DirectInput
-            var directInput = new DirectInput();
+            DirectInput directInput = new();
 
             // Find a Joystick Guid
-            var joystickGuid = Guid.Empty;
+            Guid joystickGuid = Guid.Empty;
 
-            foreach (var deviceInstance in directInput.GetDevices(DeviceType.Gamepad, DeviceEnumerationFlags.AllDevices))
+            foreach (DeviceInstance deviceInstance in directInput.GetDevices(DeviceType.Gamepad, DeviceEnumerationFlags.AllDevices))
+            {
                 joystickGuid = deviceInstance.InstanceGuid;
+            }
 
             // If Gamepad not found, look for a Joystick
             if (joystickGuid == Guid.Empty)
-                foreach (var deviceInstance in directInput.GetDevices(DeviceType.Joystick, DeviceEnumerationFlags.AllDevices))
+            {
+                foreach (DeviceInstance deviceInstance in directInput.GetDevices(DeviceType.Joystick, DeviceEnumerationFlags.AllDevices))
+                {
                     joystickGuid = deviceInstance.InstanceGuid;
+                }
+            }
 
             // If Joystick not found, throws an error
             if (joystickGuid == Guid.Empty)
             {
                 Console.WriteLine("No joystick/Gamepad found.");
-                Console.ReadKey();
+                _ = Console.ReadKey();
                 Environment.Exit(1);
             }
 
             // Instantiate the joystick
-            var joystick = new Joystick(directInput, joystickGuid);
+            Joystick joystick = new(directInput, joystickGuid);
 
             // Set the buffer size
             joystick.Properties.BufferSize = 128;
@@ -237,12 +211,12 @@ public class MyJoystick
             this.joystick = joystick;
             // How many axes?
             // Find the capabilities of the joystick
-            var cps = joystickDevice.Capabilities;
+            Capabilities cps = joystickDevice.Capabilities;
             Debug.WriteLine("Joystick Axis: " + cps.AxeCount);
             Debug.WriteLine("Joystick Buttons: " + cps.ButtonCount);
 
-            axisCount = cps.AxeCount;
-            buttonCount = cps.ButtonCount;
+            AxisCount = cps.AxeCount;
+            ButtonCount = cps.ButtonCount;
 
             UpdateStatus();
         }
@@ -274,16 +248,16 @@ public class MyJoystick
 
         int[] extraAxis = state.Sliders;
         //Rz Rx X Y Axis1 Axis2
-        axisA = state.RotationZ;
-        axisB = state.RotationX;
-        axisC = state.X;
-        axisD = state.Y;
-        axisE = extraAxis[0];
-        axisF = extraAxis[1];
+        AxisA = state.RotationZ;
+        AxisB = state.RotationX;
+        AxisC = state.X;
+        AxisD = state.Y;
+        AxisE = extraAxis[0];
+        AxisF = extraAxis[1];
 
         // not using buttons, so don't take the tiny amount of time it takes to get/parse
 
-        buttons = state.Buttons;
+        Buttons = state.Buttons;
 
 
     }

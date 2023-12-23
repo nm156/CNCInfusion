@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Xml;
-using MacGen;
+﻿using MacGen;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 /// <summary> 
 /// Reads and writes settings to disk. 
 /// </summary> 
@@ -14,7 +14,7 @@ using System.Windows.Forms;
 /// </remarks> 
 public class clsSettings
 {
-    private readonly List<clsMachine> mMachines = new();
+    private readonly List<clsMachine> mMachines = [];
     public clsMachine Machine;
     private const string DATEXTENSION = ".xml";
     private string mDatFolder;
@@ -43,10 +43,7 @@ public class clsSettings
     public static clsSettings Instance()
     {
         // initialize if not already done 
-        if (mInstance == null)
-        {
-            mInstance = new clsSettings();
-        }
+        mInstance ??= new clsSettings();
         // return the initialized instance of the Singleton Class 
         return mInstance;
     }
@@ -57,18 +54,8 @@ public class clsSettings
     /// </summary> 
     public string DatFolder
     {
-        get { return mDatFolder; }
-        set
-        {
-            if (value.EndsWith("\\"))
-            {
-                mDatFolder = value;
-            }
-            else
-            {
-                mDatFolder = value + "\\";
-            }
-        }
+        get => mDatFolder;
+        set => mDatFolder = value.EndsWith("\\") ? value : value + "\\";
     }
 
     /// <summary> 
@@ -76,10 +63,10 @@ public class clsSettings
     /// </summary> 
     public string MachineName
     {
-        get { return Machine.Name; }
+        get => Machine.Name;
         set
         {
-            foreach (clsMachine m in this.mMachines)
+            foreach (clsMachine m in mMachines)
             {
                 if (string.Compare(value, m.Name, true) == 0)
                 {
@@ -91,6 +78,7 @@ public class clsSettings
         }
     }
 
+    [Obsolete]
     public void LoadMachine(string sName)
     {
         XmlReaderSettings settings = new();
@@ -106,8 +94,8 @@ public class clsSettings
         using (XmlReader xReader = XmlReader.Create(sName, settings))
         {
             {
-                xReader.MoveToContent();
-                xReader.ReadToDescendant("Name");
+                _ = xReader.MoveToContent();
+                _ = xReader.ReadToDescendant("Name");
                 Machine.Name = xReader.ReadElementContentAsString();
                 Machine.Description = xReader.ReadElementContentAsString();
                 Machine.AbsArcCenter = bool.Parse(xReader.ReadElementContentAsString());
@@ -167,59 +155,57 @@ public class clsSettings
             CheckCharacters = false,
             CloseOutput = true
         };
-        using (XmlWriter xWriter = XmlWriter.Create(sName, xSettings))
+        using XmlWriter xWriter = XmlWriter.Create(sName, xSettings);
         {
+            xWriter.WriteStartDocument(true);
+            xWriter.WriteStartElement("Machine");
+            xWriter.WriteElementString("Name", MySetup.Name);
+            xWriter.WriteElementString("Description", MySetup.Description);
+            xWriter.WriteElementString("AbsArcCenter", MySetup.AbsArcCenter.ToString());
+            xWriter.WriteElementString("LatheMinus", MySetup.LatheMinus.ToString());
+            xWriter.WriteElementString("HelixPitch", MySetup.HelixPitch.ToString());
+            xWriter.WriteElementString("BlockSkip", MySetup.BlockSkip);
+            xWriter.WriteElementString("Comments", MySetup.Comments);
+            xWriter.WriteElementString("Endmain", MySetup.Endmain.ToString());
+            xWriter.WriteElementString("MachineType", MySetup.MachineType.ToString());
+            xWriter.WriteElementString("RotaryAxis", MySetup.RotaryAxis.ToString());
+            xWriter.WriteElementString("RotaryDir", MySetup.RotaryDir.ToString());
+            xWriter.WriteElementString("Precision", MySetup.Precision.ToString());
+            xWriter.WriteElementString("ProgramId", MySetup.ProgramId);
+            xWriter.WriteElementString("SubReturn", MySetup.SubReturn);
+            xWriter.WriteElementString("RotPrecision", MySetup.RotPrecision.ToString());
+            xWriter.WriteElementString("RotaryType", MySetup.RotaryType.ToString());
+            xWriter.WriteElementString("Searchstring", MySetup.Searchstring);
+            int r;
+            for (r = 0; r <= 2; r++)
             {
-                xWriter.WriteStartDocument(true);
-                xWriter.WriteStartElement("Machine");
-                xWriter.WriteElementString("Name", MySetup.Name);
-                xWriter.WriteElementString("Description", MySetup.Description);
-                xWriter.WriteElementString("AbsArcCenter", MySetup.AbsArcCenter.ToString());
-                xWriter.WriteElementString("LatheMinus", MySetup.LatheMinus.ToString());
-                xWriter.WriteElementString("HelixPitch", MySetup.HelixPitch.ToString());
-                xWriter.WriteElementString("BlockSkip", MySetup.BlockSkip);
-                xWriter.WriteElementString("Comments", MySetup.Comments);
-                xWriter.WriteElementString("Endmain", MySetup.Endmain.ToString());
-                xWriter.WriteElementString("MachineType", MySetup.MachineType.ToString());
-                xWriter.WriteElementString("RotaryAxis", MySetup.RotaryAxis.ToString());
-                xWriter.WriteElementString("RotaryDir", MySetup.RotaryDir.ToString());
-                xWriter.WriteElementString("Precision", MySetup.Precision.ToString());
-                xWriter.WriteElementString("ProgramId", MySetup.ProgramId);
-                xWriter.WriteElementString("SubReturn", MySetup.SubReturn);
-                xWriter.WriteElementString("RotPrecision", MySetup.RotPrecision.ToString());
-                xWriter.WriteElementString("RotaryType", MySetup.RotaryType.ToString());
-                xWriter.WriteElementString("Searchstring", MySetup.Searchstring);
-                int r;
-                for (r = 0; r <= 2; r++)
-                {
-                    xWriter.WriteElementString("ViewAngles_" + r.ToString(), MySetup.ViewAngles[r].ToString());
-                }
-                for (r = 0; r <= 2; r++)
-                {
-                    xWriter.WriteElementString("ViewShift_" + r.ToString(), MySetup.ViewShift[r].ToString());
-                }
-                xWriter.WriteElementString("Absolute", MySetup.Absolute);
-                xWriter.WriteElementString("Incremental", MySetup.Incremental);
-                xWriter.WriteElementString("CCArc", MySetup.CCArc);
-                xWriter.WriteElementString("CWArc", MySetup.CWArc);
-                xWriter.WriteElementString("DrillRapid", MySetup.DrillRapid);
-                for (r = 0; r <= MySetup.Drills.Length - 1; r++)
-                {
-                    xWriter.WriteElementString("Drills_" + r.ToString(), MySetup.Drills[r]);
-                }
-                xWriter.WriteElementString("Linear", MySetup.Linear);
-                xWriter.WriteElementString("Rapid", MySetup.Rapid);
-                xWriter.WriteElementString("ReturnLevel_0", MySetup.ReturnLevel[0]);
-                xWriter.WriteElementString("ReturnLevel_1", MySetup.ReturnLevel[1]);
-                xWriter.WriteElementString("Rotary", MySetup.Rotary);
-                xWriter.WriteElementString("XYplane", MySetup.XYplane);
-                xWriter.WriteElementString("XZplane", MySetup.XZplane);
-                xWriter.WriteElementString("YZplane", MySetup.YZplane);
-                xWriter.WriteElementString("Subcall", MySetup.Subcall);
-                xWriter.WriteElementString("SubRepeats", MySetup.SubRepeats);
-                xWriter.WriteEndElement();
-                //Machine 
+                xWriter.WriteElementString("ViewAngles_" + r.ToString(), MySetup.ViewAngles[r].ToString());
             }
+            for (r = 0; r <= 2; r++)
+            {
+                xWriter.WriteElementString("ViewShift_" + r.ToString(), MySetup.ViewShift[r].ToString());
+            }
+            xWriter.WriteElementString("Absolute", MySetup.Absolute);
+            xWriter.WriteElementString("Incremental", MySetup.Incremental);
+            xWriter.WriteElementString("CCArc", MySetup.CCArc);
+            xWriter.WriteElementString("CWArc", MySetup.CWArc);
+            xWriter.WriteElementString("DrillRapid", MySetup.DrillRapid);
+            for (r = 0; r <= MySetup.Drills.Length - 1; r++)
+            {
+                xWriter.WriteElementString("Drills_" + r.ToString(), MySetup.Drills[r]);
+            }
+            xWriter.WriteElementString("Linear", MySetup.Linear);
+            xWriter.WriteElementString("Rapid", MySetup.Rapid);
+            xWriter.WriteElementString("ReturnLevel_0", MySetup.ReturnLevel[0]);
+            xWriter.WriteElementString("ReturnLevel_1", MySetup.ReturnLevel[1]);
+            xWriter.WriteElementString("Rotary", MySetup.Rotary);
+            xWriter.WriteElementString("XYplane", MySetup.XYplane);
+            xWriter.WriteElementString("XZplane", MySetup.XZplane);
+            xWriter.WriteElementString("YZplane", MySetup.YZplane);
+            xWriter.WriteElementString("Subcall", MySetup.Subcall);
+            xWriter.WriteElementString("SubRepeats", MySetup.SubRepeats);
+            xWriter.WriteEndElement();
+            //Machine 
         }
     }
 
@@ -229,7 +215,7 @@ public class clsSettings
         if (System.IO.File.Exists(fileToDelete))
         {
             System.IO.File.Delete(fileToDelete);
-            mMachines.Remove(Machine);
+            _ = mMachines.Remove(Machine);
             MachineDeleted?.Invoke(name);
         }
     }
@@ -243,7 +229,7 @@ public class clsSettings
 
     public void RenameMachine(string newName, bool copy)
     {
-        string newFile = DatFolder + newName + DATEXTENSION;
+        _ = DatFolder + newName + DATEXTENSION;
         string thisFile = DatFolder + Machine.Name + DATEXTENSION;
 
         if (copy)
@@ -259,6 +245,7 @@ public class clsSettings
         }
     }
 
+    [Obsolete]
     public void LoadAllMachines()
     {
         mMachines.Clear();
@@ -270,6 +257,7 @@ public class clsSettings
         }
     }
 
+    [Obsolete]
     public void LoadAllMachines(string sDatFolder)
     {
         DatFolder = sDatFolder;
@@ -281,9 +269,9 @@ public class clsSettings
     {
         cbo.BeginUpdate();
         cbo.Items.Clear();
-        foreach (clsMachine m in this.mMachines)
+        foreach (clsMachine m in mMachines)
         {
-            cbo.Items.Add(m.Name);
+            _ = cbo.Items.Add(m.Name);
         }
         cbo.EndUpdate();
     }
@@ -301,8 +289,12 @@ public class clsSettings
         StreamReader fileReader = new(sFullfile);
         while (fileReader.Peek() >= 0)
         {
-            if (ln >= 50) break;
-            sb.Append(fileReader.ReadLine());
+            if (ln >= 50)
+            {
+                break;
+            }
+
+            _ = sb.Append(fileReader.ReadLine());
             ln += 1;
         }
         fileReader.Close();

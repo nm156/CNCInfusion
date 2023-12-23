@@ -1,11 +1,12 @@
-﻿using System.Drawing;
-namespace MacGen;
+﻿using MacGen;
+using System.Drawing;
+namespace CNCInfusion.Viewer;
 
 public class ClsMotionRecord
 {
     public string Codestring;
     //cnc codeline 
-    public MacGen.Motion MotionType;
+    public Motion MotionType;
     //point,arc,line etc.... 
     public int Linenumber;
     //line number of CNC file 

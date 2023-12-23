@@ -11,6 +11,7 @@
 // http://69.10.233.10/KB/cs/industrial_controls.aspx
 // Code Project Open License
 
+using CNCInfusion.Knob;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -67,14 +68,14 @@ public partial class LBKnob : UserControl
             true);
 
         // Transparent background
-        this.BackColor = Color.Transparent;
+        BackColor = Color.Transparent;
 
-        this.defaultRenderer = new LBKnobRenderer
+        defaultRenderer = new LBKnobRenderer
         {
             Knob = this
         };
 
-        this.CalculateDimensions();
+        CalculateDimensions();
     }
     #endregion
 
@@ -87,10 +88,10 @@ public partial class LBKnob : UserControl
     {
         set
         {
-            this.minValue = value;
-            this.Invalidate();
+            minValue = value;
+            Invalidate();
         }
-        get { return this.minValue; }
+        get => minValue;
     }
 
     [
@@ -101,10 +102,10 @@ public partial class LBKnob : UserControl
     {
         set
         {
-            this.maxValue = value;
-            this.Invalidate();
+            maxValue = value;
+            Invalidate();
         }
-        get { return this.maxValue; }
+        get => maxValue;
     }
 
     [
@@ -115,10 +116,10 @@ public partial class LBKnob : UserControl
     {
         set
         {
-            this.stepValue = value;
-            this.Invalidate();
+            stepValue = value;
+            Invalidate();
         }
-        get { return this.stepValue; }
+        get => stepValue;
     }
 
     [
@@ -129,20 +130,20 @@ public partial class LBKnob : UserControl
     {
         set
         {
-            if (value != this.currValue)
+            if (value != currValue)
             {
-                this.currValue = value;
-                this.knobIndicatorPos = this.GetPositionFromValue(this.currValue);
-                this.Invalidate();
+                currValue = value;
+                knobIndicatorPos = GetPositionFromValue(currValue);
+                Invalidate();
 
                 LBKnobEventArgs e = new()
                 {
-                    Value = this.currValue
+                    Value = currValue
                 };
-                this.OnKnobChangeValue(e);
+                OnKnobChangeValue(e);
             }
         }
-        get { return this.currValue; }
+        get => currValue;
     }
 
     [
@@ -153,10 +154,10 @@ public partial class LBKnob : UserControl
     {
         set
         {
-            this.style = value;
-            this.Invalidate();
+            style = value;
+            Invalidate();
         }
-        get { return this.style; }
+        get => style;
     }
 
     [
@@ -167,10 +168,10 @@ public partial class LBKnob : UserControl
     {
         set
         {
-            this.knobColor = value;
-            this.Invalidate();
+            knobColor = value;
+            Invalidate();
         }
-        get { return this.knobColor; }
+        get => knobColor;
     }
 
     [
@@ -181,10 +182,10 @@ public partial class LBKnob : UserControl
     {
         set
         {
-            this.scaleColor = value;
-            this.Invalidate();
+            scaleColor = value;
+            Invalidate();
         }
-        get { return this.scaleColor; }
+        get => scaleColor;
     }
 
     [
@@ -195,10 +196,10 @@ public partial class LBKnob : UserControl
     {
         set
         {
-            this.indicatorColor = value;
-            this.Invalidate();
+            indicatorColor = value;
+            Invalidate();
         }
-        get { return this.indicatorColor; }
+        get => indicatorColor;
     }
 
     [
@@ -209,31 +210,31 @@ public partial class LBKnob : UserControl
     {
         set
         {
-            this.indicatorOffset = value;
-            this.CalculateDimensions();
-            this.Invalidate();
+            indicatorOffset = value;
+            CalculateDimensions();
+            Invalidate();
         }
-        get { return this.indicatorOffset; }
+        get => indicatorOffset;
     }
 
     [Browsable(false)]
     public LBKnobRenderer Renderer
     {
-        get { return this.renderer; }
+        get => renderer;
         set
         {
-            this.renderer = value;
-            if (this.renderer != null)
+            renderer = value;
+            if (renderer != null)
+            {
                 renderer.Knob = this;
+            }
+
             Invalidate();
         }
     }
 
     [Browsable(false)]
-    public PointF KnobCenter
-    {
-        get { return this.knobCenter; }
-    }
+    public PointF KnobCenter => knobCenter;
     #endregion
 
     #region Events delegates
@@ -252,46 +253,52 @@ public partial class LBKnob : UserControl
         /// </summary>
         const int WM_SYSKEYDOWN = 0x0104;
 
-        float val = this.Value;
+        float val = Value;
 
-        if ((msg.Msg == WM_KEYDOWN) || (msg.Msg == WM_SYSKEYDOWN))
+        if (msg.Msg is WM_KEYDOWN or WM_SYSKEYDOWN)
         {
             switch (keyData)
             {
                 case Keys.Up:
-                    val += this.StepValue;
-                    if (val <= this.MaxValue)
-                        this.Value = val;
+                    val += StepValue;
+                    if (val <= MaxValue)
+                    {
+                        Value = val;
+                    }
+
                     break;
 
                 case Keys.Down:
-                    val -= this.StepValue;
-                    if (val >= this.MinValue)
-                        this.Value = val;
+                    val -= StepValue;
+                    if (val >= MinValue)
+                    {
+                        Value = val;
+                    }
+
                     break;
 
                 case Keys.PageUp:
-                    if (val < this.MaxValue)
+                    if (val < MaxValue)
                     {
-                        val += (this.StepValue * 10);
-                        this.Value = val;
+                        val += StepValue * 10;
+                        Value = val;
                     }
                     break;
 
                 case Keys.PageDown:
-                    if (val > this.MinValue)
+                    if (val > MinValue)
                     {
-                        val -= (this.StepValue * 10);
-                        this.Value = val;
+                        val -= StepValue * 10;
+                        Value = val;
                     }
                     break;
 
                 case Keys.Home:
-                    this.Value = this.MinValue;
+                    Value = MinValue;
                     break;
 
                 case Keys.End:
-                    this.Value = this.MaxValue;
+                    Value = MaxValue;
                     break;
 
                 default:
@@ -306,46 +313,52 @@ public partial class LBKnob : UserControl
     [System.ComponentModel.EditorBrowsableAttribute()]
     protected override void OnClick(EventArgs e)
     {
-        this.Focus();
-        this.Invalidate();
+        _ = Focus();
+        Invalidate();
         base.OnClick(e);
     }
 
-    void OnMouseUp(object sender, MouseEventArgs e)
+    private void OnMouseUp(object sender, MouseEventArgs e)
     {
-        this.isKnobRotating = false;
+        isKnobRotating = false;
 
-        if (this.rectKnob.Contains(e.Location) == false)
-            return;
-
-        float val = this.GetValueFromPosition(e.Location);
-        if (val != this.Value)
+        if (rectKnob.Contains(e.Location) == false)
         {
-            this.Value = val;
-            this.Invalidate();
+            return;
+        }
+
+        float val = GetValueFromPosition(e.Location);
+        if (val != Value)
+        {
+            Value = val;
+            Invalidate();
         }
     }
 
-    void OnMouseDown(object sender, MouseEventArgs e)
+    private void OnMouseDown(object sender, MouseEventArgs e)
     {
-        if (this.rectKnob.Contains(e.Location) == false)
+        if (rectKnob.Contains(e.Location) == false)
+        {
             return;
+        }
 
-        this.isKnobRotating = true;
+        isKnobRotating = true;
 
-        this.Focus();
+        _ = Focus();
     }
 
-    void OnMouseMove(object sender, MouseEventArgs e)
+    private void OnMouseMove(object sender, MouseEventArgs e)
     {
-        if (this.isKnobRotating == false)
-            return;
-
-        float val = this.GetValueFromPosition(e.Location);
-        if (val != this.Value)
+        if (isKnobRotating == false)
         {
-            this.Value = val;
-            this.Invalidate();
+            return;
+        }
+
+        float val = GetValueFromPosition(e.Location);
+        if (val != Value)
+        {
+            Value = val;
+            Invalidate();
         }
     }
 
@@ -353,44 +366,52 @@ public partial class LBKnob : UserControl
     protected override void OnMouseWheel(MouseEventArgs e)
     {
         int delta = e.Delta;
-        float val = this.Value;
+        float val = Value;
 
         if (delta > 0)
         {
-            val += this.StepValue;
-            if (val <= this.MaxValue)
-                this.Value++;
+            val += StepValue;
+            if (val <= MaxValue)
+            {
+                Value++;
+            }
         }
         else
         {
-            val -= this.StepValue;
-            if (val >= this.MinValue)
-                this.Value--;
+            val -= StepValue;
+            if (val >= MinValue)
+            {
+                Value--;
+            }
         }
     }
 
-    void OnKeyDown(object sender, KeyEventArgs e)
+    private void OnKeyDown(object sender, KeyEventArgs e)
     {
-        float val = this.Value;
+        float val = Value;
 
         switch (e.KeyCode)
         {
             case Keys.Up:
-                val = this.Value + this.StepValue;
+                val = Value + StepValue;
                 break;
 
             case Keys.Down:
-                val = this.Value - this.StepValue;
+                val = Value - StepValue;
                 break;
         }
 
-        if (val < this.MinValue)
-            val = this.MinValue;
+        if (val < MinValue)
+        {
+            val = MinValue;
+        }
 
-        if (val > this.MaxValue)
-            val = this.MaxValue;
+        if (val > MaxValue)
+        {
+            val = MaxValue;
+        }
 
-        this.Value = val;
+        Value = val;
     }
 
 
@@ -399,30 +420,30 @@ public partial class LBKnob : UserControl
     {
         base.OnSizeChanged(e);
 
-        this.CalculateDimensions();
+        CalculateDimensions();
 
-        this.Invalidate();
+        Invalidate();
     }
 
     [System.ComponentModel.EditorBrowsableAttribute()]
     protected override void OnPaint(PaintEventArgs e)
     {
-        RectangleF _rc = new(0, 0, this.Width, this.Height);
+        RectangleF _rc = new(0, 0, Width, Height);
         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-        if (this.Renderer == null)
+        if (Renderer == null)
         {
-            this.defaultRenderer.DrawBackground(e.Graphics, _rc);
-            this.defaultRenderer.DrawScale(e.Graphics, this.rectScale);
-            this.defaultRenderer.DrawKnob(e.Graphics, this.rectKnob);
-            this.defaultRenderer.DrawKnobIndicator(e.Graphics, this.rectKnob, this.knobIndicatorPos);
+            _ = defaultRenderer.DrawBackground(e.Graphics, _rc);
+            _ = defaultRenderer.DrawScale(e.Graphics, rectScale);
+            _ = defaultRenderer.DrawKnob(e.Graphics, rectKnob);
+            _ = defaultRenderer.DrawKnobIndicator(e.Graphics, rectKnob, knobIndicatorPos);
             return;
         }
 
-        this.Renderer.DrawBackground(e.Graphics, _rc);
-        this.Renderer.DrawScale(e.Graphics, this.rectScale);
-        this.Renderer.DrawKnob(e.Graphics, this.rectKnob);
-        this.Renderer.DrawKnobIndicator(e.Graphics, this.rectKnob, this.knobIndicatorPos);
+        _ = Renderer.DrawBackground(e.Graphics, _rc);
+        _ = Renderer.DrawScale(e.Graphics, rectScale);
+        _ = Renderer.DrawKnob(e.Graphics, rectKnob);
+        _ = Renderer.DrawKnobIndicator(e.Graphics, rectKnob, knobIndicatorPos);
     }
     #endregion
 
@@ -433,13 +454,15 @@ public partial class LBKnob : UserControl
         float x, y, w, h;
         x = 0;
         y = 0;
-        w = this.Size.Width;
-        h = this.Size.Height;
+        w = Size.Width;
+        h = Size.Height;
 
         // Calculate ratio
-        drawRatio = (Math.Min(w, h)) / 200;
+        drawRatio = Math.Min(w, h) / 200;
         if (drawRatio == 0.0)
+        {
             drawRatio = 1;
+        }
 
         // Draw rectangle
         drawRect.X = x;
@@ -448,38 +471,47 @@ public partial class LBKnob : UserControl
         drawRect.Height = h - 2;
 
         if (w < h)
+        {
             drawRect.Height = w;
+        }
         else if (w > h)
+        {
             drawRect.Width = h;
+        }
 
         if (drawRect.Width < 10)
+        {
             drawRect.Width = 10;
+        }
+
         if (drawRect.Height < 10)
+        {
             drawRect.Height = 10;
+        }
 
-        this.rectScale = this.drawRect;
-        this.rectKnob = this.drawRect;
-        this.rectKnob.Inflate(-20 * this.drawRatio, -20 * this.drawRatio);
+        rectScale = drawRect;
+        rectKnob = drawRect;
+        rectKnob.Inflate(-20 * drawRatio, -20 * drawRatio);
 
-        this.knobCenter.X = this.rectKnob.Left + (this.rectKnob.Width * 0.5F);
-        this.knobCenter.Y = this.rectKnob.Top + (this.rectKnob.Height * 0.5F);
+        knobCenter.X = rectKnob.Left + (rectKnob.Width * 0.5F);
+        knobCenter.Y = rectKnob.Top + (rectKnob.Height * 0.5F);
 
-        this.knobIndicatorPos = this.GetPositionFromValue(this.Value);
+        knobIndicatorPos = GetPositionFromValue(Value);
     }
 
     public virtual float GetValueFromPosition(PointF position)
     {
         float v = 0.0F;
 
-        PointF center = this.KnobCenter;
+        PointF center = KnobCenter;
 
         float degree;
         if (position.X <= center.X)
         {
             degree = (center.Y - position.Y) / (center.X - position.X);
             degree = (float)Math.Atan(degree);
-            degree = (float)(180F + (degree) * (180F / Math.PI) + 0F);
-            v = (degree * (this.MaxValue - this.MinValue) / 180F);
+            degree = (float)(180F + (degree * (180F / Math.PI)) + 0F);
+            v = degree * (MaxValue - MinValue) / 180F;
         }
         else
         {
@@ -487,16 +519,20 @@ public partial class LBKnob : UserControl
             {
                 degree = (position.Y - center.Y) / (position.X - center.X);
                 degree = (float)Math.Atan(degree);
-                degree = (float)((degree) * (180F / Math.PI));
-                v = (degree * (this.MaxValue - this.MinValue) / 180F);
+                degree = (float)(degree * (180F / Math.PI));
+                v = degree * (MaxValue - MinValue) / 180F;
             }
         }
 
-        if (v > this.MaxValue)
-            v = this.MaxValue;
+        if (v > MaxValue)
+        {
+            v = MaxValue;
+        }
 
-        if (v < this.MinValue)
-            v = this.MinValue;
+        if (v < MinValue)
+        {
+            v = MinValue;
+        }
 
         return v;
     }
@@ -506,16 +542,18 @@ public partial class LBKnob : UserControl
         PointF pos = new(0.0F, 0.0F);
 
         // Elimina la divisione per 0
-        if ((this.MaxValue - this.MinValue) == 0)
+        if ((MaxValue - MinValue) == 0)
+        {
             return pos;
+        }
 
-        float _indicatorOffset = this.IndicatorOffset * this.drawRatio;
+        _ = IndicatorOffset * drawRatio;
 
-        float degree = 360F * val / (this.MaxValue - this.MinValue);
+        float degree = 360F * val / (MaxValue - MinValue);
         degree = (degree - 90) * (float)Math.PI / 180F;
 
-        pos.X = (int)(Math.Cos(degree) * ((this.rectKnob.Width * 0.5F) - indicatorOffset) + this.rectKnob.X + (this.rectKnob.Width * 0.5F));
-        pos.Y = (int)(Math.Sin(degree) * ((this.rectKnob.Width * 0.5F) - indicatorOffset) + this.rectKnob.Y + (this.rectKnob.Height * 0.5F));
+        pos.X = (int)((Math.Cos(degree) * ((rectKnob.Width * 0.5F) - indicatorOffset)) + rectKnob.X + (rectKnob.Width * 0.5F));
+        pos.Y = (int)((Math.Sin(degree) * ((rectKnob.Width * 0.5F) - indicatorOffset)) + rectKnob.Y + (rectKnob.Height * 0.5F));
 
         return pos;
     }
@@ -526,7 +564,7 @@ public partial class LBKnob : UserControl
     public event KnobChangeValue KnobChangeValue;
     protected virtual void OnKnobChangeValue(LBKnobEventArgs e)
     {
-        this.KnobChangeValue?.Invoke(this, e);
+        KnobChangeValue?.Invoke(this, e);
     }
     #endregion
 }
@@ -539,17 +577,11 @@ public partial class LBKnob : UserControl
 /// </summary>
 public class LBKnobEventArgs : EventArgs
 {
-    private float val;
-
     public LBKnobEventArgs()
     {
     }
 
-    public float Value
-    {
-        get { return this.val; }
-        set { this.val = value; }
-    }
+    public float Value { get; set; }
 }
 #endregion
 

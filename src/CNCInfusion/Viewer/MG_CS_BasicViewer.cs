@@ -1,12 +1,12 @@
-﻿using System;
+﻿using CNCInfusion.Viewer;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 namespace MacGen;
 
- public enum Motion
+public enum Motion
 {
     RAPID = 0,
     LINE = 1,
@@ -56,9 +56,9 @@ public enum RotaryMotionType
 public partial class MG_CS_BasicViewer : UserControl
 {
     //public members 
-    public static Dictionary<float, ClsToolLayer> ToolLayers = new();
-    public static List<MG_CS_BasicViewer> Siblings = new();
-    public static List<ClsMotionRecord> MotionBlocks = new();
+    public static Dictionary<float, ClsToolLayer> ToolLayers = [];
+    public static List<MG_CS_BasicViewer> Siblings = [];
+    public static List<ClsMotionRecord> MotionBlocks = [];
     public enum ManipMode
     {
         NONE,
@@ -73,18 +73,18 @@ public partial class MG_CS_BasicViewer : UserControl
 
     //public delegate void OnStatusEventHandler(string msg, int index, int max);
     //public static event OnStatusEventHandler OnStatus;
-   
+
     public delegate void OnSelectionEventHandler(List<ClsMotionRecord> hits);
     public static event OnSelectionEventHandler OnSelection;
-    
+
     public delegate void MouseLocationEventHandler(float x, float y);
     public static event MouseLocationEventHandler MouseLocation;
-    
-    
+
+
     //private members 
     private const int INT_MAXHITS = 64;
     private const float ONE_RADIAN = (float)(Math.PI * 2);
-    private const float PI_S = (float)(Math.PI);
+    private const float PI_S = (float)Math.PI;
     private float mPixelF;
     private float mBlipSize;
     private float mSinPitch;
@@ -106,11 +106,11 @@ public partial class MG_CS_BasicViewer : UserControl
     private readonly float[] mExtentX = new float[2];
     private readonly float[] mExtentY = new float[2];
 
-    private readonly List<PointF> mPoints = new();
-    private readonly List<ClsDisplayList> mSelectionHitLists = new();
-    private readonly List<ClsMotionRecord> mSelectionHits = new();
-    private readonly List<ClsDisplayList> mDisplayLists = new();
-    private readonly List<ClsDisplayList> mWcsDisplayLists = new();
+    private readonly List<PointF> mPoints = [];
+    private readonly List<ClsDisplayList> mSelectionHitLists = [];
+    private readonly List<ClsMotionRecord> mSelectionHits = [];
+    private readonly List<ClsDisplayList> mDisplayLists = [];
+    private readonly List<ClsDisplayList> mWcsDisplayLists = [];
     private bool mMouseDownAndMoving;
     private Point mMouseDownPt;
     private Point mLastPt;
@@ -134,7 +134,7 @@ public partial class MG_CS_BasicViewer : UserControl
 
     private BufferedGraphicsContext mContext;
     private BufferedGraphics mGfxBuff;
-    private Graphics mGfx; 
+    private Graphics mGfx;
 
     public MG_CS_BasicViewer()
     {
@@ -145,17 +145,17 @@ public partial class MG_CS_BasicViewer : UserControl
         SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
         SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
         // Retrieves the BufferedGraphicsContext for the current application domain. 
-        mContext = BufferedGraphicsManager.Current; 
+        mContext = BufferedGraphicsManager.Current;
 
     }
 
-        /// <summary> 
+    /// <summary> 
     /// Clean up any resources being used.
     /// </summary>
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-     protected override void Dispose(bool disposing)
+    protected override void Dispose(bool disposing)
     {
-        Siblings.Remove(this);
+        _ = Siblings.Remove(this);
         if (disposing && components != null)
         {
             components.Dispose();
@@ -166,23 +166,23 @@ public partial class MG_CS_BasicViewer : UserControl
         mWCSPen?.Dispose();
         base.Dispose(disposing);
     }
-        
-   
-    
+
+
+
     #region "Properties"
     private static bool mDynamicViewManipulation = false;
     [Description("Determines if the graphics are redrawn during view manipulation."), Category("Custom"), DefaultValue(false)]
     public bool DynamicViewManipulation
     {
-        get { return mDynamicViewManipulation; }
-        set { mDynamicViewManipulation = value; }
+        get => mDynamicViewManipulation;
+        set => mDynamicViewManipulation = value;
     }
 
     private static ManipMode mViewManipMode = ManipMode.NONE;
     [Description("Sets or gets the view manipulation mode"), Category("Custom"), DefaultValue(ManipMode.NONE)]
     public ManipMode ViewManipMode
     {
-        get { return mViewManipMode; }
+        get => mViewManipMode;
         set
         {
             mViewManipMode = value;
@@ -217,63 +217,63 @@ public partial class MG_CS_BasicViewer : UserControl
     [Description("Sets or gets the scale if the axis indicator"), Category("Custom"), DefaultValue(1f)]
     public float AxisIndicatorScale
     {
-        get { return mAxisIndicatorScale; }
-        set { mAxisIndicatorScale = value; }
+        get => mAxisIndicatorScale;
+        set => mAxisIndicatorScale = value;
     }
-    
+
     private static bool mDrawAxisLines = true;
     [Description("Draw axis lines"), Category("Custom"), DefaultValue(true)]
     public bool DrawAxisLines
     {
-        get { return mDrawAxisLines; }
-        set { mDrawAxisLines = value; }
+        get => mDrawAxisLines;
+        set => mDrawAxisLines = value;
     }
 
     private static bool mDrawAxisIndicator = true;
     [Description("Draw wcs XYZ indicator"), Category("Custom"), DefaultValue(true)]
     public bool DrawAxisIndicator
     {
-        get { return mDrawAxisIndicator; }
-        set { mDrawAxisIndicator = value; }
+        get => mDrawAxisIndicator;
+        set => mDrawAxisIndicator = value;
     }
 
     private static bool mDrawRapidLines = true;
     [Description("Draw raid tool motion lines"), Category("Custom"), DefaultValue(true)]
     public bool DrawRapidLines
     {
-        get { return mDrawRapidLines; }
-        set { mDrawRapidLines = value; }
+        get => mDrawRapidLines;
+        set => mDrawRapidLines = value;
     }
 
     private static bool mDrawRapidPoints = true;
     [Description("Draw raid tool motion points"), Category("Custom"), DefaultValue(true)]
     public bool DrawRapidPoints
     {
-        get { return mDrawRapidPoints; }
-        set { mDrawRapidPoints = value; }
+        get => mDrawRapidPoints;
+        set => mDrawRapidPoints = value;
     }
 
     private static Axis mArcAxis = Axis.Z;
     [Description("Sets or gets the plane that arcs will be drawn on"), Category("Custom"), DefaultValue(Axis.Z)]
     public Axis ArcAxis
     {
-        get { return mArcAxis; }
-        set { mArcAxis = value; }
+        get => mArcAxis;
+        set => mArcAxis = value;
     }
     private static RotaryMotionType mRotaryType = RotaryMotionType.CAD;
     [Description("Sets or gets the way that fourth axis motion is interpreted"), Category("Custom"), DefaultValue(RotaryMotionType.CAD)]
     public RotaryMotionType RotaryType
     {
-        get { return mRotaryType; }
-        set { mRotaryType = value; }
+        get => mRotaryType;
+        set => mRotaryType = value;
     }
 
     private static Axis mRotaryPlane = Axis.X;
     [Description("Sets or gets the plane that the fourth axis rotates on"), Category("Custom"), DefaultValue(Axis.X)]
     public Axis RotaryPlane
     {
-        get { return mRotaryPlane; }
-        set { mRotaryPlane = value; }
+        get => mRotaryPlane;
+        set => mRotaryPlane = value;
     }
 
     private static int mRotaryDirInt;
@@ -281,8 +281,9 @@ public partial class MG_CS_BasicViewer : UserControl
     [Description("Sets or gets the direction of the fourth axis"), Category("Custom"), DefaultValue(MacGen.RotaryDirection.CW)]
     public RotaryDirection RotaryDirection
     {
-        get { return mRotaryDirection; }
-        set { 
+        get => mRotaryDirection;
+        set
+        {
             mRotaryDirection = value;
             mRotaryDirInt = (int)value;
         }
@@ -292,7 +293,7 @@ public partial class MG_CS_BasicViewer : UserControl
     [Description("Sets or gets the X axis rotation"), Category("Custom"), DefaultValue(0)]
     public float Pitch
     {
-        get { return mPitch * (180 / PI_S); }
+        get => mPitch * (180 / PI_S);
         set
         {
             mPitch = value * (PI_S / 180);
@@ -304,7 +305,7 @@ public partial class MG_CS_BasicViewer : UserControl
     [Description("Sets or gets the Y axis rotation"), Category("Custom"), DefaultValue(0)]
     public float Roll
     {
-        get { return mRoll * (180 / PI_S); }
+        get => mRoll * (180 / PI_S);
         set
         {
             mRoll = value * (PI_S / 180);
@@ -316,7 +317,7 @@ public partial class MG_CS_BasicViewer : UserControl
     [Description("Sets or gets the Z axis rotation"), Category("Custom"), DefaultValue(0)]
     public float Yaw
     {
-        get { return mYaw * (180 / PI_S); }
+        get => mYaw * (180 / PI_S);
         set
         {
             mYaw = value * (PI_S / 180);
@@ -328,7 +329,7 @@ public partial class MG_CS_BasicViewer : UserControl
     [Description("Sets or gets the fourth axis position"), Category("Custom"), DefaultValue(0)]
     public float FourthAxis
     {
-        get { return mRotary; }
+        get => mRotary;
         set
         {
             mRotary = value * (-mRotaryDirInt);
@@ -344,8 +345,16 @@ public partial class MG_CS_BasicViewer : UserControl
         set
         {
             //Set min and max values 
-            if (value < 16) value = 16;
-            if (value > 720) value = 720;
+            if (value < 16)
+            {
+                value = 16;
+            }
+
+            if (value > 720)
+            {
+                value = 720;
+            }
+
             mSegAngle = ONE_RADIAN / value;
         }
     }
@@ -354,25 +363,8 @@ public partial class MG_CS_BasicViewer : UserControl
     [Browsable(false)]
     public int BreakPoint
     {
-        get { return mBreakPoint; }
-        set
-        {
-            if (value == 0)
-            {
-                mBreakPoint = MotionBlocks.Count - 1;
-            }
-            else
-            {
-                if (value > MotionBlocks.Count)
-                {
-                    mBreakPoint = MotionBlocks.Count - 1;
-                }
-                else
-                {
-                    mBreakPoint = value;
-                }
-            }
-        }
+        get => mBreakPoint;
+        set => mBreakPoint = value == 0 ? MotionBlocks.Count - 1 : value > MotionBlocks.Count ? MotionBlocks.Count - 1 : value;
     }
 
     #endregion 
@@ -430,7 +422,7 @@ public partial class MG_CS_BasicViewer : UserControl
 
     private void MG_BasicViewer_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
     {
-        Point ptCurrent = default(Point);
+        Point ptCurrent = default;
         ptCurrent.X = e.X;
         ptCurrent.Y = e.Y;
         //Set the real coordinates of the mouse. 
@@ -450,10 +442,10 @@ public partial class MG_CS_BasicViewer : UserControl
         switch (ViewManipMode)
         {
             case ManipMode.FENCE:
-                if ((mMouseDownAndMoving))
+                if (mMouseDownAndMoving)
                 {
                     // Erase. 
-                    if ((mLastPt.X != -1))
+                    if (mLastPt.X != -1)
                     {
                         DrawWinMouseRect(mMouseDownPt, mLastPt);
                     }
@@ -463,16 +455,16 @@ public partial class MG_CS_BasicViewer : UserControl
 
                 break;
             case ManipMode.PAN:
-                if ((mMouseDownAndMoving))
+                if (mMouseDownAndMoving)
                 {
                     if (mDynamicViewManipulation)
                     {
-                        PanScene((mMousePtF[1].X - mMousePtF[2].X), mMousePtF[1].Y - mMousePtF[2].Y);
+                        PanScene(mMousePtF[1].X - mMousePtF[2].X, mMousePtF[1].Y - mMousePtF[2].Y);
                         CreateDisplayListsAndDraw();
                     }
                     else
                     {
-                        if ((mLastPt.X != -1))
+                        if (mLastPt.X != -1)
                         {
                             DrawWinMouseLine(mMouseDownPt, mLastPt);
                         }
@@ -484,8 +476,8 @@ public partial class MG_CS_BasicViewer : UserControl
             case ManipMode.ROTATE:
                 if (mMouseDownAndMoving)
                 {
-                    Pitch += (int)(-Math.Sign(static_MG_BasicViewer_MouseMove_Yold - e.Y));
-                    Roll += (int)(-Math.Sign(static_MG_BasicViewer_MouseMove_Xold - e.X));
+                    Pitch += -Math.Sign(static_MG_BasicViewer_MouseMove_Yold - e.Y);
+                    Roll += -Math.Sign(static_MG_BasicViewer_MouseMove_Xold - e.X);
                     if (mDynamicViewManipulation)
                     {
                         CreateDisplayListsAndDraw();
@@ -498,17 +490,11 @@ public partial class MG_CS_BasicViewer : UserControl
 
                 break;
             case ManipMode.ZOOM:
-                if ((mMouseDownAndMoving))
+                if (mMouseDownAndMoving)
                 {
-                    float zFact;
-                    if (e.Y > mMouseDownPt.Y)
-                    {
-                        zFact = (float)(1 + ((e.Y - static_MG_BasicViewer_MouseMove_Yold) / this.Height));
-                    }
-                    else
-                    {
-                        zFact = 1 / (float)(1 + (Math.Abs(e.Y - static_MG_BasicViewer_MouseMove_Yold) / this.Height));
-                    }
+                    float zFact = e.Y > mMouseDownPt.Y
+                        ? (float)(1 + ((e.Y - static_MG_BasicViewer_MouseMove_Yold) / Height))
+                        : 1 / (float)(1 + (Math.Abs(e.Y - static_MG_BasicViewer_MouseMove_Yold) / Height));
                     ZoomScene(zFact);
                     if (mDynamicViewManipulation)
                     {
@@ -519,8 +505,8 @@ public partial class MG_CS_BasicViewer : UserControl
                 break;
             case ManipMode.SELECTION:
                 //Get a small selection viewport for selection. 
-                mSelectionRect.X = mMousePtF[1].X - mPixelF * mSelectionPixRect.Width / 2f;
-                mSelectionRect.Y = mMousePtF[1].Y - mPixelF * mSelectionPixRect.Height / 2f;
+                mSelectionRect.X = mMousePtF[1].X - (mPixelF * mSelectionPixRect.Width / 2f);
+                mSelectionRect.Y = mMousePtF[1].Y - (mPixelF * mSelectionPixRect.Height / 2f);
                 mSelectionRect.Width = mPixelF * mSelectionPixRect.Width;
                 mSelectionRect.Height = mPixelF * mSelectionPixRect.Height;
                 GetSelectionHits(mSelectionRect);
@@ -533,8 +519,9 @@ public partial class MG_CS_BasicViewer : UserControl
         static_MG_BasicViewer_MouseMove_Yold = e.Y;
 
     }
-    static float static_MG_BasicViewer_MouseMove_Yold = 0;
-    static float static_MG_BasicViewer_MouseMove_Xold = 0;
+
+    private static float static_MG_BasicViewer_MouseMove_Yold = 0;
+    private static float static_MG_BasicViewer_MouseMove_Xold = 0;
 
     private void MG_BasicViewer_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
     {
@@ -543,13 +530,17 @@ public partial class MG_CS_BasicViewer : UserControl
         // Set flags to know that there is no "previous" line to reverse. 
         mLastPt.X = -1;
         mLastPt.Y = -1;
-        if (mMouseDownPt.X == e.X | mMouseDownPt.Y == e.Y) return;
+        if (mMouseDownPt.X == e.X | mMouseDownPt.Y == e.Y)
+        {
+            return;
+        }
+
         switch (ViewManipMode)
         {
             case ManipMode.PAN:
                 if (!mDynamicViewManipulation)
                 {
-                    PanScene((mMousePtF[1].X - mMousePtF[0].X), mMousePtF[1].Y - mMousePtF[0].Y);
+                    PanScene(mMousePtF[1].X - mMousePtF[0].X, mMousePtF[1].Y - mMousePtF[0].Y);
                     CreateDisplayListsAndDraw();
                 }
 
@@ -586,12 +577,12 @@ public partial class MG_CS_BasicViewer : UserControl
     // Convert and Normalize the points and draw the reversible frame. 
     private void DrawWinMouseRect(Point p1, Point p2)
     {
-        Rectangle rc = default(Rectangle);
+        Rectangle rc = default;
         // Convert the points to screen coordinates. 
         p1 = PointToScreen(p1);
         p2 = PointToScreen(p2);
         // Normalize the rectangle. 
-        if ((p1.X < p2.X))
+        if (p1.X < p2.X)
         {
             rc.X = p1.X;
             rc.Width = p2.X - p1.X;
@@ -601,7 +592,7 @@ public partial class MG_CS_BasicViewer : UserControl
             rc.X = p2.X;
             rc.Width = p1.X - p2.X;
         }
-        if ((p1.Y < p2.Y))
+        if (p1.Y < p2.Y)
         {
             rc.Y = p1.Y;
             rc.Height = p2.Y - p1.Y;
@@ -659,7 +650,7 @@ public partial class MG_CS_BasicViewer : UserControl
         float temp;
 
         //convert window from right to left 
-        if ((X1 > X2))
+        if (X1 > X2)
         {
             temp = X2;
             X2 = X1;
@@ -667,7 +658,7 @@ public partial class MG_CS_BasicViewer : UserControl
         }
 
         //convert window from bottom to top 
-        if ((Y1 > Y2))
+        if (Y1 > Y2)
         {
             temp = Y2;
             Y2 = Y1;
@@ -702,10 +693,10 @@ public partial class MG_CS_BasicViewer : UserControl
         mContext = BufferedGraphicsManager.Current;
 
         // Sets the maximum size for the primary graphics buffer 
-        mContext.MaximumBuffer = new Size(this.Width + 1, this.Height + 1);
+        mContext.MaximumBuffer = new Size(Width + 1, Height + 1);
 
         // Allocates a graphics buffer the size of this control 
-        mGfxBuff = mContext.Allocate(CreateGraphics(), new Rectangle(0, 0, this.Width, this.Height));
+        mGfxBuff = mContext.Allocate(CreateGraphics(), new Rectangle(0, 0, Width, Height));
         mGfx = mGfxBuff.Graphics;
 
     }
@@ -715,16 +706,23 @@ public partial class MG_CS_BasicViewer : UserControl
     /// </summary> 
     private void SetViewMatrix()
     {
-        if (float.IsInfinity(mViewRect.Width) | float.IsInfinity(mViewRect.Height)) return;
-        if (mViewRect.Width == 0 | mViewRect.Height == 0) return;
+        if (float.IsInfinity(mViewRect.Width) | float.IsInfinity(mViewRect.Height))
+        {
+            return;
+        }
+
+        if (mViewRect.Width == 0 | mViewRect.Height == 0)
+        {
+            return;
+        }
 
         //The ratio between the actual size of the screen and the size of the graphics. 
-        mScaleToReal = (mClientRect.Width / mGfx.DpiX) / mViewRect.Width;
+        mScaleToReal = mClientRect.Width / mGfx.DpiX / mViewRect.Width;
 
         mMtxDraw.Reset();
         mMtxDraw.Scale(mScaleToReal, mScaleToReal);
         mMtxDraw.Translate(-mViewportCenter.X, mViewportCenter.Y);
-        mMtxDraw.Translate((mViewRect.Width / 2f), (mViewRect.Height / 2f));
+        mMtxDraw.Translate(mViewRect.Width / 2f, mViewRect.Height / 2f);
         mMtxDraw.Scale(1, -1);
         //Flip the Y 
 
@@ -734,8 +732,8 @@ public partial class MG_CS_BasicViewer : UserControl
         mMtxWCS.Multiply(mMtxDraw);
         mMtxWCS.Scale(1 / mScaleToReal, 1 / mScaleToReal);
 
-        mPixelF = ((1 / mGfx.DpiX) / mScaleToReal);
-        mBlipSize = (mPixelF * 3f);
+        mPixelF = 1 / mGfx.DpiX / mScaleToReal;
+        mBlipSize = mPixelF * 3f;
 
         SetFeedbackMatrix();
     }
@@ -746,8 +744,15 @@ public partial class MG_CS_BasicViewer : UserControl
     private void AdjustAspect()
     {
 
-        if (mGfx.DpiX == 0) return;
-        if (float.IsInfinity(mViewRect.Width) | float.IsInfinity(mViewRect.Height)) return;
+        if (mGfx.DpiX == 0)
+        {
+            return;
+        }
+
+        if (float.IsInfinity(mViewRect.Width) | float.IsInfinity(mViewRect.Height))
+        {
+            return;
+        }
 
         mViewportCenter.X = mViewRect.X + (mViewRect.Width / 2);
         mViewportCenter.Y = mViewRect.Y + (mViewRect.Height / 2);
@@ -779,9 +784,9 @@ public partial class MG_CS_BasicViewer : UserControl
             //width 
             mViewRect.Width = mLongside;
             //top 
-            mViewRect.Y = mViewportCenter.Y - ((mLongside / aspectRatio) * 0.5f);
+            mViewRect.Y = mViewportCenter.Y - (mLongside / aspectRatio * 0.5f);
             //height 
-            mViewRect.Height = (mLongside / aspectRatio);
+            mViewRect.Height = mLongside / aspectRatio;
         }
         SetViewMatrix();
     }
@@ -796,7 +801,11 @@ public partial class MG_CS_BasicViewer : UserControl
 
     private void DrawListsToGraphics(ref Graphics g)
     {
-        if (mGfxBuff == null) return;
+        if (mGfxBuff == null)
+        {
+            return;
+        }
+
         mCurPen.Width = -1;
         {
             g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
@@ -854,7 +863,7 @@ public partial class MG_CS_BasicViewer : UserControl
     {
         if (pts.Length == 2)
         {
-            if (Math.Sqrt((Math.Pow((pts[0].X - pts[1].X), 2)) + (Math.Pow((pts[0].Y - pts[1].Y), 2))) > this.mViewRect.Width)
+            if (Math.Sqrt(Math.Pow(pts[0].X - pts[1].X, 2) + Math.Pow(pts[0].Y - pts[1].Y, 2)) > mViewRect.Width)
             {
                 if (Math.Abs(pts[0].X - pts[1].X) < 0.001)
                 {
@@ -875,10 +884,14 @@ public partial class MG_CS_BasicViewer : UserControl
 
     private void DrawWcsOnlyToBuffer()
     {
-        if (mGfxBuff == null) return;
+        if (mGfxBuff == null)
+        {
+            return;
+        }
+
         CreateWcs();
         {
-            mGfx.Clear(this.BackColor);
+            mGfx.Clear(BackColor);
             mGfx.PageUnit = GraphicsUnit.Inch;
             mGfx.ResetTransform();
             mGfx.MultiplyTransform(mMtxWCS);
@@ -908,9 +921,9 @@ public partial class MG_CS_BasicViewer : UserControl
         mGfxBuff?.Render();
 
         //Draw the selection overlay. 
-        mCurPen.Width = ((1 / mGfx.DpiX) / mScaleToReal) * 4;
+        mCurPen.Width = 1 / mGfx.DpiX / mScaleToReal * 4;
         mCurPen.EndCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor;
-        using (Graphics g = Graphics.FromHwnd(this.Handle))
+        using (Graphics g = Graphics.FromHwnd(Handle))
         {
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             g.PageUnit = GraphicsUnit.Inch;
@@ -919,14 +932,7 @@ public partial class MG_CS_BasicViewer : UserControl
             foreach (ClsDisplayList p in mSelectionHitLists)
             {
                 mCurPen.Color = p.Color;
-                if (p.Rapid)
-                {
-                    mCurPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
-                }
-                else
-                {
-                    mCurPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Solid;
-                }
+                mCurPen.DashStyle = p.Rapid ? System.Drawing.Drawing2D.DashStyle.Dash : System.Drawing.Drawing2D.DashStyle.Solid;
                 g.DrawLines(mCurPen, p.Points);
             }
         }
@@ -958,7 +964,7 @@ public partial class MG_CS_BasicViewer : UserControl
 
     #region "Graphics"
     private void PolyCircle(float Xctr, float Yctr, float Zctr, float Xe, float Xs, float Ye, float Ys, float Ze, float Zs, float r,
-    float Startang,  float Endang, int ArcDir, Motion Wplane)
+    float Startang, float Endang, int ArcDir, Motion Wplane)
     {
         float sngTotalAngle = Math.Abs(Startang - Endang);
         //counter 
@@ -977,7 +983,7 @@ public partial class MG_CS_BasicViewer : UserControl
                 helixSeg = (Ze - Zs) / sngSegments;
                 for (s = 1; s <= sngSegments; s++)
                 {
-                    LineEnd4D((float)Xctr + (float)(r * System.Math.Cos((s * sngAngle) + Startang)), (float)Yctr + (float)(r * System.Math.Sin((s * sngAngle) + Startang)), Zs + helixSeg * s);
+                    LineEnd4D((float)Xctr + (float)(r * System.Math.Cos((s * sngAngle) + Startang)), (float)Yctr + (float)(r * System.Math.Sin((s * sngAngle) + Startang)), Zs + (helixSeg * s));
                 }
 
                 break;
@@ -986,7 +992,7 @@ public partial class MG_CS_BasicViewer : UserControl
                 helixSeg = (Ye - Ys) / sngSegments;
                 for (s = 1; s <= sngSegments; s++)
                 {
-                    LineEnd4D((float)Xctr + (float)(r * System.Math.Cos((s * sngAngle) + Startang)), Ys + helixSeg * s, (float)Zctr + (float)(r * System.Math.Sin((s * sngAngle) + Startang)));
+                    LineEnd4D((float)Xctr + (float)(r * System.Math.Cos((s * sngAngle) + Startang)), Ys + (helixSeg * s), (float)Zctr + (float)(r * System.Math.Sin((s * sngAngle) + Startang)));
                 }
 
                 break;
@@ -995,7 +1001,7 @@ public partial class MG_CS_BasicViewer : UserControl
                 helixSeg = (Xe - Xs) / sngSegments;
                 for (s = 1; s <= sngSegments; s++)
                 {
-                    LineEnd4D(Xs + helixSeg * s, (float)Yctr + (float)(r * System.Math.Cos((s * sngAngle) + Startang)), (float)Zctr + (float)(r * System.Math.Sin((s * sngAngle) + Startang)));
+                    LineEnd4D(Xs + (helixSeg * s), (float)Yctr + (float)(r * System.Math.Cos((s * sngAngle) + Startang)), (float)Zctr + (float)(r * System.Math.Sin((s * sngAngle) + Startang)));
                 }
 
                 break;
@@ -1012,7 +1018,7 @@ public partial class MG_CS_BasicViewer : UserControl
         {
             if (ArcDir == -1)
             {
-                Endang = (Endang - ONE_RADIAN);
+                Endang -= ONE_RADIAN;
             }
             else
             {
@@ -1039,11 +1045,11 @@ public partial class MG_CS_BasicViewer : UserControl
             case Axis.X:
                 //X 
 
-                Startang = (Startang + AngleFromPoint(Zs, Ys, false) * mRotaryDirInt) * mRotaryDirInt;
-                Endang = (Endang + AngleFromPoint(Zs, Ys, false) * mRotaryDirInt) * mRotaryDirInt;
+                Startang = (Startang + (AngleFromPoint(Zs, Ys, false) * mRotaryDirInt)) * mRotaryDirInt;
+                _ = (Endang + (AngleFromPoint(Zs, Ys, false) * mRotaryDirInt)) * mRotaryDirInt;
 
                 //Re-calculate angle increment 
-                angle = (totalAngle / rotSegs) * mRotaryDirInt;
+                angle = totalAngle / rotSegs * mRotaryDirInt;
                 axisSeg1 = (Xe - Xs) / rotSegs;
                 axisSeg3 = (Ze - Zs) / rotSegs;
 
@@ -1053,16 +1059,16 @@ public partial class MG_CS_BasicViewer : UserControl
                 for (s = 1; s <= rotSegs; s++)
                 {
                     radFromAxis = VectorLength(0, Ys, Zs + (axisSeg3 * s), 0, 0, 0);
-                    LineEnd3D(Xs + (axisSeg1 * s), (float)(radFromAxis * System.Math.Sin((s * angle) + Startang)), (float)((radFromAxis * System.Math.Cos((s * angle) + Startang))));
+                    LineEnd3D(Xs + (axisSeg1 * s), (float)(radFromAxis * System.Math.Sin((s * angle) + Startang)), (float)(radFromAxis * System.Math.Cos((s * angle) + Startang)));
                 }
 
                 break;
             case Axis.Y:
-                Startang = (Startang - AngleFromPoint(Zs, Xs, false) * mRotaryDirInt) * -mRotaryDirInt;
-                Endang = (Endang - AngleFromPoint(Zs, Xs, false) * mRotaryDirInt) * -mRotaryDirInt;
+                Startang = (Startang - (AngleFromPoint(Zs, Xs, false) * mRotaryDirInt)) * -mRotaryDirInt;
+                _ = (Endang - (AngleFromPoint(Zs, Xs, false) * mRotaryDirInt)) * -mRotaryDirInt;
 
                 //Re-calculate angle increment 
-                angle = (totalAngle / rotSegs) * -mRotaryDirInt;
+                angle = totalAngle / rotSegs * -mRotaryDirInt;
                 axisSeg1 = (Ye - Ys) / rotSegs;
                 axisSeg3 = (Ze - Zs) / rotSegs;
                 //Debug.Print Segments 
@@ -1127,11 +1133,11 @@ public partial class MG_CS_BasicViewer : UserControl
         //Start 
         //=========================== 
         //Z twist 
-        float yawXs = mCosYaw * Xs - mSinYaw * Ys;
-        float yawYs = mSinYaw * Xs + mCosYaw * Ys;
+        float yawXs = (mCosYaw * Xs) - (mSinYaw * Ys);
+        float yawYs = (mSinYaw * Xs) + (mCosYaw * Ys);
 
         //Y twist 
-        float rollZs = mCosRoll * Zs - mSinRoll * yawXs;
+        float rollZs = (mCosRoll * Zs) - (mSinRoll * yawXs);
         yawXs = (mCosRoll * yawXs) + (mSinRoll * Zs);
         //New X 
 
@@ -1142,11 +1148,11 @@ public partial class MG_CS_BasicViewer : UserControl
         //End 
         //=========================== 
         //Z twist 
-        float yawXe = mCosYaw * Xe - mSinYaw * Ye;
-        float yawYe = mSinYaw * Xe + mCosYaw * Ye;
+        float yawXe = (mCosYaw * Xe) - (mSinYaw * Ye);
+        float yawYe = (mSinYaw * Xe) + (mCosYaw * Ye);
         //Y twist 
 
-        float rollZe = mCosRoll * Ze - mSinRoll * yawXe;
+        float rollZe = (mCosRoll * Ze) - (mSinRoll * yawXe);
         yawXe = (mCosRoll * yawXe) + (mSinRoll * Ze);
         //New X 
         //X twist 
@@ -1157,7 +1163,7 @@ public partial class MG_CS_BasicViewer : UserControl
 
     public static float VectorLength(float X1, float Y1, float Z1, float x2, float y2, float Z2)
     {
-        return (float)System.Math.Sqrt((Math.Pow((X1 - x2), 2)) + (Math.Pow((Y1 - y2), 2)) + (Math.Pow((Z1 - Z2), 2)));
+        return (float)System.Math.Sqrt(Math.Pow(X1 - x2, 2) + Math.Pow(Y1 - y2, 2) + Math.Pow(Z1 - Z2, 2));
     }
 
     public static float AngleFromPoint(float x, float y, bool deg)
@@ -1181,7 +1187,7 @@ public partial class MG_CS_BasicViewer : UserControl
         // Quadrant 4 
         else if (x > 0 & y < 0)
         {
-            theta = (float)(System.Math.Atan(y / x) + 2 * Math.PI);
+            theta = (float)(System.Math.Atan(y / x) + (2 * Math.PI));
         }
 
         // Exceptions for points landing on an axis 
@@ -1249,10 +1255,10 @@ public partial class MG_CS_BasicViewer : UserControl
         //End 
         //=========================== 
         //Z twist 
-        float yawXe = mCosYaw * Xe - mSinYaw * Ye;
-        float yawYe = mSinYaw * Xe + mCosYaw * Ye;
+        float yawXe = (mCosYaw * Xe) - (mSinYaw * Ye);
+        float yawYe = (mSinYaw * Xe) + (mCosYaw * Ye);
         //Y twist 
-        float rollZe = mCosRoll * Ze - mSinRoll * yawXe;
+        float rollZe = (mCosRoll * Ze) - (mSinRoll * yawXe);
         yawXe = (mCosRoll * yawXe) + (mSinRoll * Ze);
         //New X 
         //X twist 
@@ -1267,10 +1273,10 @@ public partial class MG_CS_BasicViewer : UserControl
         //End 
         //=========================== 
         //Z twist 
-        float yawXe = mCosYaw * Xe - mSinYaw * Ye;
-        float yawYe = mSinYaw * Xe + mCosYaw * Ye;
+        float yawXe = (mCosYaw * Xe) - (mSinYaw * Ye);
+        float yawYe = (mSinYaw * Xe) + (mCosYaw * Ye);
         //Y twist 
-        float rollZe = mCosRoll * Ze - mSinRoll * yawXe;
+        float rollZe = (mCosRoll * Ze) - (mSinRoll * yawXe);
         yawXe = (mCosRoll * yawXe) + (mSinRoll * Ze);
         //New X 
         //X twist 
@@ -1304,8 +1310,8 @@ public partial class MG_CS_BasicViewer : UserControl
 
         if (mCurGfxRec.Rotate)
         {
-            this.FourthAxis = mCurGfxRec.NewRotaryPos;
-            this.ArcSegmentCount = (int)((mCurGfxRec.Zpos / mLongside) * 90);
+            FourthAxis = mCurGfxRec.NewRotaryPos;
+            ArcSegmentCount = (int)(mCurGfxRec.Zpos / mLongside * 90);
         }
 
         float xleg;
@@ -1334,56 +1340,56 @@ public partial class MG_CS_BasicViewer : UserControl
                         if (xleg <= yleg & yleg <= zleg)
                         {
                             xleg1 = mCurGfxRec.Xpos;
-                            yleg1 = mCurGfxRec.Yold + xleg * ydir;
-                            zleg1 = mCurGfxRec.Zold + xleg * zdir;
+                            yleg1 = mCurGfxRec.Yold + (xleg * ydir);
+                            zleg1 = mCurGfxRec.Zold + (xleg * zdir);
                             xleg2 = mCurGfxRec.Xpos;
                             yleg2 = mCurGfxRec.Ypos;
-                            zleg2 = mCurGfxRec.Zold + yleg * zdir;
+                            zleg2 = mCurGfxRec.Zold + (yleg * zdir);
                         }
                         else if (xleg <= zleg & zleg <= yleg)
                         {
                             xleg1 = mCurGfxRec.Xpos;
-                            yleg1 = mCurGfxRec.Yold + xleg * ydir;
-                            zleg1 = mCurGfxRec.Zold + xleg * zdir;
+                            yleg1 = mCurGfxRec.Yold + (xleg * ydir);
+                            zleg1 = mCurGfxRec.Zold + (xleg * zdir);
                             xleg2 = mCurGfxRec.Xpos;
-                            yleg2 = mCurGfxRec.Yold + zleg * ydir;
+                            yleg2 = mCurGfxRec.Yold + (zleg * ydir);
                             zleg2 = mCurGfxRec.Zpos;
                         }
                         else if (zleg <= yleg & yleg <= xleg)
                         {
-                            xleg1 = mCurGfxRec.Xold + zleg * xdir;
-                            yleg1 = mCurGfxRec.Yold + zleg * ydir;
+                            xleg1 = mCurGfxRec.Xold + (zleg * xdir);
+                            yleg1 = mCurGfxRec.Yold + (zleg * ydir);
                             zleg1 = mCurGfxRec.Zpos;
-                            xleg2 = mCurGfxRec.Xold + yleg * xdir;
+                            xleg2 = mCurGfxRec.Xold + (yleg * xdir);
                             yleg2 = mCurGfxRec.Ypos;
                             zleg2 = mCurGfxRec.Zpos;
                         }
                         else if (zleg <= xleg & xleg <= yleg)
                         {
-                            xleg1 = mCurGfxRec.Xold + zleg * xdir;
-                            yleg1 = mCurGfxRec.Yold + zleg * ydir;
+                            xleg1 = mCurGfxRec.Xold + (zleg * xdir);
+                            yleg1 = mCurGfxRec.Yold + (zleg * ydir);
                             zleg1 = mCurGfxRec.Zpos;
                             xleg2 = mCurGfxRec.Xpos;
-                            yleg2 = mCurGfxRec.Yold + xleg * ydir;
+                            yleg2 = mCurGfxRec.Yold + (xleg * ydir);
                             zleg2 = mCurGfxRec.Zpos;
                         }
                         else if (yleg <= zleg & zleg <= xleg)
                         {
-                            xleg1 = mCurGfxRec.Xold + yleg * xdir;
+                            xleg1 = mCurGfxRec.Xold + (yleg * xdir);
                             yleg1 = mCurGfxRec.Ypos;
-                            zleg1 = mCurGfxRec.Zold + yleg * zdir;
-                            xleg2 = mCurGfxRec.Xold + zleg * xdir;
+                            zleg1 = mCurGfxRec.Zold + (yleg * zdir);
+                            xleg2 = mCurGfxRec.Xold + (zleg * xdir);
                             yleg2 = mCurGfxRec.Ypos;
                             zleg2 = mCurGfxRec.Zpos;
                         }
                         else if (yleg <= xleg & xleg <= zleg)
                         {
-                            xleg1 = mCurGfxRec.Xold + yleg * xdir;
+                            xleg1 = mCurGfxRec.Xold + (yleg * xdir);
                             yleg1 = mCurGfxRec.Ypos;
-                            zleg1 = mCurGfxRec.Zold + yleg * zdir;
+                            zleg1 = mCurGfxRec.Zold + (yleg * zdir);
                             xleg2 = mCurGfxRec.Xpos;
                             yleg2 = mCurGfxRec.Ypos;
-                            zleg2 = mCurGfxRec.Zold + xleg * zdir;
+                            zleg2 = mCurGfxRec.Zold + (xleg * zdir);
                         }
                         LineEnd3D(xleg1, yleg1, zleg1);
                         LineEnd4D(xleg2, yleg2, zleg2);
@@ -1441,16 +1447,16 @@ public partial class MG_CS_BasicViewer : UserControl
                         {
                             //The first end point 
                             //Move in the direction of each axis by the length of the shortest axis 
-                            xleg1 = mCurGfxRec.Xold + xleg * xdir;
-                            yleg1 = mCurGfxRec.Yold + xleg * ydir;
+                            xleg1 = mCurGfxRec.Xold + (xleg * xdir);
+                            yleg1 = mCurGfxRec.Yold + (xleg * ydir);
                         }
 
                         if (xleg >= yleg)
                         {
                             //The first end point 
                             //Move in the direction of each axis by the length of the shortest axis 
-                            xleg1 = mCurGfxRec.Xold + yleg * xdir;
-                            yleg1 = mCurGfxRec.Yold + yleg * ydir;
+                            xleg1 = mCurGfxRec.Xold + (yleg * xdir);
+                            yleg1 = mCurGfxRec.Yold + (yleg * ydir);
                         }
                         //Dog-leg hole positioning 
                         //Return to inital Z 
@@ -1482,7 +1488,7 @@ public partial class MG_CS_BasicViewer : UserControl
                     CreateDisplayList(false);
                     //Draw any existing lines 
                     ArcSegmentCount = 8;
-                    PolyCircle(mCurGfxRec.Xpos, mCurGfxRec.Ypos, mCurGfxRec.Zpos, mCurGfxRec.Xpos + mBlipSize, mCurGfxRec.Xpos + mBlipSize, mCurGfxRec.Ypos, mCurGfxRec.Ypos, mCurGfxRec.Zpos, mCurGfxRec.Zpos, mBlipSize, 0.0f, ONE_RADIAN, (int)-1, MacGen.Motion.CCARC);
+                    PolyCircle(mCurGfxRec.Xpos, mCurGfxRec.Ypos, mCurGfxRec.Zpos, mCurGfxRec.Xpos + mBlipSize, mCurGfxRec.Xpos + mBlipSize, mCurGfxRec.Ypos, mCurGfxRec.Ypos, mCurGfxRec.Zpos, mCurGfxRec.Zpos, mBlipSize, 0.0f, ONE_RADIAN, -1, MacGen.Motion.CCARC);
                 }
 
                 break;
@@ -1499,12 +1505,12 @@ public partial class MG_CS_BasicViewer : UserControl
 
                 break;
             case Motion.CCARC:
-                ArcSegmentCount = (int)((mCurGfxRec.Rad / mLongside) * 360);
+                ArcSegmentCount = (int)(mCurGfxRec.Rad / mLongside * 360);
                 PolyCircle(mCurGfxRec.Xcentr, mCurGfxRec.Ycentr, mCurGfxRec.Zcentr, mCurGfxRec.Xpos, mCurGfxRec.Xold, mCurGfxRec.Ypos, mCurGfxRec.Yold, mCurGfxRec.Zpos, mCurGfxRec.Zold, mCurGfxRec.Rad,
                 mCurGfxRec.Sang, mCurGfxRec.Eang, 1, (Motion)mCurGfxRec.WrkPlane);
                 break;
             case Motion.CWARC:
-                ArcSegmentCount = (int)((mCurGfxRec.Rad / mLongside) * 360);
+                ArcSegmentCount = (int)(mCurGfxRec.Rad / mLongside * 360);
                 PolyCircle(mCurGfxRec.Xcentr, mCurGfxRec.Ycentr, mCurGfxRec.Zcentr, mCurGfxRec.Xpos, mCurGfxRec.Xold, mCurGfxRec.Ypos, mCurGfxRec.Yold, mCurGfxRec.Zpos, mCurGfxRec.Zold, mCurGfxRec.Rad,
                 mCurGfxRec.Sang, mCurGfxRec.Eang, -1, (Motion)mCurGfxRec.WrkPlane);
                 break;
@@ -1528,7 +1534,7 @@ public partial class MG_CS_BasicViewer : UserControl
         {
             foreach (MG_CS_BasicViewer sib in MG_CS_BasicViewer.Siblings)
             {
-                if (sib.ParentForm.Name == this.ParentForm.Name)
+                if (sib.ParentForm.Name == ParentForm.Name)
                 {
                     sib.CreateDisplayListsAndDraw();
                 }
@@ -1542,8 +1548,15 @@ public partial class MG_CS_BasicViewer : UserControl
 
     public void FindExtents()
     {
-        if (!Visible) return;
-        if (MotionBlocks.Count == 0) return;
+        if (!Visible)
+        {
+            return;
+        }
+
+        if (MotionBlocks.Count == 0)
+        {
+            return;
+        }
 
         mExtentX[0] = float.MaxValue;
         mExtentX[1] = float.MinValue;
@@ -1580,8 +1593,16 @@ public partial class MG_CS_BasicViewer : UserControl
         mViewRect.Width = mExtentX[1] - mExtentX[0];
         mViewRect.Y = mExtentY[0];
         mViewRect.Height = mExtentY[1] - mExtentY[0];
-        if (float.IsNegativeInfinity(mViewRect.Width)) return;
-        if (float.IsNegativeInfinity(mViewRect.Height)) return;
+        if (float.IsNegativeInfinity(mViewRect.Width))
+        {
+            return;
+        }
+
+        if (float.IsNegativeInfinity(mViewRect.Height))
+        {
+            return;
+        }
+
         mViewRect.Inflate(mViewRect.Width * 0.01f, mViewRect.Height * 0.01f);
 
         AdjustAspect();
@@ -1595,10 +1616,12 @@ public partial class MG_CS_BasicViewer : UserControl
 
         mLastPos.X = 0;
         mLastPos.Y = 0;
-        
-        if( mBreakPoint > MotionBlocks.Count-1)
-        	mBreakPoint = MotionBlocks.Count-1;	
-        
+
+        if (mBreakPoint > MotionBlocks.Count - 1)
+        {
+            mBreakPoint = MotionBlocks.Count - 1;
+        }
+
         for (mGfxIndex = 0; mGfxIndex <= mBreakPoint; mGfxIndex++)
         {
             mCurGfxRec = MotionBlocks[mGfxIndex];
@@ -1610,8 +1633,8 @@ public partial class MG_CS_BasicViewer : UserControl
     private void DrawDisplayLists()
     {
         CreateWcs();
-        SetInViewStatus(this.mViewRect);
-        mGfx.Clear(this.BackColor);
+        SetInViewStatus(mViewRect);
+        mGfx.Clear(BackColor);
         DrawListsToGraphics(ref mGfx);
         mGfxBuff.Render();
     }
@@ -1624,7 +1647,10 @@ public partial class MG_CS_BasicViewer : UserControl
 
     private void CreateWcs()
     {
-        if (!Visible) return;
+        if (!Visible)
+        {
+            return;
+        }
 
         mWcsDisplayLists.Clear();
         mPoints.Clear();
@@ -1634,21 +1660,21 @@ public partial class MG_CS_BasicViewer : UserControl
             mCurMotion = Motion.RAPID;
             //Y axis line 
             Line3D(0, 0, 0, 0, -mLongside * 10, 0);
-            this.CreateWcsPath(Color.Gray);
+            CreateWcsPath(Color.Gray);
             Line3D(0, 0, 0, 0, mLongside * 10, 0);
-            this.CreateWcsPath(Color.Gray);
+            CreateWcsPath(Color.Gray);
 
             //X axis line 
             Line3D(0, 0, 0, mLongside * 10, 0, 0);
-            this.CreateWcsPath(Color.Gray);
+            CreateWcsPath(Color.Gray);
             Line3D(0, 0, 0, -mLongside * 10, 0, 0);
-            this.CreateWcsPath(Color.Gray);
+            CreateWcsPath(Color.Gray);
 
             //Z Axis line 
             Line3D(0, 0, 0, 0, 0, mLongside * 10);
-            this.CreateWcsPath(Color.Gray);
+            CreateWcsPath(Color.Gray);
             Line3D(0, 0, 0, 0, 0, -mLongside * 10);
-            this.CreateWcsPath(Color.Gray);
+            CreateWcsPath(Color.Gray);
         }
 
         if (DrawAxisIndicator)
@@ -1686,7 +1712,7 @@ public partial class MG_CS_BasicViewer : UserControl
             Line3D(0f, 0f, 1f, 0.1f, 0f, 0.8f);
             CreateWcsPath(Color.DarkRed);
 
-            PolyCircle(0f, 0f, 0f, 0.1f, 0.1f, 0f, 0f, 0.8f, 0.8f, 0.1f,0f, ONE_RADIAN, 1, Motion.XY_PLN);
+            PolyCircle(0f, 0f, 0f, 0.1f, 0.1f, 0f, 0f, 0.8f, 0.8f, 0.1f, 0f, ONE_RADIAN, 1, Motion.XY_PLN);
             CreateWcsPath(Color.DarkRed);
 
             //Draw the letter Z 
@@ -1730,7 +1756,11 @@ public partial class MG_CS_BasicViewer : UserControl
                     //Iterate in sets of 2 
                     for (int r = 0; r <= l.Points.Length - 2; r++)
                     {
-                        if (maxHits >= INT_MAXHITS) return;
+                        if (maxHits >= INT_MAXHITS)
+                        {
+                            return;
+                        }
+
                         if (cadRect.IntersectsLine(l.Points[r], l.Points[r + 1]))
                         {
                             mSelectionHits.Add(MotionBlocks[l.ParentIndex]);
@@ -1756,7 +1786,7 @@ public partial class MG_CS_BasicViewer : UserControl
                 if (cadRect.IntersectsLine(l.Points[r], l.Points[r + 1]))
                 {
                     l.InView = true;
-                    break; 
+                    break;
                 }
             }
         }
@@ -1772,7 +1802,11 @@ public partial class MG_CS_BasicViewer : UserControl
     private void CreateDisplayList(bool rapid)
     {
         ClsDisplayList p = new();
-        if ((mPoints.Count < 2)) return;
+        if (mPoints.Count < 2)
+        {
+            return;
+        }
+
         {
             p.Color = mCurColor;
             p.Rapid = rapid;
@@ -1787,10 +1821,14 @@ public partial class MG_CS_BasicViewer : UserControl
     private void CreateWcsPath(Color clr)
     {
         ClsDisplayList p = new();
-        if ((mPoints.Count < 2)) return;
+        if (mPoints.Count < 2)
+        {
+            return;
+        }
+
         {
             p.Color = clr;
-            p.Rapid = (mCurMotion == Motion.RAPID);
+            p.Rapid = mCurMotion == Motion.RAPID;
             p.Points = mPoints.ToArray();
         }
         mWcsDisplayLists.Add(p);
@@ -1820,15 +1858,15 @@ public partial class MG_CS_BasicViewer : UserControl
 
     private void MG_BasicViewer_VisibleChanged(object sender, System.EventArgs e)
     {
-        if (this.Visible == false)
+        if (Visible == false)
         {
             //Reclaim a little memory 
-            this.mDisplayLists.Clear();
+            mDisplayLists.Clear();
         }
     }
 
     private void MG_CS_BasicViewer_SizeChanged(object sender, EventArgs e)
     {
-        this.Init();
-    } 
+        Init();
+    }
 }

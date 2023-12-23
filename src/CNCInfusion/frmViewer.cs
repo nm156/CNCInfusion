@@ -1,12 +1,12 @@
+using CNCInfusion.Viewer;
+using CSharpBasicViewerApp;
+using MacGen;
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Windows.Forms;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-
-using MacGen;
-using CSharpBasicViewerApp;
+using System.Threading;
+using System.Windows.Forms;
 
 
 // TESTERS/CODERS WANTED!  I currently don't have a machine to test this on
@@ -84,7 +84,7 @@ public enum eMode { CONNECTED, DISCONNECTED, RUNNING, FEEDHOLD, CYCLESTART, FINI
 
 public partial class frmViewer : Form
 {
-    Settings settingsForm;
+    private Settings settingsForm;
 
     private string mCncFile;
     private readonly clsProcessor mProcessor = clsProcessor.Instance();
@@ -96,10 +96,7 @@ public partial class frmViewer : Form
     private bool toolchange;
     private bool feedHold;
     private bool gettingSettings;
-    private bool statusUpdates;
     private bool useGrblOnly;
-    private bool GrblReportsInches;
-
     private volatile bool waitingOnACK;
     private volatile bool cancelled;
 
@@ -113,19 +110,24 @@ public partial class frmViewer : Form
 
     // comm thread callback to gui thread
     public delegate void ThreadFinishActionsDelegate();
-    readonly ThreadFinishActionsDelegate FinishActions;
+
+    private readonly ThreadFinishActionsDelegate FinishActions;
 
     public delegate void UpdateGUIThreadDelegate(int i);
-    readonly UpdateGUIThreadDelegate UpdateGUIAction;
+
+    private readonly UpdateGUIThreadDelegate UpdateGUIAction;
 
     public delegate void UpdatePositionLEDSDelegate(string str);
-    readonly UpdatePositionLEDSDelegate UpdatePositionLEDSAction;
+
+    private readonly UpdatePositionLEDSDelegate UpdatePositionLEDSAction;
 
     public delegate void TransmitLEDDelegate();
-    readonly TransmitLEDDelegate TX_LED;
+
+    private readonly TransmitLEDDelegate TX_LED;
 
     public delegate void ReceiveLEDDelegate();
-    readonly ReceiveLEDDelegate RX_LED;
+
+    private readonly ReceiveLEDDelegate RX_LED;
 
     public eMode currentMode;
 
@@ -133,30 +135,27 @@ public partial class frmViewer : Form
     private static Regex Reportrgx;
 
 
-    public bool PerformStatusUpdates { get { return statusUpdates; } set { statusUpdates = value; } }
-    public int UpdateInterval { get { return timerStatusQuery.Interval; } set { timerStatusQuery.Interval = value; } }
+    public bool PerformStatusUpdates { get; set; }
+    public int UpdateInterval { get => timerStatusQuery.Interval; set => timerStatusQuery.Interval = value; }
     public bool PreprocessorMode
     {
-        get { return useGrblOnly; }
+        get => useGrblOnly;
         set
         {
             useGrblOnly = value;
-            if (useGrblOnly)
-                lblGcodeMode.Text = "Preprocessed ";
-            else
-                lblGcodeMode.Text = string.Empty;
+            lblGcodeMode.Text = useGrblOnly ? "Preprocessed " : string.Empty;
 
             lblGcodeMode.Text += "Gcode";
         }
     }
-    public bool GrblReportMode { get { return GrblReportsInches; } set { GrblReportsInches = value; } }
+    public bool GrblReportMode { get; set; }
 
     public frmViewer()
     {
         InitializeComponent();
         settingsForm = null;
         getSerialPorts();
-        mViewer = this.MG_Viewer1;
+        mViewer = MG_Viewer1;
         mProcessor.OnAddBlock += new clsProcessor.OnAddBlockEventHandler(mProcessor_OnAddBlock);
         MG_CS_BasicViewer.OnSelection += new MG_CS_BasicViewer.OnSelectionEventHandler(mViewer_OnSelection);
         MG_CS_BasicViewer.MouseLocation += new MG_CS_BasicViewer.MouseLocationEventHandler(mViewer_MouseLocation);
@@ -177,10 +176,10 @@ public partial class frmViewer : Form
 
         setMode(eMode.DISCONNECTED);
         UpdateInterval = 200; // 5 updates sec
-        statusUpdates = false; // when enabled
+        PerformStatusUpdates = false; // when enabled
         feedHold = false;
         PreprocessorMode = true;
-        GrblReportsInches = false;
+        GrblReportMode = false;
 
         TXLEDoff = new System.Timers.Timer(10);
         TXLEDoff.Elapsed += TXLEDoffElapsed;
@@ -210,12 +209,12 @@ public partial class frmViewer : Form
 
         if (Properties.Settings.Default.Virgin == true)
         {
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
         }
         else
         {
-            this.Location = Properties.Settings.Default.ViewFormLocation;
-            this.Size = Properties.Settings.Default.ViewFormSize;
+            Location = Properties.Settings.Default.ViewFormLocation;
+            Size = Properties.Settings.Default.ViewFormSize;
         }
 
         PreprocessorMode = Properties.Settings.Default.GrblPreprocesor;
@@ -239,9 +238,9 @@ public partial class frmViewer : Form
     {
         try
         {
-            this.Progress.Maximum = ct;
+            Progress.Maximum = ct;
 
-            this.Progress.Value = idx;
+            Progress.Value = idx;
             if (ct > 10000)
             {
                 //Refresh every 1000 blocks
@@ -279,7 +278,7 @@ public partial class frmViewer : Form
         {
             tipString[r] = hits[r].Codestring;
         }
-        this.CodeTip.SetToolTip(mViewer, string.Join(Environment.NewLine, tipString));
+        CodeTip.SetToolTip(mViewer, string.Join(Environment.NewLine, tipString));
     }
 
     private void mViewer_OnStatus(string msg, int index, int max)
@@ -292,9 +291,9 @@ public partial class frmViewer : Form
 
     private void mSetup_MachineActivated(clsMachine m)
     {
-        MG_Viewer1.RotaryDirection = (RotaryDirection)m.RotaryDir;
-        MG_Viewer1.RotaryPlane = (Axis)m.RotaryAxis;
-        MG_Viewer1.RotaryType = (RotaryMotionType)m.RotaryType;
+        MG_Viewer1.RotaryDirection = m.RotaryDir;
+        MG_Viewer1.RotaryPlane = m.RotaryAxis;
+        MG_Viewer1.RotaryType = m.RotaryType;
         MG_Viewer1.ViewManipMode = MG_CS_BasicViewer.ManipMode.SELECTION;
 
         MG_Viewer1.FindExtents();
@@ -331,7 +330,7 @@ public partial class frmViewer : Form
     private void ProcessFile(string fileName)
     {
         string lastStatus;
-        String line;
+        string line;
         string buffer = string.Empty;
         const string mCommentMatch = "\\([^()]*\\)";
 
@@ -362,20 +361,22 @@ public partial class frmViewer : Form
                 // skip comments for efficiency
                 MatchCollection cmtmatches = cmtrgx.Matches(line);
                 if (cmtmatches.Count > 0)
+                {
                     continue;
+                }
 
                 if (GRBLPreprocessor.GrblPreprocess(line) == true)
                 {
                     // supported line - add it
                     buffer += line;
                     buffer += "\r\n";
-                    listBoxGcode.Items.Add(line);
+                    _ = listBoxGcode.Items.Add(line);
                 }
                 else
                 {
                     // in Grbl mode and found unrecognized/supported command
                     listBoxGcode.Items.Clear();
-                    MessageBox.Show(
+                    _ = MessageBox.Show(
                         "Selected file contains commands unrecognized by Grbl\n'" +
                         line + "'\nCheck Settings->Options if this error was unexpected\n",
                         "Preprocessing file",
@@ -389,7 +390,7 @@ public partial class frmViewer : Form
             {
                 buffer += line;
                 buffer += "\r\n";
-                listBoxGcode.Items.Add(line);
+                _ = listBoxGcode.Items.Add(line);
             }
             Application.DoEvents();
         }
@@ -418,9 +419,13 @@ public partial class frmViewer : Form
             OpenFile(OpenFileDialog1.FileName);
 
             if (comPort.IsOpen)
+            {
                 setMode(eMode.CONNECTED);
+            }
             else
+            {
                 setMode(eMode.DISCONNECTED);
+            }
 
             Text = System.IO.Path.GetFileName(OpenFileDialog1.FileName);
         }
@@ -447,7 +452,7 @@ public partial class frmViewer : Form
     {
         if (cbxComPort.Text == "NOPORTS")
         {
-            MessageBox.Show(
+            _ = MessageBox.Show(
                 "No serial ports are currently available on this system.\n\n" +
                 "1. Connect Grbl controller\n" +
                 "2. Wait a few seconds\n" +
@@ -477,7 +482,7 @@ public partial class frmViewer : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message,
+            _ = MessageBox.Show(ex.Message,
                             "Serial Port",
                             MessageBoxButtons.OK, MessageBoxIcon.Error,
                             MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
@@ -500,7 +505,7 @@ public partial class frmViewer : Form
         cbxComPort.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames());
         if (cbxComPort.Items.Count == 0)
         {
-            cbxComPort.Items.Add("NOPORTS");
+            _ = cbxComPort.Items.Add("NOPORTS");
         }
         // choose first available index
         cbxComPort.SelectedIndex = 0;
@@ -602,11 +607,13 @@ public partial class frmViewer : Form
 
             try
             {
-                Invoke(TX_LED);
+                _ = Invoke(TX_LED);
                 if (comPort.IsOpen)
+                {
                     comPort.Write(line + "\n");
+                }
 
-                Invoke(UpdateGUIAction, i++);
+                _ = Invoke(UpdateGUIAction, i++);
 
                 // wait for ComPortDataReceived() to
                 // acknowledge reply
@@ -617,14 +624,16 @@ public partial class frmViewer : Form
                 }
 
                 if (cancelled == true)
+                {
                     break;
+                }
 
                 waitingOnACK = true;
 
             }
             catch (Exception) { }
         }
-        Invoke(FinishActions);
+        _ = Invoke(FinishActions);
     }
 
     // all interrupt driven comm is received here
@@ -647,7 +656,9 @@ public partial class frmViewer : Form
                 }
 
                 if (comPort.IsOpen)
+                {
                     ACK = comPort.ReadLine();
+                }
 
                 // test cases for responses back from GRbl
 
@@ -655,7 +666,7 @@ public partial class frmViewer : Form
                 if (ACK.ToUpper().Trim() == "OK")
                 {
                     // strobe RX LED (only on affirm ACKs, not status queries)
-                    Invoke(RX_LED);
+                    _ = Invoke(RX_LED);
                     if (specialMode == eMode.FEEDHOLD)
                     {
                         // swallow the first OK sent by the command on resume
@@ -670,7 +681,7 @@ public partial class frmViewer : Form
                 else if (ACK.ToUpper().StartsWith("MPOS"))
                 {
                     // show the machine/world position on 7 segment displays
-                    Invoke(UpdatePositionLEDSAction, ACK);
+                    _ = Invoke(UpdatePositionLEDSAction, ACK);
                 }
                 else if (ACK.StartsWith("'$x=value'"))
                 {
@@ -689,7 +700,7 @@ public partial class frmViewer : Form
                 {
                     executingLine = "Manual tool change :\n" + executingLine;
 
-                    MessageBox.Show(executingLine, "Manual intervention required",
+                    _ = MessageBox.Show(executingLine, "Manual intervention required",
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Exclamation,
                                     MessageBoxDefaultButton.Button1,
@@ -739,10 +750,13 @@ public partial class frmViewer : Form
 
         // was cancelled by user request inside comm notify by unsupported command
         if (cancelled)
+        {
             setMode(eMode.ABORTED);
+        }
         else
+        {
             setMode(eMode.FINISHED);
-
+        }
     }
 
     private void UpdateGUI(int i)
@@ -791,14 +805,14 @@ public partial class frmViewer : Form
             wy = double.Parse(groups[5].Value.ToString());
             wz = double.Parse(groups[6].Value.ToString());
 
-            if (GrblReportsInches)
+            if (GrblReportMode)
             {
-                mx = mx * TOINCHES;
-                my = my * TOINCHES;
-                mz = mz * TOINCHES;
-                wx = wx * TOINCHES;
-                wy = wy * TOINCHES;
-                wz = wz * TOINCHES;
+                mx *= TOINCHES;
+                my *= TOINCHES;
+                mz *= TOINCHES;
+                wx *= TOINCHES;
+                wy *= TOINCHES;
+                wz *= TOINCHES;
             }
 
             if (rbMachine.Checked)
@@ -818,7 +832,7 @@ public partial class frmViewer : Form
             //Debug.WriteLine(string.Format("W X={0} Y={1} Z={2}", wx, wy, wz));
 
         }
-        catch (Exception ex) { MessageBox.Show(str, ex.Message); }
+        catch (Exception ex) { _ = MessageBox.Show(str, ex.Message); }
     }
 
     private void TransmitLED()
@@ -861,7 +875,7 @@ public partial class frmViewer : Form
         $9 = 0.050 (cornering junction deviation in mm)
         '$x=value' to set parameter or just '$' to dump current settings
         */
-        Settings = new List<string>();
+        Settings = [];
 
         gettingSettings = true;
         WriteSerial("$\n");
@@ -895,7 +909,7 @@ public partial class frmViewer : Form
         string str;
         // status request
         // response is processed in ComPortDataReceived()
-        if (statusUpdates)
+        if (PerformStatusUpdates)
         {
             if (comPort.IsOpen)
             {
@@ -1009,7 +1023,7 @@ public partial class frmViewer : Form
                 btnRun.Enabled = true;
                 lblMode.BackColor = System.Drawing.Color.Chartreuse;
                 lblMode.Text = "FINISHED";
-                MessageBox.Show("Normal Completion", "Run completed",
+                _ = MessageBox.Show("Normal Completion", "Run completed",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information,
                             MessageBoxDefaultButton.Button1,
@@ -1040,7 +1054,7 @@ public partial class frmViewer : Form
                 btnCancel.Enabled = false;
                 Cursor = Cursors.Default;
 
-                MessageBox.Show("Cancel has been requested", "Run aborted",
+                _ = MessageBox.Show("Cancel has been requested", "Run aborted",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Hand,
                                 MessageBoxDefaultButton.Button1,
@@ -1063,7 +1077,7 @@ public partial class frmViewer : Form
                 pnlControl.Enabled = false;
                 btnRun.Enabled = false;
                 listBoxGcode.Items.Clear();
-                this.Refresh();
+                Refresh();
                 lblMode.BackColor = System.Drawing.Color.SkyBlue;
                 lblMode.Text = "LOADING";
                 break;
@@ -1097,13 +1111,15 @@ public partial class frmViewer : Form
         {
             connect();
             if (!comPort.IsOpen)
+            {
                 return;
+            }
 
             setMode(eMode.CONNECTED);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message);
+            _ = MessageBox.Show(ex.Message);
             setMode(eMode.DISCONNECTED);
             disconnect();
         }
@@ -1138,11 +1154,7 @@ public partial class frmViewer : Form
 
         // use existing buffer
         // copy of gcode for use in thread
-        gcode = new List<object>();
-        foreach (object o in listBoxGcode.Items)
-        {
-            gcode.Add(o);
-        }
+        gcode = [.. listBoxGcode.Items];
 
         setMode(eMode.RUNNING);
     }
@@ -1179,7 +1191,7 @@ public partial class frmViewer : Form
     #define CMD_RESET 0x18 // ctrl-x
     */
 
-    void BtnFeedHoldClick(object sender, EventArgs e)
+    private void BtnFeedHoldClick(object sender, EventArgs e)
     {
         string command;
         feedHold = !feedHold;
@@ -1191,8 +1203,10 @@ public partial class frmViewer : Form
             setMode(eMode.FEEDHOLD);
 
             // no sense doing status updates if grbl is paused
-            if (statusUpdates)
+            if (PerformStatusUpdates)
+            {
                 timerStatusQuery.Enabled = false;
+            }
         }
         else
         {
@@ -1201,8 +1215,10 @@ public partial class frmViewer : Form
             setMode(eMode.CYCLESTART);
 
             // restore status updates if they were previously enabled
-            if (statusUpdates)
+            if (PerformStatusUpdates)
+            {
                 timerStatusQuery.Enabled = true;
+            }
         }
     }
 
@@ -1215,21 +1231,21 @@ public partial class frmViewer : Form
         WriteSerial(command);
     }
 
-    void BtnZeroXClick(object sender, EventArgs e)
+    private void BtnZeroXClick(object sender, EventArgs e)
     {
         string command = "G92 X0\n";
         Xdisplay.Value = "000.000";
         WriteSerial(command);
     }
 
-    void BtnZeroYClick(object sender, EventArgs e)
+    private void BtnZeroYClick(object sender, EventArgs e)
     {
         string command = "G92 Y0\n";
         Ydisplay.Value = "000.000";
         WriteSerial(command);
     }
 
-    void BtnZeroZClick(object sender, EventArgs e)
+    private void BtnZeroZClick(object sender, EventArgs e)
     {
         string command = "G92 Z0\n";
         Zdisplay.Value = "000.000";
@@ -1245,12 +1261,12 @@ public partial class frmViewer : Form
 
         settingsForm.setUpdateInterval(timerStatusQuery.Interval);
         settingsForm.setGrblMode(useGrblOnly);
-        settingsForm.setUpdateMode(statusUpdates);
-        settingsForm.setInchUnits(GrblReportsInches);
-        settingsForm.ShowDialog();
+        settingsForm.setUpdateMode(PerformStatusUpdates);
+        settingsForm.setInchUnits(GrblReportMode);
+        _ = settingsForm.ShowDialog();
     }
 
-    void BtnXplusClick(object sender,
+    private void BtnXplusClick(object sender,
                        EventArgs e)
     {
         // G21/G20
@@ -1261,37 +1277,37 @@ public partial class frmViewer : Form
         // cbJogSpeed.Text is rate
     }
 
-    void BtnXminusClick(object sender, EventArgs e)
+    private void BtnXminusClick(object sender, EventArgs e)
     {
 
     }
 
-    void BtnYplusClick(object sender, EventArgs e)
+    private void BtnYplusClick(object sender, EventArgs e)
     {
 
     }
 
-    void BtnYminusClick(object sender, EventArgs e)
+    private void BtnYminusClick(object sender, EventArgs e)
     {
 
     }
 
-    void BtnZplusClick(object sender, EventArgs e)
+    private void BtnZplusClick(object sender, EventArgs e)
     {
 
     }
 
-    void BtnZminusClick(object sender, EventArgs e)
+    private void BtnZminusClick(object sender, EventArgs e)
     {
 
     }
 
-    void BtnMDIExecuteClick(object sender, EventArgs e)
+    private void BtnMDIExecuteClick(object sender, EventArgs e)
     {
         string command =
             tbMDICommand.Text + "\n";
 
-        cbMDIHistory.Items.Add(tbMDICommand.Text);
+        _ = cbMDIHistory.Items.Add(tbMDICommand.Text);
         WriteSerial(command);
     }
 
@@ -1357,15 +1373,7 @@ public partial class frmViewer : Form
 
         if (btnCompleted.UseMnemonic)
         {
-            if (listBoxGcode.SelectedIndex != -1)
-            {
-                mViewer.BreakPoint = listBoxGcode.SelectedIndex;
-            }
-            else
-
-            {
-                mViewer.BreakPoint = 0;
-            }
+            mViewer.BreakPoint = listBoxGcode.SelectedIndex != -1 ? listBoxGcode.SelectedIndex : 0;
         }
         else
         {
@@ -1418,7 +1426,7 @@ public partial class frmViewer : Form
     {
         frmAbout aboutForm = new
 ();
-        aboutForm.ShowDialog();
+        _ = aboutForm.ShowDialog();
     }
 
     private void ViewButtonClicked(object sender, EventArgs e)
@@ -1469,10 +1477,10 @@ public partial class frmViewer : Form
                 nd.Tag = tl;
             }
 
-            frm.tvTools.BackColor = this.MG_Viewer1.BackColor;
+            frm.tvTools.BackColor = MG_Viewer1.BackColor;
             frm.StartPosition = FormStartPosition.Manual;
             frm.Location = Control.MousePosition;
-            frm.ShowDialog();
+            _ = frm.ShowDialog();
         }
         mViewer.Redraw(true);
     }
@@ -1488,14 +1496,16 @@ public partial class frmViewer : Form
     private void TabControl1SelectedIndexChanged(object sender, EventArgs e)
     {
         if (currentMode == eMode.RUNNING)
+        {
             tabControl1.SelectedTab = AutoPage;
+        }
     }
 
     private void FrmViewerFormClosing(object sender, FormClosingEventArgs e)
     {
         if (currentMode == eMode.RUNNING)
         {
-            MessageBox.Show(
+            _ = MessageBox.Show(
                 "Currently running.  Abort current program first!", "Program active",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Hand,
@@ -1507,10 +1517,10 @@ public partial class frmViewer : Form
 
         try
         {
-            if (this.WindowState == FormWindowState.Normal)
+            if (WindowState == FormWindowState.Normal)
             {
-                Properties.Settings.Default.ViewFormLocation = this.Location;
-                Properties.Settings.Default.ViewFormSize = this.Size;
+                Properties.Settings.Default.ViewFormLocation = Location;
+                Properties.Settings.Default.ViewFormSize = Size;
             }
             Properties.Settings.Default.LastMachine = "Mill.xml";
             Properties.Settings.Default.Virgin = false;
@@ -1531,7 +1541,9 @@ public partial class frmViewer : Form
         timerStatusQuery.Enabled = false;
         clearSerialBuffers();
         if (comPort.IsOpen)
+        {
             comPort.Close();
+        }
     }
 }
 

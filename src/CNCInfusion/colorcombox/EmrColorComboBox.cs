@@ -1,14 +1,11 @@
 using System;
-using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Data;
 using System.Windows.Forms;
-using System.Windows.Forms.Design;
 
 
-namespace EmrColorComboBox;
+namespace CNCInfusion.colorcombox;
 
 /// <summary>
 /// Summary description for UserControl1.
@@ -16,12 +13,12 @@ namespace EmrColorComboBox;
 /// 
 
 
-public class ColorComboBox : System.Windows.Forms.ComboBox
+public class ColorComboBox : ComboBox
 {
     /// <summary>
     /// Required designer variable.
     /// </summary>
-    private readonly System.ComponentModel.Container components = null;
+    private readonly Container components = null;
 
 
     public ColorComboBox()
@@ -53,15 +50,15 @@ public class ColorComboBox : System.Windows.Forms.ComboBox
         // 
         // ColorComboBox
         // 
-        this.AccessibleRole = System.Windows.Forms.AccessibleRole.ComboBox;
-        this.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-        this.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-        this.Size = new System.Drawing.Size(120, 24);
-        this.EnabledChanged += new System.EventHandler(this.ColorComboBox_EnabledChanged);
-        this.SelectedIndexChanged += new System.EventHandler(this.ColorComboBox_SelectedIndexChanged);
-        this.MouseEnter += new System.EventHandler(this.ColorComboBox_MouseEnter);
-        this.MouseLeave += new System.EventHandler(this.ColorComboBox_MouseLeave);
-        this.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ColorComboBox_DrawItem);
+        AccessibleRole = AccessibleRole.ComboBox;
+        DrawMode = DrawMode.OwnerDrawFixed;
+        DropDownStyle = ComboBoxStyle.DropDownList;
+        Size = new Size(120, 24);
+        EnabledChanged += new EventHandler(ColorComboBox_EnabledChanged);
+        SelectedIndexChanged += new EventHandler(ColorComboBox_SelectedIndexChanged);
+        MouseEnter += new EventHandler(ColorComboBox_MouseEnter);
+        MouseLeave += new EventHandler(ColorComboBox_MouseLeave);
+        DrawItem += new DrawItemEventHandler(ColorComboBox_DrawItem);
 
     }
     #endregion
@@ -72,29 +69,36 @@ public class ColorComboBox : System.Windows.Forms.ComboBox
     [Category("Property")]
     public Color SelectedColor
     {
-        get
-        {
-            return this.resultCol;
-        }
+        get => resultCol;
         set
         {
-            this.resultCol = value;
+            resultCol = value;
             int i;
-            for (i = 0; i < this.Items.Count - 1; i++)
+            for (i = 0; i < Items.Count - 1; i++)
             {
-                if (i >= 141) break;
-                if (c[i].Name == this.resultCol.Name)
+                if (i >= 141)
                 {
-                    this.SelectedIndex = i;
+                    break;
+                }
+
+                if (c[i].Name == resultCol.Name)
+                {
+                    SelectedIndex = i;
                     break;
                 }
             }
             if (i == 141)
             {
-                this.colDlg = false;
-                this.otherCol = value;
-                if (this.SelectedIndex != i) this.SelectedIndex = i;
-                else this.ColorComboBox_SelectedIndexChanged(this, null);
+                colDlg = false;
+                otherCol = value;
+                if (SelectedIndex != i)
+                {
+                    SelectedIndex = i;
+                }
+                else
+                {
+                    ColorComboBox_SelectedIndexChanged(this, null);
+                }
             }
         }
     }
@@ -106,19 +110,13 @@ public class ColorComboBox : System.Windows.Forms.ComboBox
     [Description("The color of control when the appearance set to Skinned.")]
     public Color ControlColor
     {
-        get
-        {
-            return this.cColor;
-        }
+        get => cColor;
         set
         {
-            if (this.Enabled)
-                this.cColor = value;
-            else
-                this.cColor = SystemColors.ControlDark;
+            cColor = Enabled ? value : SystemColors.ControlDark;
 
-            this.bColor = value;
-            this.Refresh();
+            bColor = value;
+            Refresh();
         }
     }
 
@@ -128,14 +126,11 @@ public class ColorComboBox : System.Windows.Forms.ComboBox
     [Description("Determines if the control display skinned or standard.")]
     public ControlView Appearance
     {
-        get
-        {
-            return this.app;
-        }
+        get => app;
         set
         {
-            this.app = value;
-            this.Refresh();
+            app = value;
+            Refresh();
         }
     }
 
@@ -143,13 +138,7 @@ public class ColorComboBox : System.Windows.Forms.ComboBox
     [Browsable(true)]
     [Category("Property")]
     [Description("A VS.Net(C#) dll control by Amir Yousefi (ampiroid@hotmail.com).")]
-    public string About
-    {
-        get
-        {
-            return "A VS.Net(C#) dll control by Amir Yousefi (ampiroid@hotmail.com).";
-        }
-    }
+    public string About => "A VS.Net(C#) dll control by Amir Yousefi (ampiroid@hotmail.com).";
 
 
 
@@ -314,18 +303,18 @@ public class ColorComboBox : System.Windows.Forms.ComboBox
         #endregion
     ];
 
-    private void DrawCombo(object sender, System.Windows.Forms.DrawItemEventArgs e)
+    private void DrawCombo(object sender, DrawItemEventArgs e)
     {
 
         Graphics g = e.Graphics;
         Rectangle rd = e.Bounds;
 
-        int rr = this.cColor.R;
-        int gg = this.cColor.G;
-        int bb = this.cColor.B;
+        int rr = cColor.R;
+        int gg = cColor.G;
+        int bb = cColor.B;
         Color cll = Color.White;
-        Color cl = Color.FromArgb(rr + (255 - rr) * 2 / 3, gg + (255 - gg) * 2 / 3, bb + (255 - bb) * 2 / 3);
-        Color cc = Color.FromArgb(rr + (255 - rr) * 1 / 3, gg + (255 - gg) * 1 / 3, bb + (255 - bb) * 1 / 3);
+        Color cl = Color.FromArgb(rr + ((255 - rr) * 2 / 3), gg + ((255 - gg) * 2 / 3), bb + ((255 - bb) * 2 / 3));
+        Color cc = Color.FromArgb(rr + ((255 - rr) * 1 / 3), gg + ((255 - gg) * 1 / 3), bb + ((255 - bb) * 1 / 3));
         Color cd = Color.FromArgb(rr, gg, bb);
         //Color cdd = Color.FromArgb(rr*2/3,gg*2/3,bb*2/3);
 
@@ -341,7 +330,7 @@ public class ColorComboBox : System.Windows.Forms.ComboBox
             }
             else
             {
-                if (this.app == ControlView.Skinned)
+                if (app == ControlView.Skinned)
                 {
                     e.Graphics.FillRectangle(br, rd);
                     br = new LinearGradientBrush(e.Bounds, cc, cll, 65f);
@@ -361,52 +350,60 @@ public class ColorComboBox : System.Windows.Forms.ComboBox
         }
 
         rd.Width = 20;
-        rd.Height = this.ItemHeight - 5;
+        rd.Height = ItemHeight - 5;
         rd.X = 4;
         rd.Y += 1;
 
-        if (e.Index >= 0 && e.Index < 141)
+        if (e.Index is >= 0 and < 141)
         {
             g.FillRectangle(new SolidBrush(c[e.Index]), rd);
             g.DrawRectangle(new Pen(Color.Black), rd);
-            if (e.State == (DrawItemState.NoAccelerator | DrawItemState.NoFocusRect) || this.app == ControlView.Skinned)
-                g.DrawString(c[e.Index].Name, this.Font, new SolidBrush(Color.Black), rd.Width + 5, rd.Top - 1);
+            if (e.State == (DrawItemState.NoAccelerator | DrawItemState.NoFocusRect) || app == ControlView.Skinned)
+            {
+                g.DrawString(c[e.Index].Name, Font, new SolidBrush(Color.Black), rd.Width + 5, rd.Top - 1);
+            }
             else
-                g.DrawString(c[e.Index].Name, this.Font, new SolidBrush(SystemColors.HighlightText), rd.Width + 5, rd.Top - 1);
+            {
+                g.DrawString(c[e.Index].Name, Font, new SolidBrush(SystemColors.HighlightText), rd.Width + 5, rd.Top - 1);
+            }
         }
         else if (e.Index == 141)
         {
             g.FillRectangle(new SolidBrush(otherCol), rd);
             g.DrawRectangle(new Pen(Color.Black), rd);
-            if (e.State == (DrawItemState.NoAccelerator | DrawItemState.NoFocusRect) || this.app == ControlView.Skinned)
-                g.DrawString("Other", this.Font, new SolidBrush(Color.Black), rd.Width + 5, rd.Top - 1);
+            if (e.State == (DrawItemState.NoAccelerator | DrawItemState.NoFocusRect) || app == ControlView.Skinned)
+            {
+                g.DrawString("Other", Font, new SolidBrush(Color.Black), rd.Width + 5, rd.Top - 1);
+            }
             else
-                g.DrawString("Other", this.Font, new SolidBrush(SystemColors.HighlightText), rd.Width + 5, rd.Top - 1);
+            {
+                g.DrawString("Other", Font, new SolidBrush(SystemColors.HighlightText), rd.Width + 5, rd.Top - 1);
+            }
         }
-        if (this.app == ControlView.Skinned)
+        if (app == ControlView.Skinned)
         {
-            Graphics gr = this.CreateGraphics();
-            gr.DrawRectangle(new Pen(cd), 0, 0, this.Width - 1, this.Height - 1);
-            gr.DrawRectangle(new Pen(cl), 1, 1, this.Width - 3, this.Height - 3);
-            gr.FillRectangle(new SolidBrush(cll), this.Width - this.Height + 1, 2, this.Height - 3, this.Height - 4);
+            Graphics gr = CreateGraphics();
+            gr.DrawRectangle(new Pen(cd), 0, 0, Width - 1, Height - 1);
+            gr.DrawRectangle(new Pen(cl), 1, 1, Width - 3, Height - 3);
+            gr.FillRectangle(new SolidBrush(cll), Width - Height + 1, 2, Height - 3, Height - 4);
 
-            br = new LinearGradientBrush(new Rectangle(this.Width - this.Height + 1, 2, this.Height, this.Height), cl, cd, 45f);
-            gr.FillRectangle(br, this.Width - this.Height + 2, 3, this.Height - 5, this.Height - 6);
+            br = new LinearGradientBrush(new Rectangle(Width - Height + 1, 2, Height, Height), cl, cd, 45f);
+            gr.FillRectangle(br, Width - Height + 2, 3, Height - 5, Height - 6);
 
-            br = new LinearGradientBrush(new Rectangle(this.Width - this.Height + 1, 2, this.Height, this.Height), cll, cc, 45f);
-            gr.FillRectangle(br, this.Width - this.Height + 3, 4, this.Height - 7, this.Height - 8);
+            br = new LinearGradientBrush(new Rectangle(Width - Height + 1, 2, Height, Height), cll, cc, 45f);
+            gr.FillRectangle(br, Width - Height + 3, 4, Height - 7, Height - 8);
 
-            gr.FillRectangle(new SolidBrush(cll), this.Width - this.Height + 2, 3, 1, 1);
-            gr.FillRectangle(new SolidBrush(cll), this.Width - this.Height + 2, 3 + this.Height - 7, 1, 1);
-            gr.FillRectangle(new SolidBrush(cll), this.Width - this.Height + 2 + this.Height - 6, 3, 1, 1);
-            gr.FillRectangle(new SolidBrush(cl), this.Width - this.Height + 2 + this.Height - 6, 3 + this.Height - 7, 1, 1);
+            gr.FillRectangle(new SolidBrush(cll), Width - Height + 2, 3, 1, 1);
+            gr.FillRectangle(new SolidBrush(cll), Width - Height + 2, 3 + Height - 7, 1, 1);
+            gr.FillRectangle(new SolidBrush(cll), Width - Height + 2 + Height - 6, 3, 1, 1);
+            gr.FillRectangle(new SolidBrush(cl), Width - Height + 2 + Height - 6, 3 + Height - 7, 1, 1);
 
-            gr.DrawLine(new Pen(cd, 1), (this.Width - this.Height / 2) - 4, this.Height / 2 - 1, (this.Width - this.Height / 2) - 1, this.Height / 2 + 2);
-            gr.DrawLine(new Pen(cd, 1), (this.Width - this.Height / 2) - 1, this.Height / 2 + 2, (this.Width - this.Height / 2) + 2, this.Height / 2 - 1);
-            gr.DrawLine(new Pen(cc, 1), (this.Width - this.Height / 2) - 4, this.Height / 2 - 0, (this.Width - this.Height / 2) - 1, this.Height / 2 + 3);
-            gr.DrawLine(new Pen(cc, 1), (this.Width - this.Height / 2) - 1, this.Height / 2 + 3, (this.Width - this.Height / 2) + 2, this.Height / 2 - 0);
-            gr.DrawLine(new Pen(cl, 1), (this.Width - this.Height / 2) - 4, this.Height / 2 + 1, (this.Width - this.Height / 2) - 1, this.Height / 2 + 4);
-            gr.DrawLine(new Pen(cl, 1), (this.Width - this.Height / 2) - 1, this.Height / 2 + 4, (this.Width - this.Height / 2) + 2, this.Height / 2 + 1);
+            gr.DrawLine(new Pen(cd, 1), Width - (Height / 2) - 4, (Height / 2) - 1, Width - (Height / 2) - 1, (Height / 2) + 2);
+            gr.DrawLine(new Pen(cd, 1), Width - (Height / 2) - 1, (Height / 2) + 2, Width - (Height / 2) + 2, (Height / 2) - 1);
+            gr.DrawLine(new Pen(cc, 1), Width - (Height / 2) - 4, (Height / 2) - 0, Width - (Height / 2) - 1, (Height / 2) + 3);
+            gr.DrawLine(new Pen(cc, 1), Width - (Height / 2) - 1, (Height / 2) + 3, Width - (Height / 2) + 2, (Height / 2) - 0);
+            gr.DrawLine(new Pen(cl, 1), Width - (Height / 2) - 4, (Height / 2) + 1, Width - (Height / 2) - 1, (Height / 2) + 4);
+            gr.DrawLine(new Pen(cl, 1), Width - (Height / 2) - 1, (Height / 2) + 4, Width - (Height / 2) + 2, (Height / 2) + 1);
         }
 
         br.Dispose();
@@ -416,59 +413,72 @@ public class ColorComboBox : System.Windows.Forms.ComboBox
         //			int i = int.Parse(this.Parent.Text);
         //			this.Parent.Text = (i+1).ToString();
     }
-    private void ColorComboBox_DrawItem(object sender, System.Windows.Forms.DrawItemEventArgs e)
+    private void ColorComboBox_DrawItem(object sender, DrawItemEventArgs e)
     {
-        if (this.Items.Count < 141)
+        if (Items.Count < 141)
         {
-            if (this.Height < 21) this.Height = 21;
-            if (this.ItemHeight < 15) this.ItemHeight = 15;
-            for (int j = this.Items.Count; j < 141; j++)
-                this.Items.Add(c[j].Name);
-            this.Items.Add("Other");
+            if (Height < 21)
+            {
+                Height = 21;
+            }
+
+            if (ItemHeight < 15)
+            {
+                ItemHeight = 15;
+            }
+
+            for (int j = Items.Count; j < 141; j++)
+            {
+                _ = Items.Add(c[j].Name);
+            }
+
+            _ = Items.Add("Other");
 
             int i;
-            for (i = 0; i < this.Items.Count - 1; i++)
+            for (i = 0; i < Items.Count - 1; i++)
             {
-                if (c[i].Name == this.resultCol.Name)
+                if (c[i].Name == resultCol.Name)
                 {
-                    this.SelectedIndex = i;
+                    SelectedIndex = i;
                     break;
                 }
             }
             if (i == 141)
             {
-                this.colDlg = false;
-                this.SelectedIndex = i;
+                colDlg = false;
+                SelectedIndex = i;
             }
         }
         DrawCombo(sender, e);
 
     }
 
-    private void ColorComboBox_SelectedIndexChanged(object sender, System.EventArgs e)
+    private void ColorComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         try
         {
             if (SelectedIndex == 141)
             {
-                if (this.colDlg)
+                if (colDlg)
                 {
                     ColorDialog cDlg = new()
                     {
                         FullOpen = true
                     };
-                    cDlg.ShowDialog();
+                    _ = cDlg.ShowDialog();
                     otherCol = cDlg.Color;
                     resultCol = cDlg.Color;
                 }
                 else
                 {
-                    this.colDlg = true;
-                    this.Refresh();
+                    colDlg = true;
+                    Refresh();
                 }
             }
-            else resultCol = c[this.SelectedIndex];
-
+            else
+            {
+                resultCol = c[SelectedIndex];
+            }
         }
         catch
         {
@@ -477,24 +487,21 @@ public class ColorComboBox : System.Windows.Forms.ComboBox
 
     }
 
-    private void ColorComboBox_MouseEnter(object sender, System.EventArgs e)
+    private void ColorComboBox_MouseEnter(object sender, EventArgs e)
     {
-        Graphics gr = this.CreateGraphics();
-        gr.FillRectangle(new SolidBrush(Color.FromArgb(90, 255, 255, 255)), this.Width - this.Height + 2, 3, this.Height - 5, this.Height - 6);
+        Graphics gr = CreateGraphics();
+        gr.FillRectangle(new SolidBrush(Color.FromArgb(90, 255, 255, 255)), Width - Height + 2, 3, Height - 5, Height - 6);
     }
 
-    private void ColorComboBox_MouseLeave(object sender, System.EventArgs e)
+    private void ColorComboBox_MouseLeave(object sender, EventArgs e)
     {
-        this.Invalidate(new Rectangle(this.Width - this.Height + 2, 3, this.Height - 5, this.Height - 6));
-        this.Update();
+        Invalidate(new Rectangle(Width - Height + 2, 3, Height - 5, Height - 6));
+        Update();
     }
 
-    private void ColorComboBox_EnabledChanged(object sender, System.EventArgs e)
+    private void ColorComboBox_EnabledChanged(object sender, EventArgs e)
     {
-        if (this.Enabled)
-            this.cColor = this.bColor;
-        else
-            this.cColor = SystemColors.ControlDark;
+        cColor = Enabled ? bColor : SystemColors.ControlDark;
 
     }
 

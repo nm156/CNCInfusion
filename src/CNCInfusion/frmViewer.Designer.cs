@@ -1,4 +1,7 @@
-﻿namespace CNCInfusion;
+﻿using CNCInfusion.CustomPanel;
+using CNCInfusion.SevenSegment;
+
+namespace CNCInfusion;
 
 partial class frmViewer
 {
@@ -339,7 +342,7 @@ partial class frmViewer
         this.customPanel4.Controls.Add(this.MG_Viewer1);
         this.customPanel4.Curvature = 8;
         this.customPanel4.ForeColor = System.Drawing.Color.Black;
-        this.customPanel4.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel4.GradientMode = LinearGradientMode.Vertical;
         this.customPanel4.Location = new System.Drawing.Point(9, 6);
         this.customPanel4.Margin = new System.Windows.Forms.Padding(0);
         this.customPanel4.Name = "customPanel4";
@@ -535,7 +538,7 @@ partial class frmViewer
         this.customPanel1.Curvature = 8;
         this.customPanel1.Enabled = false;
         this.customPanel1.ForeColor = System.Drawing.Color.Black;
-        this.customPanel1.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel1.GradientMode = LinearGradientMode.Vertical;
         this.customPanel1.Location = new System.Drawing.Point(445, 41);
         this.customPanel1.Name = "customPanel1";
         this.customPanel1.Size = new System.Drawing.Size(327, 258);
@@ -673,7 +676,7 @@ partial class frmViewer
         this.customPanel5.Controls.Add(this.tabControl1);
         this.customPanel5.Curvature = 8;
         this.customPanel5.ForeColor = System.Drawing.Color.Black;
-        this.customPanel5.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel5.GradientMode = LinearGradientMode.Vertical;
         this.customPanel5.Location = new System.Drawing.Point(445, 305);
         this.customPanel5.Name = "customPanel5";
         this.customPanel5.Size = new System.Drawing.Size(327, 220);
@@ -967,7 +970,7 @@ partial class frmViewer
         this.customPanel8.Controls.Add(this.listBoxGcode);
         this.customPanel8.Curvature = 8;
         this.customPanel8.ForeColor = System.Drawing.Color.Black;
-        this.customPanel8.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel8.GradientMode = LinearGradientMode.Vertical;
         this.customPanel8.Location = new System.Drawing.Point(9, 331);
         this.customPanel8.Name = "customPanel8";
         this.customPanel8.Size = new System.Drawing.Size(330, 194);
@@ -1013,7 +1016,7 @@ partial class frmViewer
         this.pnlControl.Controls.Add(this.btnReset);
         this.pnlControl.Curvature = 8;
         this.pnlControl.ForeColor = System.Drawing.Color.Black;
-        this.pnlControl.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.pnlControl.GradientMode = LinearGradientMode.Vertical;
         this.pnlControl.Location = new System.Drawing.Point(345, 331);
         this.pnlControl.Name = "pnlControl";
         this.pnlControl.Size = new System.Drawing.Size(94, 194);
@@ -1085,7 +1088,7 @@ partial class frmViewer
         this.customPanel2.Controls.Add(this.lblVersion);
         this.customPanel2.Curvature = 4;
         this.customPanel2.ForeColor = System.Drawing.Color.Black;
-        this.customPanel2.GradientMode = Utility.Panel.LinearGradientMode.Vertical;
+        this.customPanel2.GradientMode = LinearGradientMode.Vertical;
         this.customPanel2.Location = new System.Drawing.Point(445, 6);
         this.customPanel2.Name = "customPanel2";
         this.customPanel2.Size = new System.Drawing.Size(327, 29);
@@ -1175,7 +1178,7 @@ partial class frmViewer
     private System.Windows.Forms.RadioButton rbWorld;
     private System.Windows.Forms.Label lblVersion;
     private System.Windows.Forms.Label lblGcodeMode;
-    private Utility.Panel.CustomPanel pnlControl;
+    private CustomPanel.CustomPanel pnlControl;
     private System.Windows.Forms.ComboBox cbJogSpeed;
     private System.Windows.Forms.ComboBox cbMDIHistory;
     private System.Windows.Forms.TextBox tbMDICommand;
@@ -1183,9 +1186,9 @@ partial class frmViewer
     private System.Windows.Forms.Button btnSettings;
     private System.Windows.Forms.Label lblFeedOverride;
     private System.Windows.Forms.Timer timerStatusQuery;
-    private DmitryBrant.CustomControls.SevenSegmentArray Xdisplay;
-    private DmitryBrant.CustomControls.SevenSegmentArray Zdisplay;
-    private DmitryBrant.CustomControls.SevenSegmentArray Ydisplay;
+    private SevenSegmentArray Xdisplay;
+    private SevenSegmentArray Zdisplay;
+    private SevenSegmentArray Ydisplay;
     private System.Windows.Forms.ToolStripStatusLabel lblElapsedTime;
     private System.Windows.Forms.ToolStripStatusLabel lblTX;
     private System.Windows.Forms.ToolStripStatusLabel lblRX;
@@ -1227,11 +1230,11 @@ partial class frmViewer
     private CPOL.Knobs.LBKnob lbKnob1;
     private System.Windows.Forms.Label label3;
     private System.Windows.Forms.Label label2;
-    private Utility.Panel.CustomPanel customPanel5;
-    private Utility.Panel.CustomPanel customPanel4;
-    private Utility.Panel.CustomPanel customPanel1;
-    private Utility.Panel.CustomPanel customPanel8;
-    private Utility.Panel.CustomPanel customPanel2;
+    private CustomPanel.CustomPanel customPanel5;
+    private CustomPanel.CustomPanel customPanel4;
+    private CustomPanel.CustomPanel customPanel1;
+    private CustomPanel.CustomPanel customPanel8;
+    private CustomPanel.CustomPanel customPanel2;
     private System.Windows.Forms.Label label7;
     private System.Windows.Forms.Label label4;
     private System.Windows.Forms.TabControl tabControl1;

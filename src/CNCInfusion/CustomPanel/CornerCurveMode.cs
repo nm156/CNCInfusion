@@ -1,8 +1,8 @@
 using System;
 
-namespace Utility.Panel;
+namespace CNCInfusion.CustomPanel;
 
-[FlagsAttribute()]
+[Flags()]
 public enum CornerCurveMode
 {
 

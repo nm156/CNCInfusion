@@ -1,5 +1,4 @@
-using System;
-namespace Utility.Panel;
+namespace CNCInfusion.CustomPanel;
 
 public enum LinearGradientMode
 {

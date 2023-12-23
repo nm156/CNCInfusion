@@ -1,9 +1,9 @@
 using System;
 
-namespace Utility.Panel;
+namespace CNCInfusion.CustomPanel;
 
 
-[System.Drawing.ToolboxBitmapAttribute(typeof(System.Windows.Forms.Panel))]
+[System.Drawing.ToolboxBitmap(typeof(System.Windows.Forms.Panel))]
 public class CustomPanel : System.Windows.Forms.Panel
 {
     // Fields
@@ -18,138 +18,114 @@ public class CustomPanel : System.Windows.Forms.Panel
     //   Shadow the Backcolor property so that the base class will still render with a transparent backcolor
     private CornerCurveMode _CurveMode = CornerCurveMode.All;
 
-    [System.ComponentModel.DefaultValueAttribute(typeof(System.Drawing.Color), "Window"), System.ComponentModel.CategoryAttribute("Appearance"), System.ComponentModel.DescriptionAttribute("The primary background color used to display text and graphics in the control.")]
+    [System.ComponentModel.DefaultValue(typeof(System.Drawing.Color), "Window"), System.ComponentModel.Category("Appearance"), System.ComponentModel.Description("The primary background color used to display text and graphics in the control.")]
     public new System.Drawing.Color BackColor
     {
-        get
-        {
-            return this._BackColour1;
-        }
+        get => _BackColour1;
         set
         {
-            this._BackColour1 = value;
-            if (this.DesignMode == true)
+            _BackColour1 = value;
+            if (DesignMode == true)
             {
-                this.Invalidate();
+                Invalidate();
             }
         }
     }
 
-    [System.ComponentModel.DefaultValueAttribute(typeof(System.Drawing.Color), "Window"), System.ComponentModel.CategoryAttribute("Appearance"), System.ComponentModel.DescriptionAttribute("The secondary background color used to paint the control.")]
+    [System.ComponentModel.DefaultValue(typeof(System.Drawing.Color), "Window"), System.ComponentModel.Category("Appearance"), System.ComponentModel.Description("The secondary background color used to paint the control.")]
     public System.Drawing.Color BackColor2
     {
-        get
-        {
-            return this._BackColour2;
-        }
+        get => _BackColour2;
         set
         {
-            this._BackColour2 = value;
-            if (this.DesignMode == true)
+            _BackColour2 = value;
+            if (DesignMode == true)
             {
-                this.Invalidate();
+                Invalidate();
             }
         }
     }
 
-    [System.ComponentModel.DefaultValueAttribute(typeof(LinearGradientMode), "None"), System.ComponentModel.CategoryAttribute("Appearance"), System.ComponentModel.DescriptionAttribute("The gradient direction used to paint the control.")]
+    [System.ComponentModel.DefaultValue(typeof(LinearGradientMode), "None"), System.ComponentModel.Category("Appearance"), System.ComponentModel.Description("The gradient direction used to paint the control.")]
     public LinearGradientMode GradientMode
     {
-        get
-        {
-            return this._GradientMode;
-        }
+        get => _GradientMode;
         set
         {
-            this._GradientMode = value;
-            if (this.DesignMode == true)
+            _GradientMode = value;
+            if (DesignMode == true)
             {
-                this.Invalidate();
+                Invalidate();
             }
         }
     }
 
-    [System.ComponentModel.DefaultValueAttribute(typeof(System.Windows.Forms.BorderStyle), "None"), System.ComponentModel.CategoryAttribute("Appearance"), System.ComponentModel.DescriptionAttribute("The border style used to paint the control.")]
+    [System.ComponentModel.DefaultValue(typeof(System.Windows.Forms.BorderStyle), "None"), System.ComponentModel.Category("Appearance"), System.ComponentModel.Description("The border style used to paint the control.")]
     public new System.Windows.Forms.BorderStyle BorderStyle
     {
-        get
-        {
-            return this._BorderStyle;
-        }
+        get => _BorderStyle;
         set
         {
-            this._BorderStyle = value;
-            if (this.DesignMode == true)
+            _BorderStyle = value;
+            if (DesignMode == true)
             {
-                this.Invalidate();
+                Invalidate();
             }
         }
     }
 
-    [System.ComponentModel.DefaultValueAttribute(typeof(System.Drawing.Color), "WindowFrame"), System.ComponentModel.CategoryAttribute("Appearance"), System.ComponentModel.DescriptionAttribute("The border color used to paint the control.")]
+    [System.ComponentModel.DefaultValue(typeof(System.Drawing.Color), "WindowFrame"), System.ComponentModel.Category("Appearance"), System.ComponentModel.Description("The border color used to paint the control.")]
     public System.Drawing.Color BorderColor
     {
-        get
-        {
-            return this._BorderColour;
-        }
+        get => _BorderColour;
         set
         {
-            this._BorderColour = value;
-            if (this.DesignMode == true)
+            _BorderColour = value;
+            if (DesignMode == true)
             {
-                this.Invalidate();
+                Invalidate();
             }
         }
     }
 
-    [System.ComponentModel.DefaultValueAttribute(typeof(int), "1"), System.ComponentModel.CategoryAttribute("Appearance"), System.ComponentModel.DescriptionAttribute("The width of the border used to paint the control.")]
+    [System.ComponentModel.DefaultValue(typeof(int), "1"), System.ComponentModel.Category("Appearance"), System.ComponentModel.Description("The width of the border used to paint the control.")]
     public int BorderWidth
     {
-        get
-        {
-            return this._BorderWidth;
-        }
+        get => _BorderWidth;
         set
         {
-            this._BorderWidth = value;
-            if (this.DesignMode == true)
+            _BorderWidth = value;
+            if (DesignMode == true)
             {
-                this.Invalidate();
+                Invalidate();
             }
         }
     }
 
-    [System.ComponentModel.DefaultValueAttribute(typeof(int), "0"), System.ComponentModel.CategoryAttribute("Appearance"), System.ComponentModel.DescriptionAttribute("The radius of the curve used to paint the corners of the control.")]
+    [System.ComponentModel.DefaultValue(typeof(int), "0"), System.ComponentModel.Category("Appearance"), System.ComponentModel.Description("The radius of the curve used to paint the corners of the control.")]
     public int Curvature
     {
-        get
-        {
-            return this._Curvature;
-        }
+        get => _Curvature;
         set
         {
-            this._Curvature = value;
-            if (this.DesignMode == true)
+            _Curvature = value;
+            if (DesignMode == true)
             {
-                this.Invalidate();
+                Invalidate();
             }
         }
     }
 
-    [System.ComponentModel.DefaultValueAttribute(typeof(CornerCurveMode), "All"), System.ComponentModel.CategoryAttribute("Appearance"), System.ComponentModel.DescriptionAttribute("The style of the curves to be drawn on the control.")]
+    [System.ComponentModel.DefaultValue(typeof(CornerCurveMode), "All"), System.ComponentModel.Category("Appearance"), System.ComponentModel.Description("The style of the curves to be drawn on the control.")]
     public CornerCurveMode CurveMode
     {
-        get
-        {
-            return this._CurveMode;
-        }
+        get => _CurveMode;
         set
         {
-            this._CurveMode = value;
-            if (this.DesignMode == true)
+            _CurveMode = value;
+            if (DesignMode == true)
             {
-                this.Invalidate();
+                Invalidate();
             }
         }
     }
@@ -159,19 +135,12 @@ public class CustomPanel : System.Windows.Forms.Panel
         get
         {
             int curve = 0;
-            if (!(this._CurveMode == CornerCurveMode.None))
+            if (!(_CurveMode == CornerCurveMode.None))
             {
-                if (this._Curvature > (this.ClientRectangle.Width / 2))
+                curve = _Curvature > ClientRectangle.Width / 2 ? DoubleToInt(ClientRectangle.Width / 2) : _Curvature;
+                if (curve > ClientRectangle.Height / 2)
                 {
-                    curve = DoubleToInt(this.ClientRectangle.Width / 2);
-                }
-                else
-                {
-                    curve = this._Curvature;
-                }
-                if (curve > (this.ClientRectangle.Height / 2))
-                {
-                    curve = DoubleToInt(this.ClientRectangle.Height / 2);
+                    curve = DoubleToInt(ClientRectangle.Height / 2);
                 }
             }
             return curve;
@@ -182,28 +151,28 @@ public class CustomPanel : System.Windows.Forms.Panel
     {
         // pdf - to show progress on program startup
         //SSA.Splash.Update(String.Format("initializing {0}...", SSA.Splash.GlobalCounter++));
-        this.SetDefaultControlStyles();
-        this.customInitialisation();
+        SetDefaultControlStyles();
+        customInitialisation();
     }
 
     private void SetDefaultControlStyles()
     {
-        this.SetStyle(System.Windows.Forms.ControlStyles.DoubleBuffer, true);
+        SetStyle(System.Windows.Forms.ControlStyles.DoubleBuffer, true);
 
         // was false
-        this.SetStyle(System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true);
+        SetStyle(System.Windows.Forms.ControlStyles.AllPaintingInWmPaint, true);
 
-        this.SetStyle(System.Windows.Forms.ControlStyles.ResizeRedraw, true);
-        this.SetStyle(System.Windows.Forms.ControlStyles.UserPaint, true);
-        this.SetStyle(System.Windows.Forms.ControlStyles.SupportsTransparentBackColor, true);
+        SetStyle(System.Windows.Forms.ControlStyles.ResizeRedraw, true);
+        SetStyle(System.Windows.Forms.ControlStyles.UserPaint, true);
+        SetStyle(System.Windows.Forms.ControlStyles.SupportsTransparentBackColor, true);
     }
 
     private void customInitialisation()
     {
-        this.SuspendLayout();
+        SuspendLayout();
         base.BackColor = System.Drawing.Color.Transparent;
-        this.BorderStyle = System.Windows.Forms.BorderStyle.None;
-        this.ResumeLayout(false);
+        BorderStyle = System.Windows.Forms.BorderStyle.None;
+        ResumeLayout(false);
     }
 
     protected override void OnPaintBackground(System.Windows.Forms.PaintEventArgs pevent)
@@ -211,39 +180,34 @@ public class CustomPanel : System.Windows.Forms.Panel
         base.OnPaintBackground(pevent);
         pevent.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         System.Drawing.Drawing2D.GraphicsPath graphPath;
-        graphPath = this.GetPath();
+        graphPath = GetPath();
         //	Create Gradient Brush (Cannot be width or height 0)
         System.Drawing.Drawing2D.LinearGradientBrush filler;
-        System.Drawing.Rectangle rect = this.ClientRectangle;
-        if (this.ClientRectangle.Width == 0)
+        System.Drawing.Rectangle rect = ClientRectangle;
+        if (ClientRectangle.Width == 0)
         {
             rect.Width += 1;
         }
-        if (this.ClientRectangle.Height == 0)
+        if (ClientRectangle.Height == 0)
         {
             rect.Height += 1;
         }
-        if (this._GradientMode == LinearGradientMode.None)
-        {
-            filler = new System.Drawing.Drawing2D.LinearGradientBrush(rect, this._BackColour1, this._BackColour1, System.Drawing.Drawing2D.LinearGradientMode.Vertical);
-        }
-        else
-        {
-            filler = new System.Drawing.Drawing2D.LinearGradientBrush(rect, this._BackColour1, this._BackColour2, ((System.Drawing.Drawing2D.LinearGradientMode)this._GradientMode));
-        }
+        filler = _GradientMode == LinearGradientMode.None
+            ? new System.Drawing.Drawing2D.LinearGradientBrush(rect, _BackColour1, _BackColour1, System.Drawing.Drawing2D.LinearGradientMode.Vertical)
+            : new System.Drawing.Drawing2D.LinearGradientBrush(rect, _BackColour1, _BackColour2, (System.Drawing.Drawing2D.LinearGradientMode)_GradientMode);
         pevent.Graphics.FillPath(filler, graphPath);
         filler.Dispose();
-        if (this._BorderStyle == System.Windows.Forms.BorderStyle.FixedSingle)
+        if (_BorderStyle == System.Windows.Forms.BorderStyle.FixedSingle)
         {
-            System.Drawing.Pen borderPen = new(this._BorderColour, this._BorderWidth);
+            System.Drawing.Pen borderPen = new(_BorderColour, _BorderWidth);
             pevent.Graphics.DrawPath(borderPen, graphPath);
             borderPen.Dispose();
         }
-        else if (this._BorderStyle == System.Windows.Forms.BorderStyle.Fixed3D)
+        else if (_BorderStyle == System.Windows.Forms.BorderStyle.Fixed3D)
         {
-            DrawBorder3D(pevent.Graphics, this.ClientRectangle);
+            DrawBorder3D(pevent.Graphics, ClientRectangle);
         }
-        else if (this._BorderStyle == System.Windows.Forms.BorderStyle.None)
+        else if (_BorderStyle == System.Windows.Forms.BorderStyle.None)
         {
         }
         filler.Dispose();
@@ -253,31 +217,31 @@ public class CustomPanel : System.Windows.Forms.Panel
     protected System.Drawing.Drawing2D.GraphicsPath GetPath()
     {
         System.Drawing.Drawing2D.GraphicsPath graphPath = new();
-        if (this._BorderStyle == System.Windows.Forms.BorderStyle.Fixed3D)
+        if (_BorderStyle == System.Windows.Forms.BorderStyle.Fixed3D)
         {
-            graphPath.AddRectangle(this.ClientRectangle);
+            graphPath.AddRectangle(ClientRectangle);
         }
         else
         {
             try
             {
                 int curve = 0;
-                System.Drawing.Rectangle rect = this.ClientRectangle;
+                System.Drawing.Rectangle rect = ClientRectangle;
                 int offset = 0;
-                if (this._BorderStyle == System.Windows.Forms.BorderStyle.FixedSingle)
+                if (_BorderStyle == System.Windows.Forms.BorderStyle.FixedSingle)
                 {
-                    if (this._BorderWidth > 1)
+                    if (_BorderWidth > 1)
                     {
-                        offset = DoubleToInt(this.BorderWidth / 2);
+                        offset = DoubleToInt(BorderWidth / 2);
                     }
-                    curve = this.adjustedCurve;
+                    curve = adjustedCurve;
                 }
-                else if (this._BorderStyle == System.Windows.Forms.BorderStyle.Fixed3D)
+                else if (_BorderStyle == System.Windows.Forms.BorderStyle.Fixed3D)
                 {
                 }
-                else if (this._BorderStyle == System.Windows.Forms.BorderStyle.None)
+                else if (_BorderStyle == System.Windows.Forms.BorderStyle.None)
                 {
-                    curve = this.adjustedCurve;
+                    curve = adjustedCurve;
                 }
                 if (curve == 0)
                 {
@@ -287,49 +251,20 @@ public class CustomPanel : System.Windows.Forms.Panel
                 {
                     int rectWidth = rect.Width - 1 - offset;
                     int rectHeight = rect.Height - 1 - offset;
-                    int curveWidth = 1;
-                    if ((this._CurveMode & CornerCurveMode.TopRight) != 0)
-                    {
-                        curveWidth = (curve * 2);
-                    }
-                    else
-                    {
-                        curveWidth = 1;
-                    }
+                    int curveWidth = (_CurveMode & CornerCurveMode.TopRight) != 0 ? curve * 2 : 1;
                     graphPath.AddArc(rectWidth - curveWidth, offset, curveWidth, curveWidth, 270, 90);
-                    if ((this._CurveMode & CornerCurveMode.BottomRight) != 0)
-                    {
-                        curveWidth = (curve * 2);
-                    }
-                    else
-                    {
-                        curveWidth = 1;
-                    }
+                    curveWidth = (_CurveMode & CornerCurveMode.BottomRight) != 0 ? curve * 2 : 1;
                     graphPath.AddArc(rectWidth - curveWidth, rectHeight - curveWidth, curveWidth, curveWidth, 0, 90);
-                    if ((this._CurveMode & CornerCurveMode.BottomLeft) != 0)
-                    {
-                        curveWidth = (curve * 2);
-                    }
-                    else
-                    {
-                        curveWidth = 1;
-                    }
+                    curveWidth = (_CurveMode & CornerCurveMode.BottomLeft) != 0 ? curve * 2 : 1;
                     graphPath.AddArc(offset, rectHeight - curveWidth, curveWidth, curveWidth, 90, 90);
-                    if ((this._CurveMode & CornerCurveMode.TopLeft) != 0)
-                    {
-                        curveWidth = (curve * 2);
-                    }
-                    else
-                    {
-                        curveWidth = 1;
-                    }
+                    curveWidth = (_CurveMode & CornerCurveMode.TopLeft) != 0 ? curve * 2 : 1;
                     graphPath.AddArc(offset, offset, curveWidth, curveWidth, 180, 90);
                     graphPath.CloseFigure();
                 }
             }
-            catch (System.Exception)
+            catch (Exception)
             {
-                graphPath.AddRectangle(this.ClientRectangle);
+                graphPath.AddRectangle(ClientRectangle);
             }
         }
         return graphPath;
@@ -350,6 +285,6 @@ public class CustomPanel : System.Windows.Forms.Panel
 
     public static int DoubleToInt(double value)
     {
-        return System.Decimal.ToInt32(System.Decimal.Floor(System.Decimal.Parse((value).ToString())));
+        return decimal.ToInt32(decimal.Floor(decimal.Parse(value.ToString())));
     }
 }
